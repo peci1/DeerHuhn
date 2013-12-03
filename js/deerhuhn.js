@@ -119,13 +119,28 @@ DeerHuhn.prototype = {
 	    this.sprites.push(this.backgroundLayers[i]);
 	    this.stage.addChild(this.backgroundLayers[i]);
 	}
+
+	this.populateAnimals.apply(this);
     
         this.resize();
         requestAnimFrame(this.animate.bind(this));
     },
 
+    populateAnimals: function() {
+	for (var i = 0; i < 10; i++) {
+	    var animal = PIXI.Sprite.fromImage('images/listicka.png');
+	    animal.position.x = i/10.0 * this.rendererWidth;
+	    animal.position.y = i/10.0 * this.rendererHeight;
+
+	    var layer = Math.round(Math.random() * 4);
+
+	    this.backgroundLayers[layer].addChild(animal);
+	    this.sprites.push(animal);
+	}
+    },
+
     initializeImages: function() {
-	var assets = ['images/vrstva1.png', 'images/vrstva2.png', 'images/vrstva3.png', 'images/vrstva4.png', 'images/vrstva5.png'];
+	var assets = ['images/vrstva1.png', 'images/vrstva2.png', 'images/vrstva3.png', 'images/vrstva4.png', 'images/vrstva5.png', 'images/listicka.png'];
 	var loader = new PIXI.AssetLoader(assets);
 	//loader.onProgress = onAssetLoaderProgress //TODO
         loader.onComplete = this.onLoad.bind(this);
@@ -154,6 +169,35 @@ DeerHuhn.prototype = {
 	this.lastAnimationFrameTime = new Date() - this.pauseStartTime;
 	this.animate();
     }
+}
+
+/*
+ * A class specifying position of an object in a layered scene.
+ */
+DeerHuhn.ScenePosition = function(layer, x, y) {
+    this.layer = layer;
+    this.x = x;
+    this.y = y;
+}
+
+/*
+ * Represents an animal.
+ */
+DeerHuhn.Animal = function(animalType) {
+    this.type = animalType;
+    this.sprite = PIXI.Sprite.fromImage(this.type.imagePath);
+
+    // randPositionIdx == TODO
+    this.scenePosition = this.type.startPositions[randPositionIdx];
+}
+
+/*
+ * Represents a type of animal.
+ */
+DeerHuhn.AnimalType = function(imagePath, startPositions, paths) {
+    this.imagePath = imagePath;
+    this.startPositions = startPositions;
+    this.paths = paths;
 }
 
 var deerHuhn = new DeerHuhn('gameContainer');
