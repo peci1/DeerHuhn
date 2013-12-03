@@ -9,7 +9,11 @@ var DeerHuhn = function (canvasContainerId) {
     // scrolling
     // whether the background is scrolling; 0: no scrolling; -1: scrolling left; 1: scrolling right
     this.scrollingDirection = 0;
-    this.SCROLL_STEP = 50;
+    // scrolling direction given by mouse; gets overridden by keyboard
+    this.scrollingDirectionByMouse = 0;
+    // how much is the background scrolled from the left (in the overall percentage of possible scroll)
+    this.scrollPercentage = 0.0;
+    this.SCROLL_PERCENTAGE_STEP_PER_SECOND = 35/100.0;
     
     // renderer setup
     var interactive = true;
@@ -26,7 +30,7 @@ var DeerHuhn = function (canvasContainerId) {
     this.fps = 0;
     
     // variables filled after the assets are loaded
-    this.background = null;
+    this.backgroundLayers = [];
     this.sprites = [];
     
     // window callbacks
@@ -34,6 +38,8 @@ var DeerHuhn = function (canvasContainerId) {
     window.onorientationchange = this.resize.bind(this);
     window.onblur = this.blur.bind(this);
     window.onfocus = this.focus.bind(this);
+    
+    this.renderer.view.addEventListener('mousemove', this.mousemove.bind(this), true);
 
     // other init
     PIXI.Keys.init();
@@ -43,7 +49,16 @@ DeerHuhn.prototype = {
     
     scrollBackground: function()
     {
-        this.background.position.x = Math.max(-this.background.width + this.rendererWidth, Math.min(0, this.background.position.x + this.scrollingDirection*this.SCROLL_STEP));
+	if (this.scrollingDirection === 0)
+	    return;
+
+	this.scrollPercentage = Math.max(0, Math.min(1, 
+		    this.scrollPercentage - this.scrollingDirection*this.SCROLL_PERCENTAGE_STEP_PER_SECOND/this.fps));
+
+	for (var i = 0; i < this.backgroundLayers.length; i++) {
+	    var layer = this.backgroundLayers[i];
+            layer.position.x = this.scrollPercentage * (-layer.width + this.rendererWidth);
+	}
     },
     
     animate: function() {
@@ -77,20 +92,33 @@ DeerHuhn.prototype = {
 
     processKeys: function() {
         if (PIXI.Keys.isKeyPressed(PIXI.Keys.keyCodes.left)) {
-	   this.scrollingDirection = 1;
+	    this.scrollingDirection = 1;
         } else if (PIXI.Keys.isKeyPressed(PIXI.Keys.keyCodes.right)) {
-	   this.scrollingDirection = -1;
+	    this.scrollingDirection = -1;
         } else {
-	   this.scrollingDirection = 0;
+	    // if not scrolling by keyboard, try to scroll by mouse
+	    this.scrollingDirection = this.scrollingDirectionByMouse;
         }
+    },
+
+    mousemove: function(e) {
+	if (e.clientX / this.rendererWidth < 0.1) {
+	    this.scrollingDirectionByMouse = 1 + (1 - (e.clientX / this.rendererWidth / 0.1));
+	} else if (e.clientX / this.rendererWidth > 0.9) {
+	    this.scrollingDirectionByMouse = -1 - (1 - ((1 - e.clientX / this.rendererWidth) / 0.1));
+	} else {
+	    this.scrollingDirectionByMouse = 0;
+	}
     },
     
     onLoad: function() {
-        this.background = PIXI.Sprite.fromImage('images/vrstva5.png');
-        this.background.position.x = 0;
-        
-        this.sprites.push(this.background);
-        this.stage.addChild(this.background);
+	for (var i = 4; i >= 0; i--) {
+	    this.backgroundLayers[i] = PIXI.Sprite.fromImage('images/vrstva'+(i+1)+'.png');
+            this.backgroundLayers[i].position.x = 0;
+
+	    this.sprites.push(this.backgroundLayers[i]);
+	    this.stage.addChild(this.backgroundLayers[i]);
+	}
     
         this.resize();
         requestAnimFrame(this.animate.bind(this));
