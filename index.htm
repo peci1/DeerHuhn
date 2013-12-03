@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie6" lang="cs"><![endif]-->
+<!--[if IE 7 ]><html class="ie7" lang="cs"><![endif]-->
+<!--[if IE 8 ]><html class="ie8" lang="cs"><![endif]-->
+<!--[if IE 9 ]><html class="ie9" lang="cs"><![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="cs"><!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0" />
+
+    <title>Deerhuhn</title>
+    
+    <!-- link rel="shortcut icon" href="" / TODO--> 
+
+    <!-- TODO make offline -->
+    <!-- Pulled from http://code.google.com/p/html5shiv/ - enable HTML5 usage in IE -->
+    <!--[if lt IE 9]>
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" media="screen,projection,tv" href="css/main.css" />
+    <script src="js/debug.js"></script> <!-- TODO remove -->
+</head>
+
+<body>      
+    <script>document.body.className+='jsEnabled';</script>
+    <p id="jsDisabledText">Tato hra vyžaduje ke svému běhu Javascript. Buď jej máte zakázaný, nebo ho Váš prohlížeč nepodporuje.</p>
+
+    <div id="gameContainer"></div>
+
+    <!--footer id="footer">
+	Code by <a href="mailto:peci1@seznam.cz">Peci</a>, graphics by Jarda Tománek.
+    </footer-->
+
+    <script src="js/pixi.dev.js"></script>
+    <script src="js/pixi.keys.js"></script>
+    <script src="js/deerhuhn.js"></script>
+</body>
+
+</html>

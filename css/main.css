@@ -1,0 +1,4 @@
+body {margin: 0px; padding: 0px; text-align: center;}
+body.jsEnabled #jsDisabledText {display: none;}
+
+#gameContainer {margin: 0px auto; position: absolute; top: 0px; width: 100%; height: 100%;}

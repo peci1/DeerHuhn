@@ -1,0 +1,7 @@
+offline verze
+animace bodu od zastrelenych zvirat
+db - statistiky, "mazani" (pri novych kolech)
+
+pauza pri ztrate fokusu + countdown po jeho opetovnem ziskani
+
+???propojeni skore na social sites?
