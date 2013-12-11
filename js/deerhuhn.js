@@ -32,6 +32,7 @@ var DeerHuhn = function (canvasContainerId) {
     // variables filled after the assets are loaded
     this.backgroundLayers = [];
     this.sprites = [];
+    this.animals = [];
     
     // window callbacks
     window.onresize = this.resize.bind(this);
@@ -39,6 +40,17 @@ var DeerHuhn = function (canvasContainerId) {
     window.onblur = this.blur.bind(this);
     window.onfocus = this.focus.bind(this);
     
+    /*
+     * All types of animals in the game.
+     */
+    this.animalTypes = {
+	'fox': new DeerHuhn.AnimalType('images/listicka.png', [ 
+		new DeerHuhn.ScenePath(1, 50,50,200,200),
+		new DeerHuhn.ScenePath(2, 150,150,500,500),
+	       	], 
+		50.0/1000),
+    };
+
     this.renderer.view.addEventListener('mousemove', this.mousemove.bind(this), true);
 
     // other init
@@ -65,29 +77,40 @@ DeerHuhn.prototype = {
 	if (this.isPaused)
 	    return;
 
-	this.fps = this.calculateFps(new Date());
+	var timeDelta = this.calculateTimeDelta(new Date());
+	this.fps = this.calculateFps(timeDelta);
 
         this.processKeys();
     
         this.scrollBackground();
+
+	this.updateAnimalPositions(timeDelta);
     
         this.renderer.render(this.stage);
 
         requestAnimFrame(this.animate.bind(this));
     },
     
-    calculateFps: function(now) {
-	var fps;
+    calculateTimeDelta: function(now) {
+	var timeDelta;
 
 	if (this.lastAnimationFrameTime === 0) {
 	    this.lastAnimationFrameTime = now;
+	    return 0;
+	}
+
+	timeDelta = now - this.lastAnimationFrameTime;
+	this.lastAnimationFrameTime = now;
+
+	return timeDelta; 
+    },
+
+    calculateFps: function(timeDelta) {
+	if (timeDelta === 0) {
 	    return 60;
 	}
 
-	fps = 1000 / (now - this.lastAnimationFrameTime);
-	this.lastAnimationFrameTime = now;
-
-	return fps; 
+	return 1000 / timeDelta;
     },
 
     processKeys: function() {
@@ -116,26 +139,59 @@ DeerHuhn.prototype = {
 	    this.backgroundLayers[i] = PIXI.Sprite.fromImage('images/vrstva'+(i+1)+'.png');
             this.backgroundLayers[i].position.x = 0;
 
-	    this.sprites.push(this.backgroundLayers[i]);
+	    this.addSprite(this.backgroundLayers[i]);
 	    this.stage.addChild(this.backgroundLayers[i]);
 	}
 
-	this.populateAnimals.apply(this);
+	this.initAnimals.apply(this);
     
         this.resize();
         requestAnimFrame(this.animate.bind(this));
     },
 
-    populateAnimals: function() {
+    addSprite: function(sprite) {
+	this.sprites.push(sprite);
+	sprite.scale.x = this.renderingScale;
+	sprite.scale.y = this.renderingScale;
+    },
+
+    removeSprite: function(sprite) {
+	this.sprites.remove(sprite);
+    },
+
+    initAnimals: function() {
 	for (var i = 0; i < 10; i++) {
-	    var animal = PIXI.Sprite.fromImage('images/listicka.png');
-	    animal.position.x = i/10.0 * this.rendererWidth;
-	    animal.position.y = i/10.0 * this.rendererHeight;
+	    this.addRandomAnimal();
+	}
+    },
 
-	    var layer = Math.round(Math.random() * 4);
+    addRandomAnimal: function() {
+	var animalKeys = Object.keys(this.animalTypes);
+	var randAnimalType = this.animalTypes[animalKeys[randInt(0, animalKeys.length-1)]];
 
-	    this.backgroundLayers[layer].addChild(animal);
-	    this.sprites.push(animal);
+	var deerHuhn = this;
+	var animal = new DeerHuhn.Animal(randAnimalType, function() {
+	    deerHuhn.removeAnimal(animal);
+	});
+	this.addAnimal(animal);
+    },
+
+    addAnimal: function(animal) {
+	this.backgroundLayers[animal.scenePosition.layer].addChild(animal.sprite);
+	this.addSprite(animal.sprite);
+	this.animals.push(animal);
+    },
+
+    removeAnimal: function(animal) {
+	this.backgroundLayers[animal.scenePosition.layer].removeChild(animal.sprite);
+	this.removeSprite(animal.sprite);
+	this.animals.remove(animal);
+    },
+
+    updateAnimalPositions: function(timeDelta) {
+	for (var i = 0; i < this.animals.length; i++) {
+	    var animal = this.animals[i];
+	    animal.updatePosition(timeDelta);
 	}
     },
 
@@ -169,7 +225,9 @@ DeerHuhn.prototype = {
 	this.lastAnimationFrameTime = new Date() - this.pauseStartTime;
 	this.animate();
     }
-}
+};
+
+// CLASS DeerHuhn.ScenePosition
 
 /*
  * A class specifying position of an object in a layered scene.
@@ -178,26 +236,110 @@ DeerHuhn.ScenePosition = function(layer, x, y) {
     this.layer = layer;
     this.x = x;
     this.y = y;
-}
+};
+
+// CLASS DeerHuhn.ScenePath
+
+/*
+ * A path in the scene (in a single layer).
+ */
+DeerHuhn.ScenePath = function(layer, x1, y1, x2, y2) {
+    this.layer = layer;
+    this.startPosition = new DeerHuhn.ScenePosition(layer, x1, y1);
+    this.endPosition = new DeerHuhn.ScenePosition(layer, x2, y2);
+    this.length = Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+};
+
+DeerHuhn.ScenePath.prototype = {
+    /*
+     * Return the interpolated position along the path.
+     *
+     * The default implementation does just a linear interpolation.
+     *
+     * @param float percentComplete The percentage of the movement completed (number 0.0 to 1.0).
+     */
+    interpolatePosition: function(percentComplete) {
+	var x = this.startPosition.x + percentComplete * (this.endPosition.x - this.startPosition.x);
+	var y = this.startPosition.y + percentComplete * (this.endPosition.y - this.startPosition.y);
+	return new DeerHuhn.ScenePosition(this.layer, x, y);
+    },
+};
+
+// CLASS DeerHuhn.Animal
 
 /*
  * Represents an animal.
  */
-DeerHuhn.Animal = function(animalType) {
+DeerHuhn.Animal = function(animalType, movementFinishedCallback) {
     this.type = animalType;
     this.sprite = PIXI.Sprite.fromImage(this.type.imagePath);
+    this.movementPercentComplete = 0.0;
+    this.speed = this.type.speed;
+    this.movementFinishedCallback = movementFinishedCallback;
 
-    // randPositionIdx == TODO
-    this.scenePosition = this.type.startPositions[randPositionIdx];
-}
+    var numPaths = this.type.paths.length;
+    var randPositionIdx = randInt(0, numPaths-1);
+
+    this.path = this.type.paths[randPositionIdx];
+    this.scenePosition = this.path.startPosition;
+    this.sprite.position.x = -1000;
+    this.sprite.position.y = -1000;
+};
+
+DeerHuhn.Animal.prototype = {
+    /*
+     * Update the sprite and scene position.
+     *
+     * @param int timeDelta The number of miliseconds from the last position update.
+     */
+    updatePosition: function(timeDelta) {
+	this.movementPercentComplete += timeDelta * this.speed / this.path.length;
+	if (this.movementPercentComplete > 1) {
+	    this.movementPercentComplete = 1;
+	    if (this.movementFinishedCallback !== undefined)
+		this.movementFinishedCallback();
+	}
+
+	this.scenePosition = this.path.interpolatePosition(this.movementPercentComplete);
+
+	this.sprite.position.x = this.scenePosition.x;
+	this.sprite.position.y = this.scenePosition.y;
+    },
+};
+
+// CLASS DeerHuhn.AnimalType
 
 /*
  * Represents a type of animal.
+ *
+ * @param float speed Speed of the animal in px/ms.
  */
-DeerHuhn.AnimalType = function(imagePath, startPositions, paths) {
+DeerHuhn.AnimalType = function(imagePath, paths, speed) {
     this.imagePath = imagePath;
-    this.startPositions = startPositions;
     this.paths = paths;
+    this.speed = speed;
+};
+
+// MISC UTILITIES
+
+/*
+ * Add a "remove by value" to array prototype. It only removes first instance of the value.
+ */
+Array.prototype.remove = function(val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] === val) {
+            this.splice(i, 1);
+            break;
+        }
+    }
+    return this;
+}
+
+function randInt(min, max) {
+    var result = Math.floor((Math.random() * ((max*1.0 + 1) - min)) + min);
+    if (result == max + 1)
+	return min;
+    return result;
 }
 
 var deerHuhn = new DeerHuhn('gameContainer');
