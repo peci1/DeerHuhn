@@ -14,7 +14,57 @@ var DeerHuhn = function (canvasContainerId) {
     // how much is the background scrolled from the left (in the overall percentage of possible scroll)
     this.scrollPercentage = 0.0;
     this.SCROLL_PERCENTAGE_STEP_PER_SECOND = 35/100.0;
-    
+   
+    this.possiblePaths = [
+	new DeerHuhn.ScenePath(2, 167, 273, 638, 413),
+	new DeerHuhn.ScenePath(2, 93, 327, 644, 399),
+	new DeerHuhn.ScenePath(2, 91, 304, 895, 637),
+	new DeerHuhn.ScenePath(2, -28, 483, 622, 378),
+	new DeerHuhn.ScenePath(2, -14, 459, 896, 618),
+	new DeerHuhn.ScenePath(2, -40, 514, 484, 622),
+	new DeerHuhn.ScenePath(2, -23, 667, 458, 643),
+	new DeerHuhn.ScenePath(2, 394, 907, 880, 921),
+	new DeerHuhn.ScenePath(2, 415, 951, 1366, 576),
+	new DeerHuhn.ScenePath(2, 533, 633, 875, 657),
+	new DeerHuhn.ScenePath(2, 556, 639, 1138, 808),
+	new DeerHuhn.ScenePath(2, 637, 444, 1766, 772),
+	new DeerHuhn.ScenePath(2, 656, 433, 1336, 550),
+	new DeerHuhn.ScenePath(2, 914, 639, 1394, 574),
+	new DeerHuhn.ScenePath(2, 935, 655, 1931, 667),
+	new DeerHuhn.ScenePath(3, 671, 384, 1184, 258),
+	new DeerHuhn.ScenePath(3, 656, 370, 1519, 421),
+	new DeerHuhn.ScenePath(3, 827, 277, 1154, 264),
+	new DeerHuhn.ScenePath(3, 844, 282, 1385, 442),
+	new DeerHuhn.ScenePath(3, 788, 439, 1328, 489),
+	new DeerHuhn.ScenePath(3, 1189, 271, 1559, 417),
+	new DeerHuhn.ScenePath(2, 1106, 822, 1480, 570),
+	new DeerHuhn.ScenePath(2, 1141, 795, 1894, 691),
+	new DeerHuhn.ScenePath(2, 1450, 441, 1651, 343),
+	new DeerHuhn.ScenePath(2, 1657, 339, 1969, 375),
+	new DeerHuhn.ScenePath(2, 1537, 514, 1898, 387),
+	new DeerHuhn.ScenePath(2, 1525, 534, 2695, 603),
+	new DeerHuhn.ScenePath(2, 1579, 544, 1958, 649),
+	new DeerHuhn.ScenePath(2, 1982, 649, 2686, 592),
+	new DeerHuhn.ScenePath(2, 1894, 208, 2305, 240),
+	new DeerHuhn.ScenePath(2, 1907, 226, 2471, 363),
+	new DeerHuhn.ScenePath(2, 2003, 370, 2312, 253),
+	new DeerHuhn.ScenePath(2, 2339, 262, 2458, 306),
+	new DeerHuhn.ScenePath(2, 2006, 390, 2494, 354),
+	new DeerHuhn.ScenePath(2, 2075, 388, 3248, 643),
+	new DeerHuhn.ScenePath(2, 2011, 406, 2684, 598),
+	new DeerHuhn.ScenePath(2, 2281, 712, 2699, 577),
+	new DeerHuhn.ScenePath(2, 2281, 712, 3188, 658),
+	new DeerHuhn.ScenePath(2, 2281, 712, 2741, 744),
+	new DeerHuhn.ScenePath(2, 2498, 354, 3251, 645),
+	new DeerHuhn.ScenePath(2, 2699, 577, 3419, 576),
+	new DeerHuhn.ScenePath(2, 2699, 595, 3187, 657),
+	new DeerHuhn.ScenePath(3, 2734, 418, 3560, 423),
+	new DeerHuhn.ScenePath(3, 2833, 463, 3421, 558),
+	new DeerHuhn.ScenePath(3, 3013, 531, 3469, 480),
+	new DeerHuhn.ScenePath(3, 3283, 264, 3575, 252),
+	new DeerHuhn.ScenePath(3, 3295, 286, 3647, 391),
+    ];
+
     // renderer setup
     var interactive = true;
     this.stage = new PIXI.Stage(0xAAFFFF, interactive);
@@ -24,6 +74,7 @@ var DeerHuhn = function (canvasContainerId) {
     // pausing
     this.isPaused = false;
     this.pauseStartTime = 0;
+    this.pausableObjects = [];
 
     // fps
     this.lastAnimationFrameTime = 0;
@@ -32,24 +83,18 @@ var DeerHuhn = function (canvasContainerId) {
     // variables filled after the assets are loaded
     this.backgroundLayers = [];
     this.sprites = [];
+    // All types of animals in the game. Filled in DeerHuhn.initAnimalTypes().
+    this.animalTypes = [];
+    // All animals currently living in the game. Initialized in DeerHuhn.initAnimals().
     this.animals = [];
+    // keys -> "frame" prefixes, values -> array of PIXI.Texture
+    this.animationTexturesCache = [];
     
     // window callbacks
     window.onresize = this.resize.bind(this);
     window.onorientationchange = this.resize.bind(this);
     window.onblur = this.blur.bind(this);
     window.onfocus = this.focus.bind(this);
-    
-    /*
-     * All types of animals in the game.
-     */
-    this.animalTypes = {
-	'fox': new DeerHuhn.AnimalType('images/listicka.png', [ 
-		new DeerHuhn.ScenePath(1, 50,50,200,200),
-		new DeerHuhn.ScenePath(2, 150,150,500,500),
-	       	], 
-		50.0/1000),
-    };
 
     this.renderer.view.addEventListener('mousemove', this.mousemove.bind(this), true);
 
@@ -135,6 +180,7 @@ DeerHuhn.prototype = {
     },
     
     onLoad: function() {
+	// init background tiles
 	for (var i = 4; i >= 0; i--) {
 	    this.backgroundLayers[i] = PIXI.Sprite.fromImage('images/vrstva'+(i+1)+'.png');
             this.backgroundLayers[i].position.x = 0;
@@ -142,6 +188,29 @@ DeerHuhn.prototype = {
 	    this.addSprite(this.backgroundLayers[i]);
 	    this.stage.addChild(this.backgroundLayers[i]);
 	}
+
+	// init animations
+	for (var textureId in PIXI.TextureCache) {
+	    if (PIXI.TextureCache.hasOwnProperty(textureId)) {
+		// name pattern is animation-frameBaseName-positionInAnimation.png
+		// frameBaseName cannot contain "-"
+		var idParts = textureId.split('-');
+		if (idParts[0] === 'animation' && idParts.length == 3) {
+		    var frameBaseName = idParts[1];
+
+		    // remove the ".png" suffix from position argument
+		    var positionInAnimationWithoutFileExtension = idParts[2].substr(0, idParts[2].length-4);
+		    var positionInAnimation = parseInt(positionInAnimationWithoutFileExtension);
+
+		    if (this.animationTexturesCache[frameBaseName] === undefined)
+			this.animationTexturesCache[frameBaseName] = [];
+
+		    this.animationTexturesCache[frameBaseName][positionInAnimation] = PIXI.TextureCache[textureId];
+		}
+	    }
+	}
+
+	this.initAnimalTypes.apply(this);
 
 	this.initAnimals.apply(this);
     
@@ -153,10 +222,22 @@ DeerHuhn.prototype = {
 	this.sprites.push(sprite);
 	sprite.scale.x = this.renderingScale;
 	sprite.scale.y = this.renderingScale;
+
+	if ('unPause' in sprite) {
+	    this.pausableObjects.push(sprite);
+	}
     },
 
     removeSprite: function(sprite) {
 	this.sprites.remove(sprite);
+
+	if ('unPause' in sprite)
+	    this.pausableObjects.remove(sprite);
+    },
+
+    initAnimalTypes: function() {
+	this.animalTypes['fox'] = new DeerHuhn.AnimalType(this.animationTexturesCache['listicka'], 
+		this.possiblePaths, 50.0/1000, 9);
     },
 
     initAnimals: function() {
@@ -196,7 +277,7 @@ DeerHuhn.prototype = {
     },
 
     initializeImages: function() {
-	var assets = ['images/vrstva1.png', 'images/vrstva2.png', 'images/vrstva3.png', 'images/vrstva4.png', 'images/vrstva5.png', 'images/listicka.png'];
+	var assets = ['images/vrstva1.png', 'images/vrstva2.png', 'images/vrstva3.png', 'images/vrstva4.png', 'images/vrstva5.png', 'images/sprites.json'];
 	var loader = new PIXI.AssetLoader(assets);
 	//loader.onProgress = onAssetLoaderProgress //TODO
         loader.onComplete = this.onLoad.bind(this);
@@ -215,15 +296,32 @@ DeerHuhn.prototype = {
         }
     },
 
-    blur: function() {
+    pause: function() {
 	this.isPaused = true;
 	this.pauseStartTime = new Date();
     },
 
-    focus: function() {
+    unPause: function() {
 	this.isPaused = false;
-	this.lastAnimationFrameTime = new Date() - this.pauseStartTime;
+
+	var timeDelta = new Date() - this.pauseStartTime;
+
+	for (var obj in this.pausableObjects) {
+	    if ('unPause' in this.pausableObjects[obj]) {
+		this.pausableObjects[obj].unPause(timeDelta);
+	    }
+	}
+
+	this.lastAnimationFrameTime = new Date();
 	this.animate();
+    },
+
+    blur: function() {
+	this.pause.call(this);
+    },
+
+    focus: function() {
+	this.unPause.call(this);
     }
 };
 
@@ -241,7 +339,7 @@ DeerHuhn.ScenePosition = function(layer, x, y) {
 // CLASS DeerHuhn.ScenePath
 
 /*
- * A path in the scene (in a single layer).
+ * A (oriented) path in the scene (in a single layer).
  */
 DeerHuhn.ScenePath = function(layer, x1, y1, x2, y2) {
     this.layer = layer;
@@ -263,6 +361,15 @@ DeerHuhn.ScenePath.prototype = {
 	var y = this.startPosition.y + percentComplete * (this.endPosition.y - this.startPosition.y);
 	return new DeerHuhn.ScenePosition(this.layer, x, y);
     },
+
+    /*
+     * Returns a scenepath with reverted direction (swaps endpoints).
+     */
+    reverse: function() {
+	return new DeerHuhn.ScenePath(this.layer, 
+		this.endPosition.x, this.endPosition.y,
+		this.startPosition.x, this.startPosition.y);
+    }
 };
 
 // CLASS DeerHuhn.Animal
@@ -272,7 +379,12 @@ DeerHuhn.ScenePath.prototype = {
  */
 DeerHuhn.Animal = function(animalType, movementFinishedCallback) {
     this.type = animalType;
-    this.sprite = PIXI.Sprite.fromImage(this.type.imagePath);
+
+    this.sprite = new PIXI.SmoothMovieClip(this.type.animationTextures);
+    this.sprite.loop = true;
+    this.sprite.animationSpeed = this.type.animationSpeed;
+    this.sprite.gotoAndPlay(0);
+
     this.movementPercentComplete = 0.0;
     this.speed = this.type.speed;
     this.movementFinishedCallback = movementFinishedCallback;
@@ -281,6 +393,9 @@ DeerHuhn.Animal = function(animalType, movementFinishedCallback) {
     var randPositionIdx = randInt(0, numPaths-1);
 
     this.path = this.type.paths[randPositionIdx];
+    if (Math.random() > 0.5)
+	this.path = this.path.reverse.call(this.path);
+
     this.scenePosition = this.path.startPosition;
     this.sprite.position.x = -1000;
     this.sprite.position.y = -1000;
@@ -304,7 +419,20 @@ DeerHuhn.Animal.prototype = {
 
 	this.sprite.position.x = this.scenePosition.x;
 	this.sprite.position.y = this.scenePosition.y;
+
+	if (this.isMovingLeft() && this.sprite.scale.x > 0) {
+	    this.sprite.scale.x = -this.sprite.scale.x;
+	} else if (!this.isMovingLeft() && this.sprite.scale.x < 0) {
+	    this.sprite.scale.x = -this.sprite.scale.x;
+	}
     },
+
+    /*
+     * Returns true if the animal is moving left; false means moving right.
+     */
+    isMovingLeft: function() {
+	return this.path.startPosition.x > this.path.endPosition.x;
+    }
 };
 
 // CLASS DeerHuhn.AnimalType
@@ -312,12 +440,15 @@ DeerHuhn.Animal.prototype = {
 /*
  * Represents a type of animal.
  *
+ * @param array of PIXI.Texture animationTextures The textures used for animation.
  * @param float speed Speed of the animal in px/ms.
+ * @param float animationSpeed The speed of animation (in desired fps).
  */
-DeerHuhn.AnimalType = function(imagePath, paths, speed) {
-    this.imagePath = imagePath;
+DeerHuhn.AnimalType = function(animationTextures, paths, speed, animationSpeed) {
+    this.animationTextures = animationTextures;
     this.paths = paths;
     this.speed = speed;
+    this.animationSpeed = animationSpeed;
 };
 
 // MISC UTILITIES
