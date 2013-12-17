@@ -184,6 +184,16 @@ DeerHuhn.prototype = {
 	for (var i = 4; i >= 0; i--) {
 	    this.backgroundLayers[i] = PIXI.Sprite.fromImage('images/vrstva'+(i+1)+'.png');
             this.backgroundLayers[i].position.x = 0;
+	    // make the background layers clickable through the transparent areas
+	    this.backgroundLayers[i].hitArea = new PIXI.TransparencyHitArea(this.backgroundLayers[i]);
+	    // this is needed for the background to stop bubbling of click events
+	    this.backgroundLayers[i].setInteractive(true);
+
+	    // TODO development code
+	    var _i = i;
+	    this.backgroundLayers[i].click = function () {
+		console.log('Clicked layer ' + _i);
+	    }
 
 	    this.addSprite(this.backgroundLayers[i]);
 	    this.stage.addChild(this.backgroundLayers[i]);
@@ -381,9 +391,17 @@ DeerHuhn.Animal = function(animalType, movementFinishedCallback) {
     this.type = animalType;
 
     this.sprite = new PIXI.SmoothMovieClip(this.type.animationTextures);
+    // we can click through transparent areas of animals
+    this.sprite.hitArea = new PIXI.TransparencyHitArea(this.sprite);
+    this.sprite.setInteractive(true);
     this.sprite.loop = true;
     this.sprite.animationSpeed = this.type.animationSpeed;
     this.sprite.gotoAndPlay(0);
+
+    var animal = this;
+    this.sprite.click = function (interactionData) {
+	animal.onShot.apply(animal);
+    }
 
     this.movementPercentComplete = 0.0;
     this.speed = this.type.speed;
@@ -432,6 +450,13 @@ DeerHuhn.Animal.prototype = {
      */
     isMovingLeft: function() {
 	return this.path.startPosition.x > this.path.endPosition.x;
+    },
+
+    /*
+     * Callback called when the animal gets shot.
+     */
+    onShot: function() {
+	this.movementFinishedCallback.call(this);
     }
 };
 
