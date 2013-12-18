@@ -53,15 +53,18 @@ PIXI.TransparencyHitArea.prototype.contains = function(x, y)
         return false;
 
 	var x1 = this.sprite.position.x;
-	var w = this.sprite.width / this.sprite.scale.x;
+	var w = this.sprite.texture.frame.width;
 	if(x >= x1 && x <= x1 + w)
 	{
 		var y1 = this.sprite.position.y;
-		var h = this.sprite.height / this.sprite.scale.y;
+		var h = this.sprite.texture.frame.height;
 		
 		if(y >= y1 && y <= y1 + h)
 		{
-			return !this.isTextureTransparentAt(this.getTexture(), x, y);
+			var xInTexture = x + this.sprite.texture.frame.x;
+			var yInTexture = y + this.sprite.texture.frame.y;
+			return !this.isTextureTransparentAt(this.getTexture(), 
+				xInTexture, yInTexture);
 		}
 	}
 
@@ -96,6 +99,7 @@ PIXI.CanvasTransparencyHitArea = function (sprite) {
 
     // make sure we have a canvas context of the size of the sprite's texture in cache
     texture = this.getTexture();
+
     canvasContextCache = PIXI.CanvasTransparencyHitArea.canvasContextCache;
     if (canvasContextCache[texture.width] == undefined)
 	canvasContextCache[texture.width] = {};
