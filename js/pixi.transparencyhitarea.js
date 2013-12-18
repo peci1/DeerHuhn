@@ -5,9 +5,12 @@
 /**
  * A hit area defined by opaque pixels of the texture.
  *
+ * Do not directly call the constructor. Call #create() instead.
+ *
  * @class TransparencyHitArea
  * @constructor 
  * @param PIXI.Sprite sprite The sprite this hitarea handles
+ * @param bool useWebGL If true, handle the computations using WebGL, otherwise use Canvas.
  */
 PIXI.TransparencyHitArea = function(sprite)
 {
@@ -18,15 +21,21 @@ PIXI.TransparencyHitArea = function(sprite)
 	this.sprite = sprite;
 }
 
+// constructor
+//PIXI.TransparencyHitArea.prototype.constructor = PIXI.TransparencyHitArea;
+
 /**
- * Creates a clone of this TransparencyHitArea
+ * Create a hit area defined by opaque pixels of the texture.
  *
- * @method clone
- * @return {TransparencyHitArea} a copy of the hit area
+ * @param PIXI.Sprite sprite The sprite this hitarea handles
+ * @param bool useWebGL If true, handle the computations using WebGL, otherwise use Canvas.
  */
-PIXI.TransparencyHitArea.prototype.clone = function()
-{
-	return new PIXI.TransparencyHitArea(this.sprite);
+PIXI.TransparencyHitArea.create = function (sprite, useWebGL) {
+    if (useWebGL) {
+	return new PIXI.WebGLTransparencyHitArea(sprite);
+    } else {
+	return new PIXI.CanvasTransparencyHitArea(sprite);
+    }
 }
 
 /**
@@ -52,14 +61,18 @@ PIXI.TransparencyHitArea.prototype.contains = function(x, y)
 		
 		if(y >= y1 && y <= y1 + h)
 		{
-			var xInTexture = x-x1;
-			var yInTexture = y-y1;
-			return !this.isTextureTransparentAt(this.sprite.texture.baseTexture.source, 
-				xInTexture, yInTexture);
+			return !this.isTextureTransparentAt(this.getTexture(), x, y);
 		}
 	}
 
 	return false;
+}
+
+/*
+ * Return the texture used for the handled sprite.
+ */
+PIXI.TransparencyHitArea.prototype.getTexture = function() {
+    return this.sprite.texture.baseTexture.source;
 }
 
 /*
@@ -70,8 +83,63 @@ PIXI.TransparencyHitArea.prototype.contains = function(x, y)
  * @param int y The questioned y coord in texture frame.
  */
 PIXI.TransparencyHitArea.prototype.isTextureTransparentAt = function(texture, x, y) {
-    return false; //TODO
+    throw new Error('Has to be implemented in subclasses');
 }
 
-// constructor
-PIXI.TransparencyHitArea.prototype.constructor = PIXI.TransparencyHitArea;
+// CANVAS IMPLEMENTATION
+
+/*
+ * A transparency-based hit area using Canvas as the underlying technology.
+ */
+PIXI.CanvasTransparencyHitArea = function (sprite) {
+    PIXI.TransparencyHitArea.call(this, sprite);
+
+    // make sure we have a canvas context of the size of the sprite's texture in cache
+    texture = this.getTexture();
+    canvasContextCache = PIXI.CanvasTransparencyHitArea.canvasContextCache;
+    if (canvasContextCache[texture.width] == undefined)
+	canvasContextCache[texture.width] = {};
+    if (canvasContextCache[texture.width][texture.height] == undefined) {
+	el = document.createElement('canvas');
+	el.width = texture.width;
+	el.height = texture.height;
+	canvasContextCache[texture.width][texture.height] = el.getContext('2d');
+    }
+}
+PIXI.CanvasTransparencyHitArea.prototype = Object.create(PIXI.TransparencyHitArea.prototype);
+PIXI.CanvasTransparencyHitArea.constructor = PIXI.CanvasTransparencyHitArea;
+
+// we need to draw the textures to canvases, so we store one canvas for each size of texture
+PIXI.CanvasTransparencyHitArea.canvasContextCache = {};
+
+/**
+ * Creates a clone of this CanvasTransparencyHitArea
+ *
+ * @method clone
+ * @return {CanvasTransparencyHitArea} a copy of the hit area
+ */
+PIXI.CanvasTransparencyHitArea.prototype.clone = function()
+{
+    return new PIXI.CanvasTransparencyHitArea(this.sprite);
+}
+
+/*
+ * Returns true if the given texture is fully transparent at coordinates x, y.
+ *
+ * @param Image texture The texture.
+ * @param int x The questioned x coord in texture frame.
+ * @param int y The questioned y coord in texture frame.
+ */
+PIXI.CanvasTransparencyHitArea.prototype.isTextureTransparentAt = function(texture, x, y) {
+    var texture = this.getTexture();
+    var ctx = PIXI.CanvasTransparencyHitArea.canvasContextCache[texture.width][texture.height];
+
+    // TODO we could store one canvas per texture
+    ctx.clearRect(0, 0, texture.width, texture.height);
+    ctx.drawImage(texture, 0, 0);
+    var pixelData = ctx.getImageData(x, y, 1, 1).data;
+
+    return pixelData[3] == 0;
+}
+
+// WEBGL IMPLEMENTATION

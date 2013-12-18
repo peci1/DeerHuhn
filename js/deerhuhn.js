@@ -68,8 +68,12 @@ var DeerHuhn = function (canvasContainerId) {
     // renderer setup
     var interactive = true;
     this.stage = new PIXI.Stage(0xAAFFFF, interactive);
-    this.renderer = PIXI.autoDetectRenderer(this.rendererWidth, this.rendererHeight);
+    this.stage.name = 'Stage';
+    //this.renderer = PIXI.autoDetectRenderer(this.rendererWidth, this.rendererHeight);
+    this.renderer = new PIXI.CanvasRenderer(this.rendererWidth, this.rendererHeight); //TODO remove; testing code
     this.GAME_CONTAINER.appendChild(this.renderer.view);
+
+    this.useWebGl = (this.renderer instanceof PIXI.WebGLRenderer);
 
     // pausing
     this.isPaused = false;
@@ -183,16 +187,18 @@ DeerHuhn.prototype = {
 	// init background tiles
 	for (var i = 4; i >= 0; i--) {
 	    this.backgroundLayers[i] = PIXI.Sprite.fromImage('images/vrstva'+(i+1)+'.png');
+	    this.backgroundLayers[i].name = 'Background ' + (i+1);
             this.backgroundLayers[i].position.x = 0;
 	    // make the background layers clickable through the transparent areas
-	    this.backgroundLayers[i].hitArea = new PIXI.TransparencyHitArea(this.backgroundLayers[i]);
+	    this.backgroundLayers[i].hitArea = PIXI.TransparencyHitArea.create(this.backgroundLayers[i]);
 	    // this is needed for the background to stop bubbling of click events
 	    this.backgroundLayers[i].setInteractive(true);
 
 	    // TODO development code
-	    var _i = i;
-	    this.backgroundLayers[i].click = function () {
-		console.log('Clicked layer ' + _i);
+	    var layer = this;
+	    this.backgroundLayers[i].click = function (mouse) {
+		console.log('Clicked layer ' + mouse.target.name);
+		return false; // stop event bubbling
 	    }
 
 	    this.addSprite(this.backgroundLayers[i]);
@@ -247,7 +253,7 @@ DeerHuhn.prototype = {
 
     initAnimalTypes: function() {
 	this.animalTypes['fox'] = new DeerHuhn.AnimalType(this.animationTexturesCache['listicka'], 
-		this.possiblePaths, 50.0/1000, 9);
+		'Fox', this.possiblePaths, 50.0/1000, 9);
     },
 
     initAnimals: function() {
@@ -390,9 +396,10 @@ DeerHuhn.ScenePath.prototype = {
 DeerHuhn.Animal = function(animalType, movementFinishedCallback) {
     this.type = animalType;
 
+    this.name = animalType.name;
     this.sprite = new PIXI.SmoothMovieClip(this.type.animationTextures);
     // we can click through transparent areas of animals
-    this.sprite.hitArea = new PIXI.TransparencyHitArea(this.sprite);
+    this.sprite.hitArea = PIXI.TransparencyHitArea.create(this.sprite);
     this.sprite.setInteractive(true);
     this.sprite.loop = true;
     this.sprite.animationSpeed = this.type.animationSpeed;
@@ -401,6 +408,7 @@ DeerHuhn.Animal = function(animalType, movementFinishedCallback) {
     var animal = this;
     this.sprite.click = function (interactionData) {
 	animal.onShot.apply(animal);
+	return false; // stop event bubbling
     }
 
     this.movementPercentComplete = 0.0;
@@ -456,6 +464,7 @@ DeerHuhn.Animal.prototype = {
      * Callback called when the animal gets shot.
      */
     onShot: function() {
+	console.log(this.sprite.name + ' killed');
 	this.movementFinishedCallback.call(this);
     }
 };
@@ -469,8 +478,9 @@ DeerHuhn.Animal.prototype = {
  * @param float speed Speed of the animal in px/ms.
  * @param float animationSpeed The speed of animation (in desired fps).
  */
-DeerHuhn.AnimalType = function(animationTextures, paths, speed, animationSpeed) {
+DeerHuhn.AnimalType = function(animationTextures, name, paths, speed, animationSpeed) {
     this.animationTextures = animationTextures;
+    this.name = name;
     this.paths = paths;
     this.speed = speed;
     this.animationSpeed = animationSpeed;
