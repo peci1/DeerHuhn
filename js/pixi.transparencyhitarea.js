@@ -49,17 +49,16 @@ PIXI.TransparencyHitArea.create = function (sprite, useWebGL) {
 PIXI.TransparencyHitArea.prototype.contains = function(x, y)
 {
     // first of all perform a rectangle bounds check
-    if(this.sprite.width <= 0 || this.sprite.height <= 0)
+    // with negative scale, width/height can also be negative
+    if(Math.abs(this.sprite.width) == 0 || Math.abs(this.sprite.height) == 0)
         return false;
 
-	var x1 = this.sprite.position.x;
 	var w = this.sprite.texture.frame.width;
-	if(x >= x1 && x <= x1 + w)
+	if(x >= 0 && x <= w)
 	{
-		var y1 = this.sprite.position.y;
 		var h = this.sprite.texture.frame.height;
 		
-		if(y >= y1 && y <= y1 + h)
+		if(y >= 0 && y <= h)
 		{
 			var xInTexture = x + this.sprite.texture.frame.x;
 			var yInTexture = y + this.sprite.texture.frame.y;
@@ -138,7 +137,8 @@ PIXI.CanvasTransparencyHitArea.prototype.isTextureTransparentAt = function(textu
     var texture = this.getTexture();
     var ctx = PIXI.CanvasTransparencyHitArea.canvasContextCache[texture.width][texture.height];
 
-    // TODO we could store one canvas per texture
+    // TODO shooting animals doesn't work, probably due to event bubbling order
+    // TODO we could store one canvas per texture (and then it would be sufficient to draw the texture once)
     ctx.clearRect(0, 0, texture.width, texture.height);
     ctx.drawImage(texture, 0, 0);
     var pixelData = ctx.getImageData(x, y, 1, 1).data;
