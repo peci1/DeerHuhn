@@ -1,0 +1,25 @@
+{
+"frames": {
+	"animation-vystrel-0.png": {
+		"frame": {"x":235, "y":409, "w":213, "h":160},
+		"spriteSourceSize": {"x":7,"y":19,"w":234,"h":197},
+		"sourceSize": {"w":234,"h":197}
+	},
+	"animation-vystrel-1.png": {
+		"frame": {"x":0, "y":409, "w":234, "h":197},
+		"spriteSourceSize": {"x":0,"y":0,"w":234,"h":197},
+		"sourceSize": {"w":234,"h":197}
+	},
+	"datum_body.png": {
+		"frame": {"x":0, "y":0, "w":715, "h":408},
+		"spriteSourceSize": {"x":0,"y":0,"w":715,"h":408},
+		"sourceSize": {"w":715,"h":408}
+	}
+
+},
+"meta": {
+	"image": "sprites-passive.png",
+	"size": {"w": 716, "h": 607},
+	"scale": "1"
+}
+}

@@ -16,53 +16,53 @@ var DeerHuhn = function (canvasContainerId) {
     this.SCROLL_PERCENTAGE_STEP_PER_SECOND = 35/100.0;
    
     this.possiblePaths = [
-	new DeerHuhn.ScenePath(2, 167, 273, 638, 413),
-	new DeerHuhn.ScenePath(2, 93, 327, 644, 399),
-	new DeerHuhn.ScenePath(2, 91, 304, 895, 637),
-	new DeerHuhn.ScenePath(2, -28, 483, 622, 378),
-	new DeerHuhn.ScenePath(2, -14, 459, 896, 618),
-	new DeerHuhn.ScenePath(2, -40, 514, 484, 622),
-	new DeerHuhn.ScenePath(2, -23, 667, 458, 643),
-	new DeerHuhn.ScenePath(2, 394, 907, 880, 921),
-	new DeerHuhn.ScenePath(2, 415, 951, 1366, 576),
-	new DeerHuhn.ScenePath(2, 533, 633, 875, 657),
-	new DeerHuhn.ScenePath(2, 556, 639, 1138, 808),
-	new DeerHuhn.ScenePath(2, 637, 444, 1766, 772),
-	new DeerHuhn.ScenePath(2, 656, 433, 1336, 550),
-	new DeerHuhn.ScenePath(2, 914, 639, 1394, 574),
-	new DeerHuhn.ScenePath(2, 935, 655, 1931, 667),
-	new DeerHuhn.ScenePath(3, 671, 384, 1184, 258),
-	new DeerHuhn.ScenePath(3, 656, 370, 1519, 421),
-	new DeerHuhn.ScenePath(3, 827, 277, 1154, 264),
-	new DeerHuhn.ScenePath(3, 844, 282, 1385, 442),
-	new DeerHuhn.ScenePath(3, 788, 439, 1328, 489),
-	new DeerHuhn.ScenePath(3, 1189, 271, 1559, 417),
-	new DeerHuhn.ScenePath(2, 1106, 822, 1480, 570),
-	new DeerHuhn.ScenePath(2, 1141, 795, 1894, 691),
-	new DeerHuhn.ScenePath(2, 1450, 441, 1651, 343),
-	new DeerHuhn.ScenePath(2, 1657, 339, 1969, 375),
-	new DeerHuhn.ScenePath(2, 1537, 514, 1898, 387),
-	new DeerHuhn.ScenePath(2, 1525, 534, 2695, 603),
-	new DeerHuhn.ScenePath(2, 1579, 544, 1958, 649),
-	new DeerHuhn.ScenePath(2, 1982, 649, 2686, 592),
-	new DeerHuhn.ScenePath(2, 1894, 208, 2305, 240),
-	new DeerHuhn.ScenePath(2, 1907, 226, 2471, 363),
-	new DeerHuhn.ScenePath(2, 2003, 370, 2312, 253),
-	new DeerHuhn.ScenePath(2, 2339, 262, 2458, 306),
-	new DeerHuhn.ScenePath(2, 2006, 390, 2494, 354),
-	new DeerHuhn.ScenePath(2, 2075, 388, 3248, 643),
-	new DeerHuhn.ScenePath(2, 2011, 406, 2684, 598),
-	new DeerHuhn.ScenePath(2, 2281, 712, 2699, 577),
-	new DeerHuhn.ScenePath(2, 2281, 712, 3188, 658),
-	new DeerHuhn.ScenePath(2, 2281, 712, 2741, 744),
-	new DeerHuhn.ScenePath(2, 2498, 354, 3251, 645),
-	new DeerHuhn.ScenePath(2, 2699, 577, 3419, 576),
-	new DeerHuhn.ScenePath(2, 2699, 595, 3187, 657),
-	new DeerHuhn.ScenePath(3, 2734, 418, 3560, 423),
-	new DeerHuhn.ScenePath(3, 2833, 463, 3421, 558),
-	new DeerHuhn.ScenePath(3, 3013, 531, 3469, 480),
-	new DeerHuhn.ScenePath(3, 3283, 264, 3575, 252),
-	new DeerHuhn.ScenePath(3, 3295, 286, 3647, 391),
+	new DeerHuhn.ScenePath(3, 167, 273, 638, 413),
+	new DeerHuhn.ScenePath(3, 93, 327, 644, 399),
+	new DeerHuhn.ScenePath(3, 91, 304, 895, 637),
+	new DeerHuhn.ScenePath(3, -28, 483, 622, 378),
+	new DeerHuhn.ScenePath(3, -14, 459, 896, 618),
+	new DeerHuhn.ScenePath(3, -40, 514, 484, 622),
+	new DeerHuhn.ScenePath(3, -23, 667, 458, 643),
+	new DeerHuhn.ScenePath(3, 394, 907, 880, 921),
+	new DeerHuhn.ScenePath(3, 415, 951, 1366, 576),
+	new DeerHuhn.ScenePath(3, 533, 633, 875, 657),
+	new DeerHuhn.ScenePath(3, 556, 639, 1138, 808),
+	new DeerHuhn.ScenePath(3, 637, 444, 1766, 772),
+	new DeerHuhn.ScenePath(3, 656, 433, 1336, 550),
+	new DeerHuhn.ScenePath(3, 914, 639, 1394, 574),
+	new DeerHuhn.ScenePath(3, 935, 655, 1931, 667),
+	new DeerHuhn.ScenePath(4, 671, 384, 1184, 258),
+	new DeerHuhn.ScenePath(4, 656, 370, 1519, 421),
+	new DeerHuhn.ScenePath(4, 827, 277, 1154, 264),
+	new DeerHuhn.ScenePath(4, 844, 282, 1385, 442),
+	new DeerHuhn.ScenePath(4, 788, 439, 1328, 489),
+	new DeerHuhn.ScenePath(4, 1189, 271, 1559, 417),
+	new DeerHuhn.ScenePath(3, 1106, 822, 1480, 570),
+	new DeerHuhn.ScenePath(3, 1141, 795, 1894, 691),
+	new DeerHuhn.ScenePath(3, 1450, 441, 1651, 343),
+	new DeerHuhn.ScenePath(3, 1657, 339, 1969, 375),
+	new DeerHuhn.ScenePath(3, 1537, 514, 1898, 387),
+	new DeerHuhn.ScenePath(3, 1525, 534, 2695, 603),
+	new DeerHuhn.ScenePath(3, 1579, 544, 1958, 649),
+	new DeerHuhn.ScenePath(3, 1982, 649, 2686, 592),
+	new DeerHuhn.ScenePath(3, 1894, 208, 2305, 240),
+	new DeerHuhn.ScenePath(3, 1907, 226, 2471, 363),
+	new DeerHuhn.ScenePath(3, 2003, 370, 2312, 253),
+	new DeerHuhn.ScenePath(3, 2339, 262, 2458, 306),
+	new DeerHuhn.ScenePath(3, 2006, 390, 2494, 354),
+	new DeerHuhn.ScenePath(3, 2075, 388, 3248, 643),
+	new DeerHuhn.ScenePath(3, 2011, 406, 2684, 598),
+	new DeerHuhn.ScenePath(3, 2281, 712, 2699, 577),
+	new DeerHuhn.ScenePath(3, 2281, 712, 3188, 658),
+	new DeerHuhn.ScenePath(3, 2281, 712, 2741, 744),
+	new DeerHuhn.ScenePath(3, 2498, 354, 3251, 645),
+	new DeerHuhn.ScenePath(3, 2699, 577, 3419, 576),
+	new DeerHuhn.ScenePath(3, 2699, 595, 3187, 657),
+	new DeerHuhn.ScenePath(4, 2734, 418, 3560, 423),
+	new DeerHuhn.ScenePath(4, 2833, 463, 3421, 558),
+	new DeerHuhn.ScenePath(4, 3013, 531, 3469, 480),
+	new DeerHuhn.ScenePath(4, 3283, 264, 3575, 252),
+	new DeerHuhn.ScenePath(4, 3295, 286, 3647, 391),
     ];
 
     // renderer setup
@@ -184,9 +184,9 @@ DeerHuhn.prototype = {
     
     onLoad: function() {
 	// init background tiles
-	for (var i = 4; i >= 0; i--) {
-	    this.backgroundLayers[i] = PIXI.Sprite.fromImage('images/vrstva'+(i+1)+'.png');
-	    this.backgroundLayers[i].name = 'Background ' + (i+1);
+	for (var i = 5; i >= 0; i--) {
+	    this.backgroundLayers[i] = PIXI.Sprite.fromImage('images/vrstva'+i+'.png');
+	    this.backgroundLayers[i].name = 'Background ' + i;
             this.backgroundLayers[i].position.x = 0;
 	    // make the background layers clickable through the transparent areas
 	    this.backgroundLayers[i].hitArea = PIXI.TransparencyHitArea.create(this.backgroundLayers[i]);
@@ -225,6 +225,7 @@ DeerHuhn.prototype = {
 	    }
 	}
 
+	this.initActiveObjects.apply(this);
 	this.initAnimalTypes.apply(this);
 
 	this.initAnimals.apply(this);
@@ -250,9 +251,35 @@ DeerHuhn.prototype = {
 	    this.pausableObjects.remove(sprite);
     },
 
+    initActiveObjects: function() {
+	//TODO
+    },
+
     initAnimalTypes: function() {
-	this.animalTypes['fox'] = new DeerHuhn.AnimalType(this.animationTexturesCache['listicka'], 
-		'Fox', this.possiblePaths, 50.0/1000, 9);
+	this.animalTypes['liska'] = new DeerHuhn.AnimalType(this.animationTexturesCache['liska'], 
+		'Liška', this.possiblePaths, 50.0/1000, 5);
+	this.animalTypes['auto_cervene'] = new DeerHuhn.AnimalType(this.animationTexturesCache['auto_cervene'], 
+		'Auto', this.possiblePaths, 100.0/1000, 5);
+	this.animalTypes['auto_modre'] = new DeerHuhn.AnimalType(this.animationTexturesCache['auto_modre'], 
+		'Auto', this.possiblePaths, 100.0/1000, 5);
+	this.animalTypes['kachna_plove'] = new DeerHuhn.AnimalType(this.animationTexturesCache['kachna_plove'], 
+		'Kachna', this.possiblePaths, 15.0/1000, 3);
+	this.animalTypes['kachna'] = new DeerHuhn.AnimalType(this.animationTexturesCache['kachna'], 
+		'Kachna', this.possiblePaths, 70.0/1000, 8);
+	this.animalTypes['klady'] = new DeerHuhn.AnimalType(this.animationTexturesCache['klady'], 
+		'Klády', this.possiblePaths, 30.0/1000, 5);
+	this.animalTypes['lkt'] = new DeerHuhn.AnimalType(this.animationTexturesCache['lkt'], 
+		'LKT', this.possiblePaths, 30.0/1000, 5);
+	this.animalTypes['odvozka'] = new DeerHuhn.AnimalType(this.animationTexturesCache['odvozka'], 
+		'Odvozka', this.possiblePaths, 70.0/1000, 5);
+	this.animalTypes['ovce'] = new DeerHuhn.AnimalType(this.animationTexturesCache['ovce'], 
+		'Ovce', this.possiblePaths, 5.0/1000, 3);
+	this.animalTypes['prase'] = new DeerHuhn.AnimalType(this.animationTexturesCache['prase'], 
+		'Prase', this.possiblePaths, 70.0/1000, 5);
+	this.animalTypes['sele'] = new DeerHuhn.AnimalType(this.animationTexturesCache['sele'], 
+		'Sele', this.possiblePaths, 70.0/1000, 8);
+	this.animalTypes['srna'] = new DeerHuhn.AnimalType(this.animationTexturesCache['srna'], 
+		'Srna', this.possiblePaths, 60.0/1000, 6);
     },
 
     initAnimals: function() {
@@ -292,7 +319,7 @@ DeerHuhn.prototype = {
     },
 
     initializeImages: function() {
-	var assets = ['images/vrstva1.png', 'images/vrstva2.png', 'images/vrstva3.png', 'images/vrstva4.png', 'images/vrstva5.png', 'images/sprites.json'];
+	var assets = ['images/vrstva0.png', 'images/vrstva1.png', 'images/vrstva2.png', 'images/vrstva3.png', 'images/vrstva4.png', 'images/vrstva5.png', 'images/sprites-interactive.json', 'images/sprites-passive.json'];
 	var loader = new PIXI.AssetLoader(assets);
 	//loader.onProgress = onAssetLoaderProgress //TODO
         loader.onComplete = this.onLoad.bind(this);
@@ -463,7 +490,7 @@ DeerHuhn.Animal.prototype = {
      * Callback called when the animal gets shot.
      */
     onShot: function() {
-	console.log(this.sprite.name + ' killed');
+	console.log(this.name + ' killed');
 	this.movementFinishedCallback.call(this);
     }
 };
