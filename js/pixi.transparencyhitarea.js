@@ -239,3 +239,141 @@ PIXI.CanvasTransparencyHitArea.prototype.isTextureTransparentAt = function(x, y)
 PIXI.CanvasTransparencyHitArea.TextureData = [];
 
 // WEBGL IMPLEMENTATION
+
+/**
+ * A transparency-based hit area using WebGL as the underlying technology.
+ *
+ * Do not directly call this constructor, call {@link PIXI.TransparencyHitArea#create) instead.
+ *
+ * If you really want to call this constructor directly, don't forget to call #init() afterwards.
+ *
+ * @constructor
+ * @param {PIXI.Sprite} sprite The sprite this hitarea handles
+ */
+PIXI.WebGLTransparencyHitArea = function (sprite) {
+    PIXI.TransparencyHitArea.call(this, sprite);
+
+    /**
+     * Data of the texture. 
+     *
+     * @property textureData
+     * @private
+     * @readonly
+     * @type {Uint8Array}
+     */
+    this.textureData = null;
+
+    /**
+     * Width of the texture in pixels.
+     *
+     * @property textureWidth
+     * @private
+     * @readonly
+     * @type {int}
+     */
+    this.textureWidth = null;
+}
+PIXI.WebGLTransparencyHitArea.prototype = Object.create(PIXI.TransparencyHitArea.prototype);
+PIXI.WebGLTransparencyHitArea.constructor = PIXI.WebGLTransparencyHitArea;
+
+/**
+ * Creates a clone.
+ *
+ * @method clone
+ * @return {WebGLTransparencyHitArea} A shallow copy.
+ */
+PIXI.WebGLTransparencyHitArea.prototype.clone = function()
+{
+    return new PIXI.WebGLTransparencyHitArea(this.sprite);
+};
+
+/**
+ * Initialize this hit area after all constructors finish.
+ *
+ * @override
+ * @protected
+ */
+PIXI.WebGLTransparencyHitArea.prototype.init = function () {
+    PIXI.TransparencyHitArea.prototype.init.call(this);
+
+    this.initTextureData();
+}
+
+/**
+ * Initialize the texture data and save it to
+ * PIXI.WebGLTransparencyHitArea.TextureData for it to be available 
+ * in future calls.
+ *
+ * @private
+ */
+PIXI.WebGLTransparencyHitArea.prototype.initTextureData = function() {
+    if (this.textureData)
+	return;
+
+    var texture = this.getTexture();
+    this.textureWidth = texture.width;
+
+    // texture is an <img> element and it always has the "src" attribute set
+    var textureId = texture.src;
+
+    if (PIXI.WebGLTransparencyHitArea.TextureData[textureId] === undefined) {
+	var textureData = this.createTextureData(texture);
+	PIXI.WebGLTransparencyHitArea.TextureData[textureId] = textureData;
+    }
+
+    this.textureData = PIXI.WebGLTransparencyHitArea.TextureData[textureId];
+}
+
+/**
+ * Convert the given texture to an array of values readable by JS.
+ *
+ * @param {Image} texture The texture to convert.
+ * @return {Uint8Array} Array of pixel values. Each pixel takes 4 values, for R, G, B and alpha.
+ */
+PIXI.WebGLTransparencyHitArea.prototype.createTextureData = function (texture) {
+    var gl = PIXI.gl;
+    // create a new framebuffer to draw the texture on
+    var frameBufer = gl.createFramebuffer();
+
+    // make the created framebuffer the current
+    gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+
+    // attach the texture to the framebuffer
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, 
+	    gl.TEXTURE_2D, texture, 0);
+
+    // read out the framebuffer
+    var textureData = new Uint8Array(texture.width * texture.height * 4);
+    gl.readPixels(0, 0, texture.width, texture.height, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
+
+    // unbind the framebuffer
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    return textureData;
+};
+
+/**
+ * Returns true if the given texture is transparent at coordinates (x, y).
+ *
+ * @protected
+ * @param {int} x The questioned x coord in texture frame.
+ * @param {int} y The questioned y coord in texture frame.
+ * @return {boolean} true if the given texture is transparent at coordinates (x, y).
+ */
+PIXI.WebGLTransparencyHitArea.prototype.isTextureTransparentAt = function(x, y) {
+    if (!this.textureData)
+	throw new Error('WebGLTransparencyHitArea#init() not called.');
+
+    // the textureData contains 4 elements per pixel, the 4th being alpha channel
+    var index = (x + y * this.textureWidth) * 4 + 3;
+
+    // value 255 means fully opaque, < 255 means (at least partially) transparent
+    return this.textureData[index] < 255;
+}
+
+/**
+ * The cache that stores the texture data needed for transparency detection.
+ *
+ * @type {Uint8Array[]}
+ */
+PIXI.WebGLTransparencyHitArea.TextureData = [];

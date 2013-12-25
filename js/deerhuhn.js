@@ -69,8 +69,7 @@ var DeerHuhn = function (canvasContainerId) {
     var interactive = true;
     this.stage = new PIXI.Stage(0xAAFFFF, interactive);
     this.stage.name = 'Stage';
-    //this.renderer = PIXI.autoDetectRenderer(this.rendererWidth, this.rendererHeight);
-    this.renderer = new PIXI.CanvasRenderer(this.rendererWidth, this.rendererHeight); //TODO remove; testing code
+    this.renderer = PIXI.autoDetectRenderer(this.rendererWidth, this.rendererHeight);
     this.GAME_CONTAINER.appendChild(this.renderer.view);
 
     this.useWebGl = (this.renderer instanceof PIXI.WebGLRenderer);
