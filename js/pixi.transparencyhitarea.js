@@ -358,8 +358,11 @@ PIXI.WebGLTransparencyHitArea.prototype.createTextureData = function (texture) {
 
     // unbind the texture
     gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.deleteTexture(glTexture);
+
     // unbind the framebuffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.deleteFramebuffer(frameBuffer);
 
     return textureData;
 };
