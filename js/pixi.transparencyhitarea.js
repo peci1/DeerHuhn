@@ -13,12 +13,12 @@
  */
 PIXI.TransparencyHitArea = function(sprite)
 {
-	/**
-	 * @property sprite
-	 * @type {PIXI.Sprite}
-	 */
-	this.sprite = sprite;
-}
+    /**
+     * @property sprite
+     * @type {PIXI.Sprite}
+     */
+    this.sprite = sprite;
+};
 
 // constructor
 //PIXI.TransparencyHitArea.prototype.constructor = PIXI.TransparencyHitArea;
@@ -32,15 +32,15 @@ PIXI.TransparencyHitArea = function(sprite)
 PIXI.TransparencyHitArea.create = function (sprite, useWebGL) {
     var hitArea;
     if (useWebGL) {
-	hitArea = new PIXI.WebGLTransparencyHitArea(sprite);
+        hitArea = new PIXI.WebGLTransparencyHitArea(sprite);
     } else {
-	hitArea = new PIXI.CanvasTransparencyHitArea(sprite);
+        hitArea = new PIXI.CanvasTransparencyHitArea(sprite);
     }
 
     hitArea.init();
 
     return hitArea;
-}
+};
 
 /**
  * Initialize this hit area after all constructors finish.
@@ -48,8 +48,8 @@ PIXI.TransparencyHitArea.create = function (sprite, useWebGL) {
  * Has to be called after the constructor finishes.
  */
 PIXI.TransparencyHitArea.prototype.init = function() {
-    
-}
+
+};
 
 /**
  * Checks if the x, and y coords passed to this function are contained within this hit area
@@ -61,29 +61,27 @@ PIXI.TransparencyHitArea.prototype.init = function() {
 PIXI.TransparencyHitArea.prototype.contains = function(x, y) {
     // first of all perform a rectangle bounds check
     // with negative scale, width/height can also be negative
-    if(Math.abs(this.sprite.width) == 0 || Math.abs(this.sprite.height) == 0)
+    if(Math.abs(this.sprite.width) === 0 || Math.abs(this.sprite.height) === 0)
         return false;
 
-	var w = this.sprite.texture.frame.width;
-	if(x >= 0 && x <= w)
-	{
-	    var h = this.sprite.texture.frame.height;
-		
-	    if(y >= 0 && y <= h)
-	    {
-		// the rectangle bounds check succeeded		
-		var xInTexture = Math.round(x + this.sprite.texture.frame.x);
-		var yInTexture = Math.round(y + this.sprite.texture.frame.y);
+    var w = this.sprite.texture.frame.width;
+    if(x >= 0 && x <= w) {
+        var h = this.sprite.texture.frame.height;
 
-		// x and y are coordinates in the texture, but the texture can
-		// be part of a larger texture, of which the current one is a
-		// subrectangle (a frame)
-		return !this.isTextureTransparentAt(xInTexture, yInTexture);
-	    }
-	}
+        if(y >= 0 && y <= h) {
+            // the rectangle bounds check succeeded        
+            var xInTexture = Math.round(x + this.sprite.texture.frame.x);
+            var yInTexture = Math.round(y + this.sprite.texture.frame.y);
 
-	return false;
-}
+            // x and y are coordinates in the texture, but the texture can
+            // be part of a larger texture, of which the current one is a
+            // subrectangle (a frame)
+            return !this.isTextureTransparentAt(xInTexture, yInTexture);
+        } 
+    }
+
+    return false;
+};
 
 /**
  * @protected
@@ -91,7 +89,7 @@ PIXI.TransparencyHitArea.prototype.contains = function(x, y) {
  */
 PIXI.TransparencyHitArea.prototype.getTexture = function() {
     return this.sprite.texture.baseTexture.source;
-}
+};
 
 /**
  * Returns true if the given texture is transparent at coordinates (x, y).
@@ -104,7 +102,7 @@ PIXI.TransparencyHitArea.prototype.getTexture = function() {
  */
 PIXI.TransparencyHitArea.prototype.isTextureTransparentAt = function(x, y) {
     throw new Error('Has to be implemented in subclasses');
-}
+};
 
 // CANVAS IMPLEMENTATION
 
@@ -140,7 +138,7 @@ PIXI.CanvasTransparencyHitArea = function (sprite) {
      * @type {int}
      */
     this.textureWidth = null;
-}
+};
 PIXI.CanvasTransparencyHitArea.prototype = Object.create(PIXI.TransparencyHitArea.prototype);
 PIXI.CanvasTransparencyHitArea.constructor = PIXI.CanvasTransparencyHitArea;
 
@@ -165,7 +163,7 @@ PIXI.CanvasTransparencyHitArea.prototype.init = function () {
     PIXI.TransparencyHitArea.prototype.init.call(this);
 
     this.initTextureData();
-}
+};
 
 /**
  * Initialize the texture data and save it to
@@ -176,7 +174,7 @@ PIXI.CanvasTransparencyHitArea.prototype.init = function () {
  */
 PIXI.CanvasTransparencyHitArea.prototype.initTextureData = function() {
     if (this.textureData)
-	return;
+        return;
 
     var texture = this.getTexture();
     this.textureWidth = texture.width;
@@ -185,12 +183,12 @@ PIXI.CanvasTransparencyHitArea.prototype.initTextureData = function() {
     var textureId = texture.src;
 
     if (PIXI.CanvasTransparencyHitArea.TextureData[textureId] === undefined) {
-	var textureData = this.createTextureData(texture);
-	PIXI.CanvasTransparencyHitArea.TextureData[textureId] = textureData;
+        var textureData = this.createTextureData(texture);
+        PIXI.CanvasTransparencyHitArea.TextureData[textureId] = textureData;
     }
 
     this.textureData = PIXI.CanvasTransparencyHitArea.TextureData[textureId];
-}
+};
 
 /**
  * Convert the given texture to an array of values readable by JS.
@@ -222,14 +220,14 @@ PIXI.CanvasTransparencyHitArea.prototype.createTextureData = function (texture) 
  */
 PIXI.CanvasTransparencyHitArea.prototype.isTextureTransparentAt = function(x, y) {
     if (!this.textureData)
-	throw new Error('CanvasTransparencyHitArea#init() not called.');
+        throw new Error('CanvasTransparencyHitArea#init() not called.');
 
     // the textureData contains 4 elements per pixel, the 4th being alpha channel
     var index = (x + y * this.textureWidth) * 4 + 3;
 
     // value 255 means fully opaque, < 255 means (at least partially) transparent
     return this.textureData[index] < 255;
-}
+};
 
 /**
  * The cache that stores the texture data needed for transparency detection.
@@ -272,7 +270,7 @@ PIXI.WebGLTransparencyHitArea = function (sprite) {
      * @type {int}
      */
     this.textureWidth = null;
-}
+};
 PIXI.WebGLTransparencyHitArea.prototype = Object.create(PIXI.TransparencyHitArea.prototype);
 PIXI.WebGLTransparencyHitArea.constructor = PIXI.WebGLTransparencyHitArea;
 
@@ -297,7 +295,7 @@ PIXI.WebGLTransparencyHitArea.prototype.init = function () {
     PIXI.TransparencyHitArea.prototype.init.call(this);
 
     this.initTextureData();
-}
+};
 
 /**
  * Initialize the texture data and save it to
@@ -308,7 +306,7 @@ PIXI.WebGLTransparencyHitArea.prototype.init = function () {
  */
 PIXI.WebGLTransparencyHitArea.prototype.initTextureData = function() {
     if (this.textureData)
-	return;
+        return;
 
     var texture = this.getTexture();
     this.textureWidth = texture.width;
@@ -317,12 +315,12 @@ PIXI.WebGLTransparencyHitArea.prototype.initTextureData = function() {
     var textureId = texture.src;
 
     if (PIXI.WebGLTransparencyHitArea.TextureData[textureId] === undefined) {
-	var textureData = this.createTextureData(texture);
-	PIXI.WebGLTransparencyHitArea.TextureData[textureId] = textureData;
+        var textureData = this.createTextureData(texture);
+        PIXI.WebGLTransparencyHitArea.TextureData[textureId] = textureData;
     }
 
     this.textureData = PIXI.WebGLTransparencyHitArea.TextureData[textureId];
-}
+};
 
 /**
  * Convert the given texture to an array of values readable by JS.
@@ -377,14 +375,14 @@ PIXI.WebGLTransparencyHitArea.prototype.createTextureData = function (texture) {
  */
 PIXI.WebGLTransparencyHitArea.prototype.isTextureTransparentAt = function(x, y) {
     if (!this.textureData)
-	throw new Error('WebGLTransparencyHitArea#init() not called.');
+        throw new Error('WebGLTransparencyHitArea#init() not called.');
 
     // the textureData contains 4 elements per pixel, the 4th being alpha channel
     var index = (x + y * this.textureWidth) * 4 + 3;
 
     // value 255 means fully opaque, < 255 means (at least partially) transparent
     return this.textureData[index] < 255;
-}
+};
 
 /**
  * The cache that stores the texture data needed for transparency detection.
