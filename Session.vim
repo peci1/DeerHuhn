@@ -2,10 +2,18 @@ let SessionLoad = 1
 if &cp | set nocp | endif
 let s:cpo_save=&cpo
 set cpo&vim
+inoremap <C-Space> 
+inoremap <expr> <Up> pumvisible() ? "\" : "\<Up>"
+inoremap <expr> <S-Tab> pumvisible() ? "\" : "\<S-Tab>"
+inoremap <expr> <Down> pumvisible() ? "\" : "\<Down>"
 imap <silent> <Plug>IMAP_JumpBack =IMAP_Jumpfunc('b', 0)
 imap <silent> <Plug>IMAP_JumpForward =IMAP_Jumpfunc('', 0)
 inoremap <C-F5> :CheckSyntax!
 inoremap <F5> :CheckSyntax
+inoremap <silent> <expr> <Plug>delimitMateS-BS delimitMate#WithinEmptyPair() ? "\<Del>" : "\<S-BS>"
+inoremap <silent> <Plug>delimitMateBS =delimitMate#BS()
+inoremap <C-Right> :call camelcasemotion#Motion('e', 1, 'n')a
+inoremap <C-Left> :call camelcasemotion#Motion('b', 1, 'n')i
 cnoremap <C-F4> c
 inoremap <C-F4> c
 cnoremap <C-Tab> w
@@ -19,6 +27,9 @@ nnoremap  gggHG
 vnoremap  "+y
 vmap <NL> <Plug>IMAP_JumpForward
 nmap <NL> <Plug>IMAP_JumpForward
+nnoremap  :lnext
+nnoremap  :lprev
+nmap <silent>  <Plug>(jsdoc)
 noremap  
 nnoremap  :update
 vnoremap  :update
@@ -30,11 +41,22 @@ noremap  
 noremap  u
 cnoremap   :simalt ~
 inoremap   :simalt ~
+xmap <silent> ,w <Plug>CamelCaseMotion_w
+omap <silent> ,w <Plug>CamelCaseMotion_w
+nmap <silent> ,w <Plug>CamelCaseMotion_w
 map Q gq
+nnoremap \d :YcmShowDetailedDiagnostic
+nmap <silent> \ig <Plug>IndentGuidesToggle
 nmap gx <Plug>NetrwBrowseX
-nnoremap <C-F4> c
-nnoremap <C-Tab> w
+xmap <silent> i,e <Plug>CamelCaseMotion_ie
+xmap <silent> i,b <Plug>CamelCaseMotion_ib
+xmap <silent> i,w <Plug>CamelCaseMotion_iw
+omap <silent> i,e <Plug>CamelCaseMotion_ie
+omap <silent> i,b <Plug>CamelCaseMotion_ib
+omap <silent> i,w <Plug>CamelCaseMotion_iw
 nmap <S-Insert> "+gP
+nnoremap <C-Tab> w
+nnoremap <C-F4> c
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
 vmap <silent> <Plug>IMAP_JumpBack `<i=IMAP_Jumpfunc('b', 0)
 vmap <silent> <Plug>IMAP_JumpForward i=IMAP_Jumpfunc('', 0)
@@ -44,6 +66,23 @@ nmap <silent> <Plug>IMAP_JumpBack i=IMAP_Jumpfunc('b', 0)
 nmap <silent> <Plug>IMAP_JumpForward i=IMAP_Jumpfunc('', 0)
 noremap <C-F5> :CheckSyntax!
 noremap <F5> :CheckSyntax
+vnoremap <Plug>CamelCaseMotion_ie :call camelcasemotion#InnerMotion('e',v:count1)
+vnoremap <Plug>CamelCaseMotion_ib :call camelcasemotion#InnerMotion('b',v:count1)
+vnoremap <Plug>CamelCaseMotion_iw :call camelcasemotion#InnerMotion('w',v:count1)
+onoremap <Plug>CamelCaseMotion_ie :call camelcasemotion#InnerMotion('e',v:count1)
+onoremap <Plug>CamelCaseMotion_ib :call camelcasemotion#InnerMotion('b',v:count1)
+onoremap <Plug>CamelCaseMotion_iw :call camelcasemotion#InnerMotion('w',v:count1)
+vnoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'v')
+vnoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'v')
+vnoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'v')
+onoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'o')
+onoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'o')
+onoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'o')
+nnoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'n')
+nnoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'n')
+nnoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'n')
+map <C-Right> <Plug>CamelCaseMotion_e
+map <C-Left> <Plug>CamelCaseMotion_b
 onoremap <C-F4> c
 vnoremap <C-F4> c
 onoremap <C-Tab> w
@@ -56,7 +95,10 @@ vnoremap <C-Insert> "+y
 omap <S-Insert> "+gP
 cnoremap  gggHG
 inoremap  gggHG
+imap  O
+inoremap <expr> 	 pumvisible() ? "\" : "\	"
 imap <NL> <Plug>IMAP_JumpForward
+inoremap <expr>  pumvisible() ? "\" : "\"
 inoremap  :update
 inoremap  u
 cmap  +
@@ -69,9 +111,13 @@ set background=dark
 set backspace=indent,eol,start
 set backup
 set backupdir=C:\\Users\\MARTIN~1\\AppData\\Local\\Temp//,C:/Program\ Files\ (x86)/Vim/_backup//
+set completefunc=youcompleteme#Complete
+set completeopt=preview,menuone
+set cpoptions=aAceFsB
 set diffexpr=MyDiff()
 set directory=C:\\Users\\MARTIN~1\\AppData\\Local\\Temp//,C:/Program\ Files\ (x86)/Vim/_backup//
 set encoding=utf-8
+set expandtab
 set fileencodings=ucs-bom,utf-8,default,latin1
 set helplang=cs
 set history=50
@@ -79,11 +125,15 @@ set hlsearch
 set incsearch
 set keymodel=startsel,stopsel
 set ruler
+set runtimepath=~\\.vim\\bundle\\vundle,~\\.vim\\bundle\\vim-javascript-syntax,~\\.vim\\bundle\\vim-javascript,~\\.vim\\bundle\\vim-indent-guides,~\\.vim\\bundle\\delimitMate,~\\.vim\\bundle\\syntastic,~\\.vim\\bundle\\YouCompleteMe-fixed,~\\.vim\\bundle\\tern_for_vim,~\\.vim\\bundle\\html5.vim,~\\.vim\\bundle\\LargeFile,~\\.vim\\bundle\\CamelCaseMotion,~/vimfiles,C:\\Program\ Files\ (x86)\\Vim/vimfiles,C:\\Program\ Files\ (x86)\\Vim\\vim74,C:\\Program\ Files\ (x86)\\Vim/vimfiles/after,~/vimfiles/after,~/.vim/bundle/vundle/,~\\.vim\\bundle\\vundle/after,~\\.vim\\bundle\\vim-javascript-syntax/after,~\\.vim\\bundle\\vim-javascript/after,~\\.vim\\bundle\\vim-indent-guides/after,~\\.vim\\bundle\\delimitMate/after,~\\.vim\\bundle\\syntastic/after,~\\.vim\\bundle\\YouCompleteMe-fixed/after,~\\.vim\\bundle\\tern_for_vim/after,~\\.vim\\bundle\\html5.vim/after,~\\.vim\\bundle\\LargeFile/after,~\\.vim\\bundle\\CamelCaseMotion/after
 set selection=exclusive
 set selectmode=mouse,key
 set shiftwidth=4
 set softtabstop=4
+set tabstop=4
+set updatetime=2000
 set whichwrap=b,s,<,>,[,]
+set winaltkeys=yes
 set window=41
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
@@ -93,11 +143,11 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +37 index.htm
+badd +38 index.htm
 badd +1 Â¨
-badd +194 js\deerhuhn.js
+badd +667 js\deerhuhn.js
 badd +4 css\main.css
-badd +0 js\pixi.transparencyhitarea.js
+badd +1 js\pixi.transparencyhitarea.js
 args index.htm
 edit js\deerhuhn.js
 set splitbelow splitright
@@ -115,11 +165,30 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 10 + 21) / 42)
-exe '2resize ' . ((&lines * 25 + 21) / 42)
+exe '1resize ' . ((&lines * 34 + 21) / 42)
+exe '2resize ' . ((&lines * 1 + 21) / 42)
 exe '3resize ' . ((&lines * 1 + 21) / 42)
 exe '4resize ' . ((&lines * 1 + 21) / 42)
 argglobal
+let s:cpo_save=&cpo
+set cpo&vim
+imap <buffer> <S-Tab> <Plug>delimitMateS-Tab
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
+imap <buffer> <BS> <Plug>delimitMateBS
+nnoremap <buffer> <silent> <Plug>(jsdoc) :call jsdoc#insert()
+imap <buffer> <silent> g <Plug>delimitMateJumpMany
+imap <buffer>  <Plug>delimitMateBS
+imap <buffer> " <Plug>delimitMate"
+imap <buffer> ' <Plug>delimitMate'
+imap <buffer> ( <Plug>delimitMate(
+imap <buffer> ) <Plug>delimitMate)
+imap <buffer> [ <Plug>delimitMate[
+imap <buffer> ] <Plug>delimitMate]
+imap <buffer> ` <Plug>delimitMate`
+imap <buffer> { <Plug>delimitMate{
+imap <buffer> } <Plug>delimitMate}
+let &cpo=s:cpo_save
+unlet s:cpo_save
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
@@ -138,7 +207,7 @@ setlocal commentstring=//%s
 setlocal complete=.,w,b,u,t,i
 setlocal concealcursor=
 setlocal conceallevel=0
-setlocal completefunc=
+setlocal completefunc=youcompleteme#Complete
 setlocal nocopyindent
 setlocal cryptmethod=
 setlocal nocursorbind
@@ -149,7 +218,7 @@ setlocal dictionary=
 setlocal nodiff
 setlocal equalprg=
 setlocal errorformat=
-setlocal noexpandtab
+setlocal expandtab
 if &filetype != 'javascript'
 setlocal filetype=javascript
 endif
@@ -211,25 +280,45 @@ setlocal synmaxcol=3000
 if &syntax != 'javascript'
 setlocal syntax=javascript
 endif
-setlocal tabstop=8
+setlocal tabstop=4
 setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
+setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 187 - ((3 * winheight(0) + 5) / 10)
+let s:l = 187 - ((12 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 187
-normal! 095l
+normal! 062|
 wincmd w
 argglobal
 edit js\pixi.transparencyhitarea.js
+let s:cpo_save=&cpo
+set cpo&vim
+imap <buffer> <S-Tab> <Plug>delimitMateS-Tab
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
+imap <buffer> <BS> <Plug>delimitMateBS
+nnoremap <buffer> <silent> <Plug>(jsdoc) :call jsdoc#insert()
+imap <buffer> <silent> g <Plug>delimitMateJumpMany
+imap <buffer>  <Plug>delimitMateBS
+imap <buffer> " <Plug>delimitMate"
+imap <buffer> ' <Plug>delimitMate'
+imap <buffer> ( <Plug>delimitMate(
+imap <buffer> ) <Plug>delimitMate)
+imap <buffer> [ <Plug>delimitMate[
+imap <buffer> ] <Plug>delimitMate]
+imap <buffer> ` <Plug>delimitMate`
+imap <buffer> { <Plug>delimitMate{
+imap <buffer> } <Plug>delimitMate}
+let &cpo=s:cpo_save
+unlet s:cpo_save
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
@@ -248,7 +337,7 @@ setlocal commentstring=//%s
 setlocal complete=.,w,b,u,t,i
 setlocal concealcursor=
 setlocal conceallevel=0
-setlocal completefunc=
+setlocal completefunc=youcompleteme#Complete
 setlocal nocopyindent
 setlocal cryptmethod=
 setlocal nocursorbind
@@ -259,7 +348,7 @@ setlocal dictionary=
 setlocal nodiff
 setlocal equalprg=
 setlocal errorformat=
-setlocal noexpandtab
+setlocal expandtab
 if &filetype != 'javascript'
 setlocal filetype=javascript
 endif
@@ -321,25 +410,46 @@ setlocal synmaxcol=3000
 if &syntax != 'javascript'
 setlocal syntax=javascript
 endif
-setlocal tabstop=8
+setlocal tabstop=4
 setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
+setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 73 - ((13 * winheight(0) + 12) / 25)
+let s:l = 73 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 73
-normal! 016l
+normal! 017|
 wincmd w
 argglobal
 edit index.htm
+let s:cpo_save=&cpo
+set cpo&vim
+imap <buffer> <S-Tab> <Plug>delimitMateS-Tab
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
+imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <silent> g <Plug>delimitMateJumpMany
+imap <buffer>  <Plug>delimitMateBS
+imap <buffer> " <Plug>delimitMate"
+imap <buffer> ' <Plug>delimitMate'
+imap <buffer> ( <Plug>delimitMate(
+imap <buffer> ) <Plug>delimitMate)
+imap <buffer> < <Plug>delimitMate<
+imap <buffer> > <Plug>delimitMate>
+imap <buffer> [ <Plug>delimitMate[
+imap <buffer> ] <Plug>delimitMate]
+imap <buffer> ` <Plug>delimitMate`
+imap <buffer> { <Plug>delimitMate{
+imap <buffer> } <Plug>delimitMate}
+let &cpo=s:cpo_save
+unlet s:cpo_save
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
@@ -358,7 +468,7 @@ setlocal commentstring=<!--%s-->
 setlocal complete=.,w,b,u,t,i
 setlocal concealcursor=
 setlocal conceallevel=0
-setlocal completefunc=
+setlocal completefunc=youcompleteme#Complete
 setlocal nocopyindent
 setlocal cryptmethod=
 setlocal nocursorbind
@@ -369,7 +479,7 @@ setlocal dictionary=
 setlocal nodiff
 setlocal equalprg=
 setlocal errorformat=
-setlocal noexpandtab
+setlocal expandtab
 if &filetype != 'html'
 setlocal filetype=html
 endif
@@ -431,11 +541,12 @@ setlocal synmaxcol=3000
 if &syntax != 'html'
 setlocal syntax=html
 endif
-setlocal tabstop=8
+setlocal tabstop=4
 setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
+setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
@@ -446,10 +557,28 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 38
-normal! 020l
+normal! 021|
 wincmd w
 argglobal
 edit css\main.css
+let s:cpo_save=&cpo
+set cpo&vim
+imap <buffer> <S-Tab> <Plug>delimitMateS-Tab
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
+imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <silent> g <Plug>delimitMateJumpMany
+imap <buffer>  <Plug>delimitMateBS
+imap <buffer> " <Plug>delimitMate"
+imap <buffer> ' <Plug>delimitMate'
+imap <buffer> ( <Plug>delimitMate(
+imap <buffer> ) <Plug>delimitMate)
+imap <buffer> [ <Plug>delimitMate[
+imap <buffer> ] <Plug>delimitMate]
+imap <buffer> ` <Plug>delimitMate`
+imap <buffer> { <Plug>delimitMate{
+imap <buffer> } <Plug>delimitMate}
+let &cpo=s:cpo_save
+unlet s:cpo_save
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
@@ -468,7 +597,7 @@ setlocal commentstring=/*%s*/
 setlocal complete=.,w,b,u,t,i
 setlocal concealcursor=
 setlocal conceallevel=0
-setlocal completefunc=
+setlocal completefunc=youcompleteme#Complete
 setlocal nocopyindent
 setlocal cryptmethod=
 setlocal nocursorbind
@@ -479,7 +608,7 @@ setlocal dictionary=
 setlocal nodiff
 setlocal equalprg=
 setlocal errorformat=
-setlocal noexpandtab
+setlocal expandtab
 if &filetype != 'css'
 setlocal filetype=css
 endif
@@ -541,11 +670,12 @@ setlocal synmaxcol=3000
 if &syntax != 'css'
 setlocal syntax=css
 endif
-setlocal tabstop=8
+setlocal tabstop=4
 setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
+setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
@@ -556,11 +686,10 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 4
-normal! 033l
+normal! 034|
 wincmd w
-2wincmd w
-exe '1resize ' . ((&lines * 10 + 21) / 42)
-exe '2resize ' . ((&lines * 25 + 21) / 42)
+exe '1resize ' . ((&lines * 34 + 21) / 42)
+exe '2resize ' . ((&lines * 1 + 21) / 42)
 exe '3resize ' . ((&lines * 1 + 21) / 42)
 exe '4resize ' . ((&lines * 1 + 21) / 42)
 tabnext 1
