@@ -1,3 +1,75 @@
+DeerHuhn.Animals.AnimalFactory.prototype.roadPaths = [
+    new DeerHuhn.ScenePath(3, 93, 327, 644, 399),
+    new DeerHuhn.ScenePath(4, 2650, 333, 3705, 333),
+    new DeerHuhn.ScenePath(3, 2248, 784, 3106, 525),
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.cropsPaths = [
+    new DeerHuhn.ScenePath(3, 656, 433, 1336, 550),
+    new DeerHuhn.ScenePath(3, 914, 639, 1394, 574),
+    new DeerHuhn.ScenePath(3, 1106, 822, 1480, 570),
+    new DeerHuhn.ScenePath(3, 1450, 441, 1651, 343),
+    new DeerHuhn.ScenePath(3, 1525, 534, 2695, 603),
+    new DeerHuhn.ScenePath(3, 1579, 544, 1958, 649),
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.fieldPaths = [
+    new DeerHuhn.ScenePath(4, 671, 384, 1184, 258),
+    new DeerHuhn.ScenePath(4, 844, 282, 1385, 442),
+    new DeerHuhn.ScenePath(4, 2734, 418, 3560, 423),
+    new DeerHuhn.ScenePath(4, 2833, 463, 3421, 558),
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.housePaths = [
+    new DeerHuhn.ScenePath(3, 167, 273, 638, 413),
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.barnPaths = [
+    new DeerHuhn.ScenePath(3, 2281, 712, 2699, 577),
+    new DeerHuhn.ScenePath(3, 2281, 712, 3188, 658),
+    new DeerHuhn.ScenePath(3, 2281, 712, 2741, 744),
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.waterPaths = [
+    new DeerHuhn.ScenePath(3, 394, 738, 702, 710),
+    new DeerHuhn.ScenePath(3, 702, 710, 607, 855),
+    new DeerHuhn.ScenePath(3, 607, 855, 313, 832),
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.forrestPaths = [
+    new DeerHuhn.ScenePath(3, 91, 304, 895, 637),
+    new DeerHuhn.ScenePath(3, -28, 483, 622, 378),
+    new DeerHuhn.ScenePath(3, -14, 459, 896, 618),
+    new DeerHuhn.ScenePath(3, -40, 514, 484, 622),
+    new DeerHuhn.ScenePath(3, -23, 667, 458, 643),
+    new DeerHuhn.ScenePath(3, 394, 907, 880, 921),
+    new DeerHuhn.ScenePath(3, 415, 951, 1366, 576), //almost road path
+    new DeerHuhn.ScenePath(3, 533, 633, 875, 657),
+    new DeerHuhn.ScenePath(3, 556, 639, 1138, 808), //near lake
+    new DeerHuhn.ScenePath(3, 637, 444, 1766, 772),
+    new DeerHuhn.ScenePath(3, 935, 655, 1931, 667),
+    new DeerHuhn.ScenePath(4, 656, 370, 1519, 421),
+    new DeerHuhn.ScenePath(4, 827, 277, 1154, 264),
+    new DeerHuhn.ScenePath(4, 788, 439, 1328, 489),
+    new DeerHuhn.ScenePath(4, 1189, 271, 1559, 417),
+    new DeerHuhn.ScenePath(3, 1141, 795, 1894, 691),
+    new DeerHuhn.ScenePath(3, 1657, 339, 1969, 375),
+    new DeerHuhn.ScenePath(3, 1982, 649, 2686, 592),
+    new DeerHuhn.ScenePath(3, 1894, 208, 2305, 240),
+    new DeerHuhn.ScenePath(3, 1907, 226, 2471, 363),
+    new DeerHuhn.ScenePath(3, 2003, 370, 2312, 253),
+    new DeerHuhn.ScenePath(3, 2339, 262, 2458, 306), //too short
+    new DeerHuhn.ScenePath(3, 2006, 390, 2494, 354),
+    new DeerHuhn.ScenePath(3, 2075, 388, 3248, 643),
+    new DeerHuhn.ScenePath(3, 2011, 406, 2684, 598),
+    new DeerHuhn.ScenePath(3, 2498, 354, 3251, 645),
+    new DeerHuhn.ScenePath(3, 2699, 577, 3419, 576),
+    new DeerHuhn.ScenePath(3, 2699, 595, 3187, 657),
+    new DeerHuhn.ScenePath(4, 3013, 531, 3469, 480),
+    new DeerHuhn.ScenePath(4, 3283, 264, 3575, 252),
+    new DeerHuhn.ScenePath(4, 3295, 286, 3647, 391),
+];
+
 /**
  * A fox.
  *
@@ -25,8 +97,7 @@ DeerHuhn.Animals.Liska.prototype.constructor = DeerHuhn.Animals.Liska;
  * @return {DeerHuhn.Animals.Liska} A fox.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createLiska = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    var path = this.getRandomPath(this.forrestPaths, this.barnPaths, this.housePaths);
     return new DeerHuhn.Animals.Liska(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createLiska);
@@ -58,8 +129,7 @@ DeerHuhn.Animals.AutoCervene.prototype.constructor = DeerHuhn.Animals.AutoCerven
  * @return {DeerHuhn.Animals.AutoCervene} A red car.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createAutoCervene = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    var path = this.getRandomPath(this.roadPaths);
     return new DeerHuhn.Animals.AutoCervene(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createAutoCervene);
@@ -91,8 +161,7 @@ DeerHuhn.Animals.AutoModre.prototype.constructor = DeerHuhn.Animals.AutoModre;
  * @return {DeerHuhn.Animals.AutoModre} A blue car.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createAutoModre = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    var path = this.getRandomPath(this.roadPaths);
     return new DeerHuhn.Animals.AutoModre(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createAutoModre);
@@ -124,8 +193,7 @@ DeerHuhn.Animals.KachnaPlove.prototype.constructor = DeerHuhn.Animals.KachnaPlov
  * @return {DeerHuhn.Animals.KachnaPlove} A floating duck.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createKachnaPlove = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    var path = this.getRandomPath(this.waterPaths);
     return new DeerHuhn.Animals.KachnaPlove(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createKachnaPlove);
@@ -157,8 +225,14 @@ DeerHuhn.Animals.Kachna.prototype.constructor = DeerHuhn.Animals.Kachna;
  * @return {DeerHuhn.Animals.Kachna} A flying duck.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createKachna = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    var possibleLayers = [1, 2, 4, 5];
+    var layer = possibleLayers[randInt(0, possibleLayers.length-1)];
+
+    var yLeft = randInt(20, 940);
+    var yRight = randInt(20, 940);
+
+    var path = new DeerHuhn.ScenePath(layer, -50, yLeft, 3800, yRight);
+
     return new DeerHuhn.Animals.Kachna(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createKachna);
@@ -190,8 +264,8 @@ DeerHuhn.Animals.Klady.prototype.constructor = DeerHuhn.Animals.Klady;
  * @return {DeerHuhn.Animals.Klady} A block of logs.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createKlady = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    // TODO only allow in combination with LKT
+    var path = this.getRandomPath(this.forrestPaths);
     return new DeerHuhn.Animals.Klady(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createKlady);
@@ -223,8 +297,8 @@ DeerHuhn.Animals.LKT.prototype.constructor = DeerHuhn.Animals.LKT;
  * @return {DeerHuhn.Animals.LKT} A tractor.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createLKT = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    // TODO join with Klady
+    var path = this.getRandomPath(this.forrestPaths);
     return new DeerHuhn.Animals.LKT(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createLKT);
@@ -256,8 +330,7 @@ DeerHuhn.Animals.Odvozka.prototype.constructor = DeerHuhn.Animals.Odvozka;
  * @return {DeerHuhn.Animals.Odvozka} A collector.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    var path = this.getRandomPath(this.roadPaths);
     return new DeerHuhn.Animals.Odvozka(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka);
@@ -289,8 +362,7 @@ DeerHuhn.Animals.Ovce.prototype.constructor = DeerHuhn.Animals.Ovce;
  * @return {DeerHuhn.Animals.Ovce} A sheep.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createOvce = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    var path = this.getRandomPath(this.forrestPaths, this.fieldPaths, this.barnPaths, this.housePaths);
     return new DeerHuhn.Animals.Ovce(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createOvce);
@@ -322,8 +394,7 @@ DeerHuhn.Animals.Prase.prototype.constructor = DeerHuhn.Animals.Prase;
  * @return {DeerHuhn.Animals.Prase} A wild boar.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createPrase = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
     return new DeerHuhn.Animals.Prase(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createPrase);
@@ -355,8 +426,7 @@ DeerHuhn.Animals.Sele.prototype.constructor = DeerHuhn.Animals.Sele;
  * @return {DeerHuhn.Animals.Sele} A wild boar child.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createSele = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
     return new DeerHuhn.Animals.Sele(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createSele);
@@ -388,8 +458,7 @@ DeerHuhn.Animals.Srna.prototype.constructor = DeerHuhn.Animals.Srna;
  * @return {DeerHuhn.Animals.Srna} A deer.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createSrna = function (movementFinishedCallback) {
-    var paths = this.possiblePaths;
-    var path = this.getRandomPath(paths);
+    var path = this.getRandomPath(this.forrestPaths, this.barnPaths, this.fieldPaths);
     return new DeerHuhn.Animals.Srna(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createSrna);

@@ -593,6 +593,7 @@ DeerHuhn.Animal = function(name, sprite, animationSpeed, sceneSpeed, scenePath, 
 };
 DeerHuhn.Animal.prototype = Object.create(DeerHuhn.MovingAnimatedObject.prototype);
 DeerHuhn.Animal.prototype.constructor = DeerHuhn.Animal;
+
 // ANIMALS
 
 /**
@@ -611,68 +612,36 @@ DeerHuhn.Animals.animationTexturesCache = [];
  * @constructor
  */
 DeerHuhn.Animals.AnimalFactory = function() {
-    this.possiblePaths = [
-        new DeerHuhn.ScenePath(3, 167, 273, 638, 413),
-        new DeerHuhn.ScenePath(3, 93, 327, 644, 399),
-        new DeerHuhn.ScenePath(3, 91, 304, 895, 637),
-        new DeerHuhn.ScenePath(3, -28, 483, 622, 378),
-        new DeerHuhn.ScenePath(3, -14, 459, 896, 618),
-        new DeerHuhn.ScenePath(3, -40, 514, 484, 622),
-        new DeerHuhn.ScenePath(3, -23, 667, 458, 643),
-        new DeerHuhn.ScenePath(3, 394, 907, 880, 921),
-        new DeerHuhn.ScenePath(3, 415, 951, 1366, 576),
-        new DeerHuhn.ScenePath(3, 533, 633, 875, 657),
-        new DeerHuhn.ScenePath(3, 556, 639, 1138, 808),
-        new DeerHuhn.ScenePath(3, 637, 444, 1766, 772),
-        new DeerHuhn.ScenePath(3, 656, 433, 1336, 550),
-        new DeerHuhn.ScenePath(3, 914, 639, 1394, 574),
-        new DeerHuhn.ScenePath(3, 935, 655, 1931, 667),
-        new DeerHuhn.ScenePath(4, 671, 384, 1184, 258),
-        new DeerHuhn.ScenePath(4, 656, 370, 1519, 421),
-        new DeerHuhn.ScenePath(4, 827, 277, 1154, 264),
-        new DeerHuhn.ScenePath(4, 844, 282, 1385, 442),
-        new DeerHuhn.ScenePath(4, 788, 439, 1328, 489),
-        new DeerHuhn.ScenePath(4, 1189, 271, 1559, 417),
-        new DeerHuhn.ScenePath(3, 1106, 822, 1480, 570),
-        new DeerHuhn.ScenePath(3, 1141, 795, 1894, 691),
-        new DeerHuhn.ScenePath(3, 1450, 441, 1651, 343),
-        new DeerHuhn.ScenePath(3, 1657, 339, 1969, 375),
-        new DeerHuhn.ScenePath(3, 1537, 514, 1898, 387),
-        new DeerHuhn.ScenePath(3, 1525, 534, 2695, 603),
-        new DeerHuhn.ScenePath(3, 1579, 544, 1958, 649),
-        new DeerHuhn.ScenePath(3, 1982, 649, 2686, 592),
-        new DeerHuhn.ScenePath(3, 1894, 208, 2305, 240),
-        new DeerHuhn.ScenePath(3, 1907, 226, 2471, 363),
-        new DeerHuhn.ScenePath(3, 2003, 370, 2312, 253),
-        new DeerHuhn.ScenePath(3, 2339, 262, 2458, 306),
-        new DeerHuhn.ScenePath(3, 2006, 390, 2494, 354),
-        new DeerHuhn.ScenePath(3, 2075, 388, 3248, 643),
-        new DeerHuhn.ScenePath(3, 2011, 406, 2684, 598),
-        new DeerHuhn.ScenePath(3, 2281, 712, 2699, 577),
-        new DeerHuhn.ScenePath(3, 2281, 712, 3188, 658),
-        new DeerHuhn.ScenePath(3, 2281, 712, 2741, 744),
-        new DeerHuhn.ScenePath(3, 2498, 354, 3251, 645),
-        new DeerHuhn.ScenePath(3, 2699, 577, 3419, 576),
-        new DeerHuhn.ScenePath(3, 2699, 595, 3187, 657),
-        new DeerHuhn.ScenePath(4, 2734, 418, 3560, 423),
-        new DeerHuhn.ScenePath(4, 2833, 463, 3421, 558),
-        new DeerHuhn.ScenePath(4, 3013, 531, 3469, 480),
-        new DeerHuhn.ScenePath(4, 3283, 264, 3575, 252),
-        new DeerHuhn.ScenePath(4, 3295, 286, 3647, 391),
-    ];
 };
 
 /**
  * Choose a random path from the given set.
  *
- * @param {DeerHuhn.ScenePath[]} paths All possible paths to choose from.
- * @return {DeerHuhn.ScenePath} A random path from the given list (might have reversed direction).
+ * @param {...DeerHuhn.ScenePath[]} paths All possible paths to choose from.
+ * @return {DeerHuhn.ScenePath} A random path from the given lists (might have reversed direction).
  */
 DeerHuhn.Animals.AnimalFactory.prototype.getRandomPath = function(paths) {
-    var numPaths = paths.length;
+    var pathArrays = arguments;
+    var numPaths = 0;
+    for (var i = 0; i < arguments.length; i++)
+        numPaths += pathArrays[i].length;
+
     var randPositionIdx = randInt(0, numPaths-1);
 
-    var path = paths[randPositionIdx];
+    var path = null;
+    for (var i = 0; i < pathArrays.length; i++) {
+        if (randPositionIdx >= pathArrays[i].length) {
+            randPositionIdx -= pathArrays[i].length;
+        } else {
+            path = pathArrays[i][randPositionIdx];
+            break;
+        }
+    }
+
+    if (path === null) {
+        console.log('Error in selecting random path from ' + arguments.length + ' arguments.');
+    }
+
     if (Math.random() > 0.5)
         path = path.reverse.call(path);  
 
