@@ -188,8 +188,6 @@ DeerHuhn.prototype = {
 	    this.backgroundLayers[i] = PIXI.Sprite.fromImage('images/vrstva'+i+'.png');
 	    this.backgroundLayers[i].name = 'Background ' + i;
             this.backgroundLayers[i].position.x = 0;
-	    // make the background layers clickable through the transparent areas
-	    this.backgroundLayers[i].hitArea = PIXI.TransparencyHitArea.create(this.backgroundLayers[i]);
 	    // this is needed for the background to stop bubbling of click events
 	    this.backgroundLayers[i].setInteractive(true);
 
@@ -230,6 +228,9 @@ DeerHuhn.prototype = {
 
 	this.initAnimals.apply(this);
     
+            // make the background layers clickable through the transparent areas
+            var useWebGL = (this.renderer instanceof PIXI.WebGLRenderer);
+            this.backgroundLayers[i].hitArea = PIXI.TransparencyHitArea.create(this.backgroundLayers[i], useWebGL);
         this.resize();
         requestAnimFrame(this.animate.bind(this));
     },
@@ -424,8 +425,9 @@ DeerHuhn.Animal = function(animalType, movementFinishedCallback) {
 
     this.name = animalType.name;
     this.sprite = new PIXI.SmoothMovieClip(this.type.animationTextures);
-    // we can click through transparent areas of animals
-    this.sprite.hitArea = PIXI.TransparencyHitArea.create(this.sprite);
+    // we can click through transparent areas of objects
+    var useWebGL = (this.renderer instanceof PIXI.WebGLRenderer);
+    this.sprite.hitArea = PIXI.TransparencyHitArea.create(this.sprite, useWebGL);
     this.sprite.setInteractive(true);
     this.sprite.loop = true;
     this.sprite.animationSpeed = this.type.animationSpeed;

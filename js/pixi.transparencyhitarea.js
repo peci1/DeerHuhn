@@ -333,19 +333,31 @@ PIXI.WebGLTransparencyHitArea.prototype.initTextureData = function() {
 PIXI.WebGLTransparencyHitArea.prototype.createTextureData = function (texture) {
     var gl = PIXI.gl;
     // create a new framebuffer to draw the texture on
-    var frameBufer = gl.createFramebuffer();
+    var frameBuffer = gl.createFramebuffer();
 
     // make the created framebuffer the current
     gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
 
+    // create the texture
+    var glTexture = gl.createTexture(); 
+    gl.bindTexture(gl.TEXTURE_2D, glTexture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    // the following is to allow non-power of two sized textures
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
     // attach the texture to the framebuffer
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, 
-	    gl.TEXTURE_2D, texture, 0);
+        gl.TEXTURE_2D, glTexture, 0);
 
     // read out the framebuffer
     var textureData = new Uint8Array(texture.width * texture.height * 4);
     gl.readPixels(0, 0, texture.width, texture.height, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
 
+    // unbind the texture
+    gl.bindTexture(gl.TEXTURE_2D, null);
     // unbind the framebuffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
