@@ -209,12 +209,17 @@ DeerHuhn.prototype = {
     },
 
     addRandomAnimal: function() {
-        var deerHuhn = this;
-        var movementFinishedCallback = function() {
-            deerHuhn.removeAnimal(animal);
+        var movementFinishedCallback = function(animal) {
+            if (!(this instanceof DeerHuhn))
+                throw new Error('Bad type of this in callback.');
+
+            if (!(animal instanceof DeerHuhn.MovingAnimatedObject))
+                throw new Error('Bad type of animal in callback.');
+
+            this.removeAnimal(animal);
         };
 
-        var animal = this.animalFactory.createRandomAnimal(movementFinishedCallback);
+        var animal = this.animalFactory.createRandomAnimal(movementFinishedCallback.bind(this));
         this.addAnimal(animal);
     },
 
@@ -222,9 +227,31 @@ DeerHuhn.prototype = {
         this.backgroundLayers[animal.scenePosition.layer].addChild(animal.sprite);
         this.addSprite(animal.sprite);
         this.animals.push(animal);
+
+        var spawnFunction = function (childToSpawn) {
+            // do not spawn children if the parent has been killed in the meantime
+            if (childToSpawn.animal.parentAnimal === null)
+                return;
+
+            this.addAnimal(childToSpawn.animal);
+        };
+        for (var i=0; i < animal.childrenToSpawn.length; i++) {
+            var childToSpawn = animal.childrenToSpawn[i];
+            setTimeout(spawnFunction.bind(this, childToSpawn), childToSpawn.delay);
+        }
+
+        animal.childrenToSpawn = [];
     },
 
     removeAnimal: function(animal) {
+        if (animal.parentAnimal !== null) {
+            animal.parentAnimal.childrenAnimals.remove(animal);
+        }
+
+        for (var i = 0; i < animal.childrenAnimals.length; i++) {
+            animal.childrenAnimals[i].parentAnimal = null;
+        }
+
         this.backgroundLayers[animal.scenePosition.layer].removeChild(animal.sprite);
         this.removeSprite(animal.sprite);
         this.animals.remove(animal);
@@ -327,7 +354,7 @@ DeerHuhn.ScenePath.prototype = {
      * @param float percentComplete The percentage of the movement completed (number 0.0 to 1.0).
      */
     interpolatePosition: function(percentComplete) {
-       var x = this.startPosition.x + percentComplete * (this.endPosition.x - this.startPosition.x);
+        var x = this.startPosition.x + percentComplete * (this.endPosition.x - this.startPosition.x);
         var y = this.startPosition.y + percentComplete * (this.endPosition.y - this.startPosition.y);
         return new DeerHuhn.ScenePosition(this.layer, x, y);
     },
@@ -412,7 +439,7 @@ DeerHuhn.ShootableObject.prototype.constructor = DeerHuhn.ShootableObject;
  * Process the shot event (should call {@link DeerHuhn.ShootableObject.onShotCallback}).
  */
 DeerHuhn.ShootableObject.prototype.onShot = function () {
-    this.onShotCallback();
+    this.onShotCallback.call(this);
 };
 
 /**
@@ -460,10 +487,11 @@ DeerHuhn.AnimatedObject.prototype.constructor = DeerHuhn.AnimatedObject;
 // CLASS DeerHuhn.MovingAnimatedObject
 
 /**
- * The callback to call when the object arrives at its target.
+ * The callback to call when the object arrives at its target or disappears in another way.
  *
  * @callback movementFinishedCallback
- * @this DeerHuhn.MovingAnimatedObject
+ * @this DeerHuhn
+ * @param {PIXI.MovingAnimatedObject} animal The animal that finished moving.
  */
 
 /**
@@ -536,10 +564,10 @@ DeerHuhn.MovingAnimatedObject.prototype.constructor = DeerHuhn.MovingAnimatedObj
  */
 DeerHuhn.MovingAnimatedObject.prototype.updatePosition = function(timeDelta) {
     this.movementPercentComplete += timeDelta * this.sceneSpeed / this.scenePath.length;
-    if (this.movementPercentComplete > 1) {
+    if (this.movementPercentComplete >= 1) {
         this.movementPercentComplete = 1;
         if (this.movementFinishedCallback !== undefined)
-        this.movementFinishedCallback();
+            this.movementFinishedCallback(this);
     }
 
     this.scenePosition = this.scenePath.interpolatePosition(this.movementPercentComplete);
@@ -581,18 +609,81 @@ DeerHuhn.Animal = function(name, sprite, animationSpeed, sceneSpeed, scenePath, 
     DeerHuhn.MovingAnimatedObject.call(this, sprite, null, animationSpeed, sceneSpeed, scenePath, movementFinishedCallback);
 
     this.name = name;
+    this.sprite.name = name;
 
     var onShotCallback = function() {
+        if (!(this instanceof DeerHuhn.ShootableObject))
+            throw new Error('Wrong type of this in callback');
+
         console.log(this.name + ' killed');
-        this.movementFinishedCallback.call(this);
+        this.movementFinishedCallback(this);
     }; 
     this.onShotCallback = onShotCallback.bind(this);
 
     this.sprite.position.x = -1000;
     this.sprite.position.y = -1000;
+
+    /**
+     * The (biological) parent of this animal if it has one.
+     * 
+     * @property
+     * @protected
+     * @readonly
+     * @type {DeerHuhn.Animal}
+     */
+    this.parentAnimal = null;
+
+    /**
+     * A list of children to add after this animal is added to the game.
+     * 
+     * @property
+     * @public
+     * @readonly
+     * @type {DeerHuhn.AnimalToSpawn[]}
+     */
+    this.childrenToSpawn = [];
+
+    /**
+     * A list of children this animal has.
+     * 
+     * @property
+     * @protected
+     * @readonly
+     * @type {DeerHuhn.Animal[]}
+     */
+    this.childrenAnimals = [];
 };
 DeerHuhn.Animal.prototype = Object.create(DeerHuhn.MovingAnimatedObject.prototype);
 DeerHuhn.Animal.prototype.constructor = DeerHuhn.Animal;
+
+/**
+ * An animal to be spawned into the game after some delay.
+ *
+ * @constructor
+ * @param {DeerHuhn.Animal} animal The animal to spawn.
+ * @param {int} delay Delay before spawning (in ms).
+ */
+DeerHuhn.AnimalToSpawn = function (animal, delay) {
+    /**
+     * The animal to spawn.
+     * 
+     * @property
+     * @public
+     * @readonly
+     * @type {DeerHuhn.Animal}
+     */
+    this.animal = animal;
+
+    /**
+     * Delay before spawning (in ms).
+     * 
+     * @property
+     * @public
+     * @readonly
+     * @type {int}
+     */
+    this.delay = delay;
+};
 
 // ANIMALS
 
@@ -643,7 +734,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.getRandomPath = function(paths) {
     }
 
     if (Math.random() > 0.5)
-        path = path.reverse.call(path);  
+        path = path.reverse();
 
     return path;
 };

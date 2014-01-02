@@ -256,19 +256,30 @@ DeerHuhn.Animals.Klady = function (scenePath, movementFinishedCallback) {
 DeerHuhn.Animals.Klady.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.Klady.prototype.constructor = DeerHuhn.Animals.Klady;
 
+// do not allow a block of woods to move without the tractor
+DeerHuhn.Animals.Klady.prototype.updatePosition = function (timeDelta) {
+    if (this.parentAnimal === null)
+        return;
+
+    DeerHuhn.MovingAnimatedObject.prototype.updatePosition.call(this, timeDelta);
+};
+
 /**
  * Create a block of logs on a random path.
  *
  * @constructs {DeerHuhn.Animals.Klady}
+ * @param {DeerHuhn.Animals.LKT} parentLKT The tractor handling this block of woods.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Klady} A block of logs.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createKlady = function (movementFinishedCallback) {
-    // TODO only allow in combination with LKT
-    var path = this.getRandomPath(this.forrestPaths);
-    return new DeerHuhn.Animals.Klady(path, movementFinishedCallback);
+DeerHuhn.Animals.AnimalFactory.prototype.createKlady = function (parentLKT, movementFinishedCallback) {
+    var path = parentLKT.scenePath;
+    var klady = new DeerHuhn.Animals.Klady(path, movementFinishedCallback);
+    klady.parentAnimal = parentLKT;
+    return klady;
 };
-DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createKlady);
+// we don't want a block of logs to be constructed automatically
+//DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createKlady);
 
 /**
  * A tractor.
@@ -297,11 +308,37 @@ DeerHuhn.Animals.LKT.prototype.constructor = DeerHuhn.Animals.LKT;
  * @return {DeerHuhn.Animals.LKT} A tractor.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createLKT = function (movementFinishedCallback) {
-    // TODO join with Klady
     var path = this.getRandomPath(this.forrestPaths);
     return new DeerHuhn.Animals.LKT(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createLKT);
+
+/**
+ * Create a tractor handling a block of woods on a random path.
+ *
+ * @constructs {DeerHuhn.Animals.LKT}
+ * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
+ * @return {DeerHuhn.Animals.LKT} A tractor.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (movementFinishedCallback) {
+    var path = this.getRandomPath(this.forrestPaths);
+
+    var lkt = new DeerHuhn.Animals.LKT(path, function () {
+        if (lkt.childrenAnimals.length == 1) {
+            // remove block of woods at the same time the tractor is removed
+            klady.movementFinishedCallback(klady);
+        }
+        movementFinishedCallback(lkt);
+    });
+    var klady = this.createKlady(lkt, movementFinishedCallback);
+    lkt.childrenAnimals.push(klady);
+    lkt.childrenToSpawn.push(new DeerHuhn.AnimalToSpawn(klady, 2000));
+
+    lkt.name = "LKT s náloží";
+
+    return lkt;
+};
+DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady);
 
 /**
  * A collector.
@@ -400,6 +437,30 @@ DeerHuhn.Animals.AnimalFactory.prototype.createPrase = function (movementFinishe
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createPrase);
 
 /**
+ * Create a wild boar family on a random path.
+ *
+ * @constructs {DeerHuhn.Animals.Prase}
+ * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target. The callback is also used for the children animals.
+ * @return {DeerHuhn.Animals.Prase} A wild boar with family.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.createVlacek = function (movementFinishedCallback) {
+    var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
+    var prase = new DeerHuhn.Animals.Prase(path, movementFinishedCallback);
+
+    var numChildren = randInt(1, 5);
+    var childSpawnDelay = 700;
+
+    for (var i=1; i <= numChildren; i++) {
+        var sele = this.createSeleForPrase(prase, movementFinishedCallback);
+        prase.childrenAnimals.push(sele);
+        prase.childrenToSpawn.push(new DeerHuhn.AnimalToSpawn(sele, i*childSpawnDelay));
+    }
+
+    return prase;
+};
+DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createVlacek);
+
+/**
  * A wild boar child.
  *
  * @constructor
@@ -430,6 +491,20 @@ DeerHuhn.Animals.AnimalFactory.prototype.createSele = function (movementFinished
     return new DeerHuhn.Animals.Sele(path, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createSele);
+
+/**
+ * Create a wild boar child on a random path.
+ *
+ * @constructs {DeerHuhn.Animals.Sele}
+ * @param {DeerHuhn.Animals.Prase} The parent of this wild boar child.
+ * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
+ * @return {DeerHuhn.Animals.Sele} A wild boar child.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.createSeleForPrase = function (prase, movementFinishedCallback) {
+    var sele = new DeerHuhn.Animals.Sele(prase.scenePath, movementFinishedCallback);
+    sele.parentAnimal = prase;
+    return sele;
+};
 
 /**
  * A deer.

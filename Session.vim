@@ -2,10 +2,10 @@ let SessionLoad = 1
 if &cp | set nocp | endif
 let s:cpo_save=&cpo
 set cpo&vim
-inoremap <C-Space> 
-inoremap <expr> <Up> pumvisible() ? "\" : "\<Up>"
-inoremap <expr> <S-Tab> pumvisible() ? "\" : "\<S-Tab>"
 inoremap <expr> <Down> pumvisible() ? "\" : "\<Down>"
+inoremap <expr> <S-Tab> pumvisible() ? "\" : "\<S-Tab>"
+inoremap <expr> <Up> pumvisible() ? "\" : "\<Up>"
+inoremap <C-Space> 
 imap <silent> <Plug>IMAP_JumpBack =IMAP_Jumpfunc('b', 0)
 imap <silent> <Plug>IMAP_JumpForward =IMAP_Jumpfunc('', 0)
 inoremap <C-F5> :CheckSyntax!
@@ -54,9 +54,9 @@ xmap <silent> i,w <Plug>CamelCaseMotion_iw
 omap <silent> i,e <Plug>CamelCaseMotion_ie
 omap <silent> i,b <Plug>CamelCaseMotion_ib
 omap <silent> i,w <Plug>CamelCaseMotion_iw
-nmap <S-Insert> "+gP
-nnoremap <C-Tab> w
 nnoremap <C-F4> c
+nnoremap <C-Tab> w
+nmap <S-Insert> "+gP
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
 vmap <silent> <Plug>IMAP_JumpBack `<i=IMAP_Jumpfunc('b', 0)
 vmap <silent> <Plug>IMAP_JumpForward i=IMAP_Jumpfunc('', 0)
@@ -147,7 +147,8 @@ badd +38 index.htm
 badd +1 ¨
 badd +667 js\deerhuhn.js
 badd +4 css\main.css
-badd +1 js\pixi.transparencyhitarea.js
+badd +73 js\pixi.transparencyhitarea.js
+badd +0 js\deerhuhn.animals.js
 args index.htm
 edit js\deerhuhn.js
 set splitbelow splitright
@@ -291,18 +292,17 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 187 - ((12 * winheight(0) + 17) / 34)
+let s:l = 196 - ((21 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-187
-normal! 062|
+196
+normal! 06|
 wincmd w
 argglobal
-edit js\pixi.transparencyhitarea.js
+edit js\deerhuhn.animals.js
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-Tab> <Plug>delimitMateS-Tab
 imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
 nnoremap <buffer> <silent> <Plug>(jsdoc) :call jsdoc#insert()
@@ -327,9 +327,9 @@ setlocal nobinary
 setlocal bufhidden=
 setlocal buflisted
 setlocal buftype=
-setlocal cindent
+setlocal nocindent
 setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
-setlocal cinoptions=j1,J1
+setlocal cinoptions=
 setlocal cinwords=if,else,while,do,for,switch
 setlocal colorcolumn=
 setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
@@ -370,10 +370,10 @@ setlocal iminsert=2
 setlocal imsearch=2
 setlocal include=
 setlocal includeexpr=
-setlocal indentexpr=
-setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal indentexpr=GetJavascriptIndent()
+setlocal indentkeys=0{,0},0),0],0,,!^F,o,O,e
 setlocal noinfercase
-setlocal iskeyword=@,48-57,_,128-167,224-235
+setlocal iskeyword=@,48-57,_,128-167,224-235,$
 setlocal keywordprg=
 setlocal nolinebreak
 setlocal nolisp
@@ -385,7 +385,7 @@ setlocal modifiable
 setlocal nrformats=octal,hex
 setlocal nonumber
 setlocal numberwidth=4
-setlocal omnifunc=javascriptcomplete#CompleteJS
+setlocal omnifunc=tern#Complete
 setlocal path=
 setlocal nopreserveindent
 setlocal nopreviewwindow
@@ -421,12 +421,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 73 - ((0 * winheight(0) + 0) / 1)
+let s:l = 1 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-73
-normal! 017|
+1
+normal! 0
 wincmd w
 argglobal
 edit index.htm
