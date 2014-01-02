@@ -323,13 +323,7 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
 DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths);
 
-    var lkt = new DeerHuhn.Animals.LKT(path, function () {
-        if (lkt.childrenAnimals.length == 1) {
-            // remove block of woods at the same time the tractor is removed
-            klady.movementFinishedCallback(klady);
-        }
-        movementFinishedCallback(lkt);
-    });
+    var lkt = new DeerHuhn.Animals.LKT(path, movementFinishedCallback);
     var klady = this.createKlady(lkt, movementFinishedCallback);
     lkt.childrenAnimals.push(klady);
     lkt.childrenToSpawn.push(new DeerHuhn.AnimalToSpawn(klady, 2000));
