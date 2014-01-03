@@ -45,8 +45,32 @@ var DeerHuhn = function (canvasContainerId) {
     // window callbacks
     window.onresize = this.resize.bind(this);
     window.onorientationchange = this.resize.bind(this);
-    window.onblur = this.blur.bind(this);
-    window.onfocus = this.focus.bind(this);
+    window.onblur = window.onfocusout = window.onpagehide = this.blur.bind(this);
+    window.onfocus = window.onfocusin = window.onpageshow = this.focus.bind(this);
+
+    var visibilityChangedCallback = function (hidden) {
+        if (document[hidden])
+            this.blur();
+        else
+            this.focus();
+    }.bind(this);
+    // HTML5 visibility API
+    // http://stackoverflow.com/questions/1060008/is-there-a-way-to-detect-if-a-browser-window-is-not-currently-active
+    var hidden = "hidden";
+    if (hidden in document)
+        document.addEventListener("visibilitychange", visibilityChangedCallback.bind(hidden));
+    else if ((hidden = "mozHidden") in document)
+        document.addEventListener("mozvisibilitychange", visibilityChangedCallback.bind(hidden));
+    else if ((hidden = "webkitHidden") in document)
+        document.addEventListener("webkitvisibilitychange", visibilityChangedCallback.bind(hidden));
+    else if ((hidden = "msHidden") in document)
+        document.addEventListener("msvisibilitychange", visibilityChangedCallback.bind(hidden));
+    else
+        hidden = null;
+
+    // if the window isn't active at startup, pause the game
+    if (hidden !== null && document[hidden])
+        this.blur();
 
     this.renderer.view.addEventListener('mousemove', this.mousemove.bind(this), true);
 
