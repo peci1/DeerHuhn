@@ -24,13 +24,28 @@ var DeerHuhn = function (canvasContainerId) {
 
     this.useWebGl = (this.renderer instanceof PIXI.WebGLRenderer);
 
+    var gameOverCallback = function () {
+        console.log('Game over!'); //TODO development code
+    };
+
+    /**
+     * The time of the game.
+     *
+     * @property
+     *
+     * @public
+     * @readonly
+     * @type {DeerHuhn.GameTime}
+     */
+    this.gameTime = new DeerHuhn.GameTime(gameOverCallback);
+
     // pausing
     this.isPaused = false;
-    this.pauseStartTime = 0;
-    this.pausableObjects = [];
+    this.pauseStartTime = null;
+    this.pausableObjects = [this.gameTime];
 
     // fps
-    this.lastAnimationFrameTime = 0;
+    this.lastAnimationFrameTime = null;
     this.fps = 0;
 
     // variables filled after the assets are loaded
@@ -115,12 +130,12 @@ DeerHuhn.prototype = {
     calculateTimeDelta: function(now) {
         var timeDelta;
 
-        if (this.lastAnimationFrameTime === 0) {
+        if (this.lastAnimationFrameTime === null) {
             this.lastAnimationFrameTime = now;
             return 0;
         }
 
-        timeDelta = now - this.lastAnimationFrameTime;
+        timeDelta = now.valueOf() - this.lastAnimationFrameTime.valueOf();
         this.lastAnimationFrameTime = now;
 
         return timeDelta; 
@@ -206,6 +221,7 @@ DeerHuhn.prototype = {
         this.initAnimals.apply(this);
 
         this.resize();
+        this.gameTime.start();
         requestAnimFrame(this.animate.bind(this));
     },
 
@@ -320,12 +336,21 @@ DeerHuhn.prototype = {
     pause: function() {
         this.isPaused = true;
         this.pauseStartTime = new Date();
+
+        for (var obj in this.pausableObjects) {
+            if ('pause' in this.pausableObjects[obj]) {
+                this.pausableObjects[obj].pause();
+            }
+        }
     },
 
     unPause: function() {
-        this.isPaused = false;
+        // at startup and in some rare cases of blurring/focusing the window, this case can happen
+        if (!this.isPaused || this.pauseStartTime === null)
+            return;
 
-        var timeDelta = new Date() - this.pauseStartTime;
+        this.isPaused = false;
+        var timeDelta = new Date().valueOf() - this.pauseStartTime.valueOf();
 
         for (var obj in this.pausableObjects) {
             if ('unPause' in this.pausableObjects[obj]) {
@@ -338,12 +363,198 @@ DeerHuhn.prototype = {
     },
 
     blur: function() {
-        this.pause.call(this);
+        this.pause();
     },
 
     focus: function() {
-        this.unPause.call(this);
+        this.unPause();
     }
+};
+
+// CLASS DeerHuhn.GameTime
+
+/**
+ * The callback to call when the time is up.
+ *
+ * @callback gameOverCallback
+ */
+
+/**
+ * The time of the game.
+ *
+ * @constructor
+ * @param {gameOverCallback} gameOverCallback The callback to call when the time is up.
+ */
+DeerHuhn.GameTime = function (gameOverCallback) {
+    
+    /**
+     * The callback to call when the time is up.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {gameOverCallback}
+     */
+    this.gameOverCallback = gameOverCallback;
+
+    /**
+     * The current date representation.
+     *
+     * It has to be initialized with a non-leap year and time at midnight.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {Date}
+     */
+    this.date = new Date("Mar 01, 2013 00:00:00");
+
+    /**
+     * The last time the repetition occured.
+     * 
+     * Has to be set in the #start() method.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {Date}
+     */
+    this.lastRepetitionTime = null;
+
+    /**
+     * Id of the repetition timer.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {int}
+     */
+    this.repetitionIntervalId = null;
+
+    /**
+     * Id of the repetition timer used to wait for #delayAfterUnPause ms before triggering the timer after pausing.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {int}
+     */
+    this.repetitionTimerId = null;
+
+    /**
+     * The interval after which the date should be increased (in ms).
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {int}
+     */
+    this.interval = 600;
+
+    /**
+     * True if the game has ended.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {boolean}
+     */
+    this.gameOver = false;
+};
+
+/**
+ * Start the game timer. Should only be called once.
+ */
+DeerHuhn.GameTime.prototype.start = function () {
+    this.lastRepetitionTime = new Date();
+    this.unPause(0);
+};
+
+/**
+ * Pause the timer.
+ */
+DeerHuhn.GameTime.prototype.pause = function () {
+    window.clearTimeout(this.repetitionTimerId);
+    window.clearInterval(this.repetitionIntervalId);
+};
+
+/**
+ * Unpause the timer.
+ *
+ * @param {Number} timeDelta The time between pause and unPause calls (in ms).
+ */
+DeerHuhn.GameTime.prototype.unPause = function (timeDelta) {
+    if (this.isGameOver)
+        return;
+
+    this.lastRepetitionTime.setUTCMilliseconds(this.lastRepetitionTime.getUTCMilliseconds() + timeDelta);
+    var now = new Date();
+    var repetitionDelay = this.interval - (now.valueOf() - this.lastRepetitionTime.valueOf());
+
+    var repetitionCallback = function () {
+        this.lastRepetitionTime = new Date();
+        this.increaseDate();
+    };
+
+    if (repetitionDelay === 0) {
+        // if timeDelta === 0 then this is probably called from #start() and we want to skip the repetition at time 0
+        if (timeDelta > 0)
+            repetitionCallback.call(this);
+
+        this.repetitionIntervalId = window.setInterval(repetitionCallback.bind(this), this.interval);
+    } else {
+        var callback = function () {
+            repetitionCallback.call(this);
+            this.repetitionIntervalId = window.setInterval(repetitionCallback.bind(this), this.interval);
+            this.repetitionTimerId = null;
+        };
+        this.repetitionTimerId = window.setTimeout(callback.bind(this), repetitionDelay);
+    }
+};
+
+/**
+ * Add one day to the game timer. Call #gameOverCallback if the game is over.
+ *
+ * @private
+ */
+DeerHuhn.GameTime.prototype.increaseDate = function () {
+    // if the day overflows, the month gets increased and day is reset to 1
+    this.date.setDate(this.date.getDate() + 1);
+
+    console.log(this.getDay() + ". " + this.getMonth() + "."); //TODO development code
+
+    // months are indexed from 0 and we stop in December
+    if (this.date.getMonth() === 11) {
+        this.isGameOver = true;
+        this.pause();
+        this.gameOverCallback();
+    }
+};
+
+/**
+ * Return the current day number.
+ *
+ * @return {int} The day number (1-31).
+ */
+DeerHuhn.GameTime.prototype.getDay = function () {
+    return this.date.getDate();
+};
+
+/**
+ * Return the current month number.
+ *
+ * @return {int} The month number (1-12).
+ */
+DeerHuhn.GameTime.prototype.getMonth = function () {
+    // the month from Date is between 0-11.
+    return this.date.getMonth() + 1;
 };
 
 // CLASS DeerHuhn.ScenePosition
