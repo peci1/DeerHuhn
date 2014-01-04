@@ -171,7 +171,7 @@ DeerHuhn.prototype = {
     },
 
     onLoad: function() {
-        var animalClick = function (mouse) {
+        var layerClick = function (mouse) {
             console.log('Clicked layer ' + mouse.target.name);
             return false; // stop event bubbling
         };
@@ -191,7 +191,7 @@ DeerHuhn.prototype = {
 
             // TODO development code
             var layer = this;
-            this.backgroundLayers[i].click = animalClick;
+            this.backgroundLayers[i].click = layerClick;
 
             this.addSprite(this.backgroundLayers[i]);
             this.stage.addChild(this.backgroundLayers[i]);
