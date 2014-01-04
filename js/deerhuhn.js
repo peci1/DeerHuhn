@@ -311,7 +311,7 @@ DeerHuhn.prototype = {
         this.pointsText.updateText();
 
         this.pointsText.position.x = 585 - this.pointsText.width/2;
-        this.pointsText.position.y = 310 - this.pointsText.height;
+        this.pointsText.position.y = 100;
     },
 
     initAnimals: function() {
@@ -330,6 +330,10 @@ DeerHuhn.prototype = {
 
             //TODO development code
             console.log(animal.name + ' killed, ' + animal.getScore(this.gameTime) + ' points');
+            
+            this.points += animal.getScore(this.gameTime);
+            this.updatePoints();
+
             animal.movementFinishedCallback(animal);
         }; 
 
