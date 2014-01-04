@@ -565,6 +565,10 @@ DeerHuhn.PausableTimeout.prototype.unPause = function (timeDelta) {
     if (this.fired)
         return;
 
+    // ignore unPause before the timer is started
+    if (this.startTime === null)
+        return;
+
     this.startTime.setUTCMilliseconds(this.startTime.getUTCMilliseconds() + timeDelta);
     var now = new Date();
     var delay = this.timeout - (now.valueOf() - this.startTime.valueOf());
@@ -686,6 +690,10 @@ DeerHuhn.PausableInterval.prototype.pause = function () {
  */
 DeerHuhn.PausableInterval.prototype.unPause = function (timeDelta) {
     if (this.stopped)
+        return;
+
+    // ignore unPause before the timer is started
+    if (this.lastRepetitionTime === null)
         return;
 
     this.lastRepetitionTime.setUTCMilliseconds(this.lastRepetitionTime.getUTCMilliseconds() + timeDelta);
