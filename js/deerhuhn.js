@@ -371,6 +371,258 @@ DeerHuhn.prototype = {
     }
 };
 
+// CLASS DeerHuhn.PausableTimeout
+
+/**
+ * A timeout like setTimeout that can be paused.
+ *
+ * @constructor
+ * @param callback The callback to call when the time is up.
+ * @param {int} timeout The delay before calling the #callback.
+ */
+DeerHuhn.PausableTimeout = function (callback, timeout) {
+    
+    /**
+     * The interval after which the callback should be called.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {int}
+     */
+    this.timeout = timeout;
+
+    /**
+     * The callback to call when the time is up.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     */
+    this.callback = callback;
+
+    /**
+     * Id of the setTimeout timer.
+     *
+     * @property
+     *
+     * @private
+     * @type {int}
+     */
+    this.timerId = null;
+
+    /**
+     * The time the timer was started. Is adjusted after #unPause.
+     *
+     * @property
+     *
+     * @private
+     * @type {Date}
+     */
+    this.startTime = null;
+
+    /**
+     * Set to true after the timer has been fired.
+     *
+     * @property
+     *
+     * @private
+     * @type {boolean}
+     */
+    this.fired = false;
+};
+
+/**
+ * Start the timer. Should only be called once.
+ */
+DeerHuhn.PausableTimeout.prototype.start = function () {
+    this.startTime = new Date();
+    this.unPause(0);
+};
+
+/**
+ * Pause the timer.
+ */
+DeerHuhn.PausableTimeout.prototype.pause = function () {
+    if (this.fired)
+        return;
+
+    window.clearTimeout(this.timerId);
+};
+
+/**
+ * Unpause the timer.
+ *
+ * @param {Number} timeDelta The time between pause and unPause calls (in ms).
+ */
+DeerHuhn.PausableTimeout.prototype.unPause = function (timeDelta) {
+    if (this.fired)
+        return;
+
+    this.startTime.setUTCMilliseconds(this.startTime.getUTCMilliseconds() + timeDelta);
+    var now = new Date();
+    var delay = this.timeout - (now.valueOf() - this.startTime.valueOf());
+
+    var timerCallback = function () {
+        this.fired = true;
+        this.callback();
+    };
+
+    if (delay <= 0) {
+        timerCallback.call(this);
+    } else {
+        this.timerId = window.setTimeout(timerCallback.bind(this), delay);
+    }
+};
+
+// CLASS DeerHuhn.PausableInterval
+
+/**
+ * A pausable repeating timer similar to setInterval.
+ *
+ * @constructor
+ * @param callback The callback to call when the interval is up.
+ * @param {int} interval The interval in which the callback should be called.
+ */
+DeerHuhn.PausableInterval = function (callback, interval) {
+    
+    /**
+     * The interval after which the callback should be called (in ms).
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {int}
+     */
+    this.interval = interval;
+
+    /**
+     * The callback to call when the interval is up.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     */
+    this.callback = callback;
+
+    /**
+     * The last time the repetition occured.
+     * 
+     * Has to be set in the #start() method.
+     *
+     * @property
+     *
+     * @private
+     * @type {Date}
+     */
+    this.lastRepetitionTime = null;
+
+    /**
+     * Id of the repetition timer.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {int}
+     */
+    this.intervalTimerId = null;
+
+    /**
+     * The timer used to wait before triggering the interval timer after pausing.
+     *
+     * @property
+     *
+     * @private
+     * @type {DeerHuhn.PausableTimeout}
+     */
+    this.timeoutTimer = null;
+
+    /**
+     * True if the timer has been stopped. 
+     *
+     * Should only be called once.
+     *
+     * @property
+     *
+     * @private
+     * @type {boolean}
+     */
+    this.stopped = false;
+};
+
+/**
+ * Start the timer. Repetition at time 0 is skipped. Should only be called once.
+ */
+DeerHuhn.PausableInterval.prototype.start = function () {
+    this.lastRepetitionTime = new Date();
+    this.unPause(0);
+};
+
+/**
+ * Pause the timer.
+ */
+DeerHuhn.PausableInterval.prototype.pause = function () {
+    if (this.stopped)
+        return;
+
+    window.clearInterval(this.intervalTimerId);
+    if (this.timeoutTimer !== null)
+        this.timeoutTimer.pause();
+};
+
+/**
+ * Unpause the timer.
+ *
+ * @param {Number} timeDelta The time between pause and unPause calls (in ms).
+ */
+DeerHuhn.PausableInterval.prototype.unPause = function (timeDelta) {
+    if (this.stopped)
+        return;
+
+    this.lastRepetitionTime.setUTCMilliseconds(this.lastRepetitionTime.getUTCMilliseconds() + timeDelta);
+
+    if (this.timeoutTimer !== null) {
+        this.timeoutTimer.unPause(timeDelta);
+        return;
+    }
+
+    var now = new Date();
+    var repetitionDelay = this.interval - (now.valueOf() - this.lastRepetitionTime.valueOf());
+
+    var repetitionCallback = function () {
+        this.lastRepetitionTime = new Date();
+        this.callback();
+    };
+
+    if (repetitionDelay <= 0) {
+        repetitionCallback.call(this);
+        this.intervalTimerId = window.setInterval(repetitionCallback.bind(this), this.interval);
+    } else {
+        var callback = function () {
+            repetitionCallback.call(this);
+            this.intervalTimerId = window.setInterval(repetitionCallback.bind(this), this.interval);
+            this.timeoutTimer = null;
+        };
+        this.timeoutTimer = new DeerHuhn.PausableTimeout(callback.bind(this), repetitionDelay);
+        this.timeoutTimer.start();
+    }
+};
+
+/**
+ * Stop the timer. Should only be called once. 
+ * 
+ * For temporary disabling the timer, use #pause.
+ */
+DeerHuhn.PausableInterval.prototype.stop = function () {
+    this.pause();
+    this.stopped = true;
+};
+
 // CLASS DeerHuhn.GameTime
 
 /**
@@ -412,77 +664,29 @@ DeerHuhn.GameTime = function (gameOverCallback) {
     this.date = new Date("Mar 01, 2013 00:00:00");
 
     /**
-     * The last time the repetition occured.
-     * 
-     * Has to be set in the #start() method.
-     *
-     * @property
-     *
-     * @private
-     * @readonly
-     * @type {Date}
-     */
-    this.lastRepetitionTime = null;
-
-    /**
-     * Id of the repetition timer.
-     *
-     * @property
-     *
-     * @private
-     * @readonly
-     * @type {int}
-     */
-    this.repetitionIntervalId = null;
-
-    /**
      * Id of the repetition timer used to wait for #delayAfterUnPause ms before triggering the timer after pausing.
      *
      * @property
      *
      * @private
      * @readonly
-     * @type {int}
+     * @type {DeerHuhn.PausableInterval}
      */
-    this.repetitionTimerId = null;
-
-    /**
-     * The interval after which the date should be increased (in ms).
-     *
-     * @property
-     *
-     * @private
-     * @readonly
-     * @type {int}
-     */
-    this.interval = 600;
-
-    /**
-     * True if the game has ended.
-     *
-     * @property
-     *
-     * @private
-     * @readonly
-     * @type {boolean}
-     */
-    this.gameOver = false;
+    this.intervalTimer = new DeerHuhn.PausableInterval(this.increaseDate.bind(this), 600);
 };
 
 /**
  * Start the game timer. Should only be called once.
  */
 DeerHuhn.GameTime.prototype.start = function () {
-    this.lastRepetitionTime = new Date();
-    this.unPause(0);
+    this.intervalTimer.start();
 };
 
 /**
  * Pause the timer.
  */
 DeerHuhn.GameTime.prototype.pause = function () {
-    window.clearTimeout(this.repetitionTimerId);
-    window.clearInterval(this.repetitionIntervalId);
+    this.intervalTimer.pause();
 };
 
 /**
@@ -491,32 +695,7 @@ DeerHuhn.GameTime.prototype.pause = function () {
  * @param {Number} timeDelta The time between pause and unPause calls (in ms).
  */
 DeerHuhn.GameTime.prototype.unPause = function (timeDelta) {
-    if (this.isGameOver)
-        return;
-
-    this.lastRepetitionTime.setUTCMilliseconds(this.lastRepetitionTime.getUTCMilliseconds() + timeDelta);
-    var now = new Date();
-    var repetitionDelay = this.interval - (now.valueOf() - this.lastRepetitionTime.valueOf());
-
-    var repetitionCallback = function () {
-        this.lastRepetitionTime = new Date();
-        this.increaseDate();
-    };
-
-    if (repetitionDelay === 0) {
-        // if timeDelta === 0 then this is probably called from #start() and we want to skip the repetition at time 0
-        if (timeDelta > 0)
-            repetitionCallback.call(this);
-
-        this.repetitionIntervalId = window.setInterval(repetitionCallback.bind(this), this.interval);
-    } else {
-        var callback = function () {
-            repetitionCallback.call(this);
-            this.repetitionIntervalId = window.setInterval(repetitionCallback.bind(this), this.interval);
-            this.repetitionTimerId = null;
-        };
-        this.repetitionTimerId = window.setTimeout(callback.bind(this), repetitionDelay);
-    }
+    this.intervalTimer.unPause(timeDelta);
 };
 
 /**
@@ -532,8 +711,7 @@ DeerHuhn.GameTime.prototype.increaseDate = function () {
 
     // months are indexed from 0 and we stop in December
     if (this.date.getMonth() === 11) {
-        this.isGameOver = true;
-        this.pause();
+        this.intervalTimer.stop();
         this.gameOverCallback();
     }
 };
@@ -681,7 +859,7 @@ DeerHuhn.ShootableObject.prototype.onShot = function () {
  * Get the score for shooting the object in the given game time.
  *
  * @abstract
- * @param {int} gameTime The game time to get score in.
+ * @param {DeerHuhn.GameTime} gameTime The game time to get score in.
  * @return {int} Score for shooting this object.
  */
 DeerHuhn.ShootableObject.prototype.getScore = function (gameTime) {
