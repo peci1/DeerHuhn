@@ -24,9 +24,13 @@ var DeerHuhn = function (canvasContainerId) {
 
     this.useWebGl = (this.renderer instanceof PIXI.WebGLRenderer);
 
+    var dateChangeCallback = function () {
+        this.updateDate();
+    }.bind(this);
+
     var gameOverCallback = function () {
         console.log('Game over!'); //TODO development code
-    };
+    }.bind(this);
 
     /**
      * The time of the game.
@@ -37,7 +41,9 @@ var DeerHuhn = function (canvasContainerId) {
      * @readonly
      * @type {DeerHuhn.GameTime}
      */
-    this.gameTime = new DeerHuhn.GameTime(gameOverCallback);
+    this.gameTime = new DeerHuhn.GameTime(dateChangeCallback, gameOverCallback);
+
+    this.points = 0;
 
     // pausing
     this.isPaused = false;
@@ -47,6 +53,10 @@ var DeerHuhn = function (canvasContainerId) {
     // fps
     this.lastAnimationFrameTime = null;
     this.fps = 0;
+
+    // HUD
+    this.dateText = null;
+    this.pointsText = null;
 
     // variables filled after the assets are loaded
     this.backgroundLayers = [];
@@ -218,7 +228,9 @@ DeerHuhn.prototype = {
             }
         }
 
-        this.initAnimals.apply(this);
+        this.initHUD();
+
+        this.initAnimals();
 
         this.resize();
         this.gameTime.start();
@@ -240,6 +252,66 @@ DeerHuhn.prototype = {
 
         if ('unPause' in sprite)
             this.pausableObjects.remove(sprite);
+    },
+
+    initHUD: function() {
+        var pointsDate = new PIXI.Sprite(PIXI.TextureCache['datum_body.png']);
+        pointsDate.initialScale = 0.5;
+        pointsDate.onresize = function () {
+            pointsDate.position.x = 0.99*this.rendererWidth - pointsDate.width;
+            pointsDate.position.y = 0.99*this.rendererHeight - pointsDate.height;
+        }.bind(this);
+
+        this.addSprite(pointsDate);
+        this.stage.addChild(pointsDate);
+
+        this.dateText = new PIXI.Text(' 1. 3.', {font: '150px HelveticaLight', fill: '#8E8D5B'});
+        this.dateText.dontScale = true;
+        // set the position
+        this.updateDate();
+
+        this.addSprite(this.dateText);
+        pointsDate.addChild(this.dateText);
+
+        this.pointsText = new PIXI.Text('0', {font: '170px HelveticaBlack'});
+        this.pointsText.dontScale = true;
+        // set the position
+        this.updatePoints();
+
+        this.addSprite(this.pointsText);
+        pointsDate.addChild(this.pointsText);
+    },
+
+    updateDate: function () {
+        var day = this.gameTime.getDay() + '.';
+        if (day.length == 2)
+            day = ' ' + day;
+
+        var month = this.gameTime.getMonth() + '.';
+        if (month.length == 2)
+            month = ' ' + month;
+
+        this.dateText.setText(day + month);
+        this.dateText.updateText();
+
+        this.dateText.position.x = 280 - this.dateText.width;
+        this.dateText.position.y = 240 - this.dateText.height;
+    },
+
+    updatePoints: function () {
+        var style = this.pointsText.style;
+        if (this.points >= 0)
+            style.fill = '#8E8D5B';
+        else
+            style.fill = '#FF0000';
+
+        this.pointsText.setStyle(style);
+
+        this.pointsText.setText(this.points);
+        this.pointsText.updateText();
+
+        this.pointsText.position.x = 585 - this.pointsText.width/2;
+        this.pointsText.position.y = 310 - this.pointsText.height;
     },
 
     initAnimals: function() {
@@ -341,8 +413,19 @@ DeerHuhn.prototype = {
 
         this.renderer.resize(this.rendererWidth, this.rendererHeight);
         for (var i = 0; i < this.sprites.length; i++) {
-            this.sprites[i].scale.x = this.renderingScale;
-            this.sprites[i].scale.y = this.renderingScale;
+
+            if (this.sprites[i].dontScale !== true) {
+                var initialScale = 1.0;
+                if (this.sprites[i].initialScale !== undefined)
+                    initialScale = this.sprites[i].initialScale;
+
+                this.sprites[i].scale.x = this.renderingScale * initialScale;
+                this.sprites[i].scale.y = this.renderingScale * initialScale;
+            }
+
+            if (this.sprites[i].onresize !== undefined) {
+                this.sprites[i].onresize();
+            }
         }
     },
 
@@ -639,6 +722,12 @@ DeerHuhn.PausableInterval.prototype.stop = function () {
 // CLASS DeerHuhn.GameTime
 
 /**
+ * The callback to call when the date is changed.
+ *
+ * @callback dateChangeCallback
+ */
+
+/**
  * The callback to call when the time is up.
  *
  * @callback gameOverCallback
@@ -648,10 +737,22 @@ DeerHuhn.PausableInterval.prototype.stop = function () {
  * The time of the game.
  *
  * @constructor
+ * @param {dateChangeCallback} dateChangeCallback The callback to call when the date is changed.
  * @param {gameOverCallback} gameOverCallback The callback to call when the time is up.
  */
-DeerHuhn.GameTime = function (gameOverCallback) {
+DeerHuhn.GameTime = function (dateChangeCallback, gameOverCallback) {
     
+    /**
+     * The callback to call when the date is changed.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {dateChangeCallback}
+     */
+    this.dateChangeCallback = dateChangeCallback;
+
     /**
      * The callback to call when the time is up.
      *
@@ -720,7 +821,7 @@ DeerHuhn.GameTime.prototype.increaseDate = function () {
     // if the day overflows, the month gets increased and day is reset to 1
     this.date.setDate(this.date.getDate() + 1);
 
-    console.log(this.getDay() + ". " + this.getMonth() + "."); //TODO development code
+    this.dateChangeCallback();
 
     // months are indexed from 0 and we stop in December
     if (this.date.getMonth() === 11) {
