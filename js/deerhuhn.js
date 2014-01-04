@@ -233,6 +233,11 @@ DeerHuhn.prototype = {
         this.initAnimals();
 
         this.resize();
+
+        // needed for the scale to propagate to the text size
+        this.updateDate();
+        this.updatePoints();
+
         this.gameTime.start();
         requestAnimFrame(this.animate.bind(this));
     },
@@ -306,12 +311,11 @@ DeerHuhn.prototype = {
             style.fill = '#FF0000';
 
         this.pointsText.setStyle(style);
-
-        this.pointsText.setText(this.points);
+        this.pointsText.setText(this.points + '');
         this.pointsText.updateText();
 
-        this.pointsText.position.x = 585 - this.pointsText.width/2;
-        this.pointsText.position.y = 100;
+        this.pointsText.position.x = 560 - this.pointsText.width/2;
+        this.pointsText.position.y = 250 - this.pointsText.height;
     },
 
     initAnimals: function() {
