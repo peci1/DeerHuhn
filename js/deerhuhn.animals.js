@@ -90,6 +90,13 @@ DeerHuhn.Animals.Liska.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.Liska.prototype.constructor = DeerHuhn.Animals.Liska;
 
 /**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Liska.prototype.getScore = function (gameTime) {
+    return 5;
+};
+
+/**
  * Create a fox on a random path.
  *
  * @constructs {DeerHuhn.Animals.Liska}
@@ -120,6 +127,13 @@ DeerHuhn.Animals.AutoCervene = function (scenePath, movementFinishedCallback) {
 };
 DeerHuhn.Animals.AutoCervene.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.AutoCervene.prototype.constructor = DeerHuhn.Animals.AutoCervene;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.AutoCervene.prototype.getScore = function (gameTime) {
+    return -10;
+};
 
 /**
  * Create a red car on a random path.
@@ -154,6 +168,13 @@ DeerHuhn.Animals.AutoModre.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.AutoModre.prototype.constructor = DeerHuhn.Animals.AutoModre;
 
 /**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.AutoModre.prototype.getScore = function (gameTime) {
+    return -10;
+};
+
+/**
  * Create a blue car on a random path.
  *
  * @constructs {DeerHuhn.Animals.AutoModre}
@@ -186,6 +207,16 @@ DeerHuhn.Animals.KachnaPlove.prototype = Object.create(DeerHuhn.Animal.prototype
 DeerHuhn.Animals.KachnaPlove.prototype.constructor = DeerHuhn.Animals.KachnaPlove;
 
 /**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.KachnaPlove.prototype.getScore = function (gameTime) {
+    if (gameTime.getMonth() >= 9)
+        return 20;
+    else
+        return -20;
+};
+
+/**
  * Create a floating duck on a random path.
  *
  * @constructs {DeerHuhn.Animals.KachnaPlove}
@@ -216,6 +247,16 @@ DeerHuhn.Animals.Kachna = function (scenePath, movementFinishedCallback) {
 };
 DeerHuhn.Animals.Kachna.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.Kachna.prototype.constructor = DeerHuhn.Animals.Kachna;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Kachna.prototype.getScore = function (gameTime) {
+    if (gameTime.getMonth() >= 9)
+        return 10;
+    else
+        return -10;
+};
 
 /**
  * Create a flying duck on a random path.
@@ -255,6 +296,13 @@ DeerHuhn.Animals.Klady = function (scenePath, movementFinishedCallback) {
 };
 DeerHuhn.Animals.Klady.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.Klady.prototype.constructor = DeerHuhn.Animals.Klady;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Klady.prototype.getScore = function (gameTime) {
+    return -10;
+};
 
 // do not allow a block of woods to move without the tractor
 DeerHuhn.Animals.Klady.prototype.updatePosition = function (timeDelta) {
@@ -299,6 +347,13 @@ DeerHuhn.Animals.LKT = function (scenePath, movementFinishedCallback) {
 };
 DeerHuhn.Animals.LKT.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.LKT.prototype.constructor = DeerHuhn.Animals.LKT;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.LKT.prototype.getScore = function (gameTime) {
+    return -20;
+};
 
 /**
  * Create a tractor on a random path.
@@ -354,6 +409,13 @@ DeerHuhn.Animals.Odvozka.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.Odvozka.prototype.constructor = DeerHuhn.Animals.Odvozka;
 
 /**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Odvozka.prototype.getScore = function (gameTime) {
+    return -20;
+};
+
+/**
  * Create a collector on a random path.
  *
  * @constructs {DeerHuhn.Animals.Odvozka}
@@ -386,6 +448,13 @@ DeerHuhn.Animals.Ovce.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.Ovce.prototype.constructor = DeerHuhn.Animals.Ovce;
 
 /**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Ovce.prototype.getScore = function (gameTime) {
+    return -20;
+};
+
+/**
  * Create a sheep on a random path.
  *
  * @constructs {DeerHuhn.Animals.Ovce}
@@ -416,6 +485,19 @@ DeerHuhn.Animals.Prase = function (scenePath, movementFinishedCallback) {
 };
 DeerHuhn.Animals.Prase.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.Prase.prototype.constructor = DeerHuhn.Animals.Prase;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Prase.prototype.getScore = function (gameTime) {
+    if (this.childrenAnimals.length > 0)
+        // negative points for shooting mother boar
+        return -25;
+    else if (gameTime.getMonth() < 8)
+        return -25;
+    else
+        return 25;
+};
 
 /**
  * Create a wild boar on a random path.
@@ -474,6 +556,13 @@ DeerHuhn.Animals.Sele.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.Sele.prototype.constructor = DeerHuhn.Animals.Sele;
 
 /**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Sele.prototype.getScore = function (gameTime) {
+    return 10;
+};
+
+/**
  * Create a wild boar child on a random path.
  *
  * @constructs {DeerHuhn.Animals.Sele}
@@ -518,6 +607,16 @@ DeerHuhn.Animals.Srna = function (scenePath, movementFinishedCallback) {
 };
 DeerHuhn.Animals.Srna.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.Srna.prototype.constructor = DeerHuhn.Animals.Srna;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Srna.prototype.getScore = function (gameTime) {
+    if (gameTime.getMonth() >= 5 && gameTime.getDay() >= 16 && gameTime.getMonth() < 10) 
+        return 15;
+    else
+        return -15;
+};
 
 /**
  * Create a deer on a random path.
