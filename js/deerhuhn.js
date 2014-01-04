@@ -249,6 +249,18 @@ DeerHuhn.prototype = {
     },
 
     addRandomAnimal: function() {
+        var onShotCallback = function(animal) {
+            if (!(this instanceof DeerHuhn))
+                throw new Error('Wrong type of this in callback');
+
+            if (!(animal instanceof DeerHuhn.ShootableObject))
+                throw new Error('Wrong type of animal in callback');
+
+            //TODO development code
+            console.log(animal.name + ' killed, ' + animal.getScore(this.gameTime) + ' points');
+            animal.movementFinishedCallback(animal);
+        }; 
+
         var movementFinishedCallback = function(animal) {
             if (!(this instanceof DeerHuhn))
                 throw new Error('Bad type of this in callback.');
@@ -259,7 +271,8 @@ DeerHuhn.prototype = {
             this.removeAnimal(animal);
         };
 
-        var animal = this.animalFactory.createRandomAnimal(movementFinishedCallback.bind(this));
+        var animal = this.animalFactory.createRandomAnimal(
+            onShotCallback.bind(this), movementFinishedCallback.bind(this));
         this.addAnimal(animal);
     },
 
@@ -808,7 +821,8 @@ DeerHuhn.SceneObject = function (sprite) {
  * The callback to call after the object is shot.
  *
  * @callback onShotCallback
- * @this DeerHuhn.ShootableObject
+ * @this DeerHuhn
+ * @param {DeerHuhn.ShootableObject} animal The shot object.
  */
 
 /**
@@ -839,8 +853,8 @@ DeerHuhn.ShootableObject = function (sprite, onShotCallback) {
     this.sprite.setInteractive(true);
 
     // click means shot
-    var onClick = function (interactionData) {
-        this.onShotCallback.call(this);
+    var onClick = function () {
+        this.onShotCallback(this);
         return false; // stop event bubbling
     };
     this.sprite.click = onClick.bind(this);
@@ -852,7 +866,7 @@ DeerHuhn.ShootableObject.prototype.constructor = DeerHuhn.ShootableObject;
  * Process the shot event (should call {@link DeerHuhn.ShootableObject.onShotCallback}).
  */
 DeerHuhn.ShootableObject.prototype.onShot = function () {
-    this.onShotCallback.call(this);
+    this.onShotCallback(this);
 };
 
 /**
@@ -1018,20 +1032,11 @@ DeerHuhn.MovingAnimatedObject.prototype.isMovingLeft = function() {
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animal = function(name, sprite, animationSpeed, sceneSpeed, scenePath, movementFinishedCallback) {
-    DeerHuhn.MovingAnimatedObject.call(this, sprite, null, animationSpeed, sceneSpeed, scenePath, movementFinishedCallback);
+DeerHuhn.Animal = function(name, sprite, onShotCallback, animationSpeed, sceneSpeed, scenePath, movementFinishedCallback) {
+    DeerHuhn.MovingAnimatedObject.call(this, sprite, onShotCallback, animationSpeed, sceneSpeed, scenePath, movementFinishedCallback);
 
     this.name = name;
     this.sprite.name = name;
-
-    var onShotCallback = function() {
-        if (!(this instanceof DeerHuhn.ShootableObject))
-            throw new Error('Wrong type of this in callback');
-
-        console.log(this.name + ' killed');
-        this.movementFinishedCallback(this);
-    }; 
-    this.onShotCallback = onShotCallback.bind(this);
 
     this.sprite.position.x = -1000;
     this.sprite.position.y = -1000;
@@ -1155,15 +1160,16 @@ DeerHuhn.Animals.AnimalFactory.prototype.getRandomPath = function(paths) {
 /**
  * Create a random animal on a random path.
  *
+ * @param {onShotCallback} onShotCallback The callback to call after the object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animal} A random animal on a random path.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createRandomAnimal = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createRandomAnimal = function (onShotCallback, movementFinishedCallback) {
     var numFactories = DeerHuhn.Animals.AnimalFactory.factories.length;
     var randFactoryIdx = randInt(0, numFactories-1);
 
     var randFactory = DeerHuhn.Animals.AnimalFactory.factories[randFactoryIdx];
-    return randFactory.call(this, movementFinishedCallback);
+    return randFactory.call(this, onShotCallback, movementFinishedCallback);
 };
 
 /**

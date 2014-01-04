@@ -75,12 +75,14 @@ DeerHuhn.Animals.AnimalFactory.prototype.forrestPaths = [
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.Liska = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.Liska = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Liška', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.liska), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.liska),
+            onShotCallback, 
             5, 
             50.0/1000, 
             scenePath, 
@@ -100,12 +102,13 @@ DeerHuhn.Animals.Liska.prototype.getScore = function (gameTime) {
  * Create a fox on a random path.
  *
  * @constructs {DeerHuhn.Animals.Liska}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Liska} A fox.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createLiska = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createLiska = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.barnPaths, this.housePaths);
-    return new DeerHuhn.Animals.Liska(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.Liska(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createLiska);
 
@@ -114,12 +117,14 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.AutoCervene = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.AutoCervene = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Auto', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.auto_cervene), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.auto_cervene),
+            onShotCallback, 
             5, 
             100.0/1000, 
             scenePath, 
@@ -139,12 +144,13 @@ DeerHuhn.Animals.AutoCervene.prototype.getScore = function (gameTime) {
  * Create a red car on a random path.
  *
  * @constructs {DeerHuhn.Animals.AutoCervene}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.AutoCervene} A red car.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createAutoCervene = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createAutoCervene = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.roadPaths);
-    return new DeerHuhn.Animals.AutoCervene(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.AutoCervene(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createAutoCervene);
 
@@ -153,12 +159,14 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.AutoModre = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.AutoModre = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Auto', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.auto_modre), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.auto_modre),
+            onShotCallback, 
             5, 
             100.0/1000, 
             scenePath, 
@@ -178,12 +186,13 @@ DeerHuhn.Animals.AutoModre.prototype.getScore = function (gameTime) {
  * Create a blue car on a random path.
  *
  * @constructs {DeerHuhn.Animals.AutoModre}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.AutoModre} A blue car.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createAutoModre = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createAutoModre = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.roadPaths);
-    return new DeerHuhn.Animals.AutoModre(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.AutoModre(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createAutoModre);
 
@@ -192,12 +201,14 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.KachnaPlove = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.KachnaPlove = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Kachna', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.kachna_plove), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.kachna_plove),
+            onShotCallback, 
             3, 
             15.0/1000, 
             scenePath, 
@@ -220,12 +231,13 @@ DeerHuhn.Animals.KachnaPlove.prototype.getScore = function (gameTime) {
  * Create a floating duck on a random path.
  *
  * @constructs {DeerHuhn.Animals.KachnaPlove}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.KachnaPlove} A floating duck.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createKachnaPlove = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createKachnaPlove = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.waterPaths);
-    return new DeerHuhn.Animals.KachnaPlove(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.KachnaPlove(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createKachnaPlove);
 
@@ -234,12 +246,14 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.Kachna = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.Kachna = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Kachna', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.kachna), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.kachna),
+            onShotCallback, 
             8, 
             70.0/1000, 
             scenePath, 
@@ -262,10 +276,11 @@ DeerHuhn.Animals.Kachna.prototype.getScore = function (gameTime) {
  * Create a flying duck on a random path.
  *
  * @constructs {DeerHuhn.Animals.Kachna}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Kachna} A flying duck.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createKachna = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createKachna = function (onShotCallback, movementFinishedCallback) {
     var possibleLayers = [1, 2, 4, 5];
     var layer = possibleLayers[randInt(0, possibleLayers.length-1)];
 
@@ -274,7 +289,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createKachna = function (movementFinish
 
     var path = new DeerHuhn.ScenePath(layer, -50, yLeft, 3800, yRight);
 
-    return new DeerHuhn.Animals.Kachna(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.Kachna(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createKachna);
 
@@ -283,12 +298,14 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.Klady = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.Klady = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Klády', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.klady), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.klady),
+            onShotCallback, 
             5, 
             30.0/1000, 
             scenePath, 
@@ -317,12 +334,13 @@ DeerHuhn.Animals.Klady.prototype.updatePosition = function (timeDelta) {
  *
  * @constructs {DeerHuhn.Animals.Klady}
  * @param {DeerHuhn.Animals.LKT} parentLKT The tractor handling this block of woods.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Klady} A block of logs.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createKlady = function (parentLKT, movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createKlady = function (parentLKT, onShotCallback, movementFinishedCallback) {
     var path = parentLKT.scenePath;
-    var klady = new DeerHuhn.Animals.Klady(path, movementFinishedCallback);
+    var klady = new DeerHuhn.Animals.Klady(path, onShotCallback, movementFinishedCallback);
     klady.parentAnimal = parentLKT;
     return klady;
 };
@@ -334,12 +352,14 @@ DeerHuhn.Animals.AnimalFactory.prototype.createKlady = function (parentLKT, move
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.LKT = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.LKT = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'LKT', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.lkt), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.lkt),
+            onShotCallback, 
             5, 
             30.0/1000, 
             scenePath, 
@@ -359,12 +379,13 @@ DeerHuhn.Animals.LKT.prototype.getScore = function (gameTime) {
  * Create a tractor on a random path.
  *
  * @constructs {DeerHuhn.Animals.LKT}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.LKT} A tractor.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createLKT = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createLKT = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths);
-    return new DeerHuhn.Animals.LKT(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.LKT(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createLKT);
 
@@ -372,14 +393,15 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  * Create a tractor handling a block of woods on a random path.
  *
  * @constructs {DeerHuhn.Animals.LKT}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.LKT} A tractor.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths);
 
-    var lkt = new DeerHuhn.Animals.LKT(path, movementFinishedCallback);
-    var klady = this.createKlady(lkt, movementFinishedCallback);
+    var lkt = new DeerHuhn.Animals.LKT(path, onShotCallback, movementFinishedCallback);
+    var klady = this.createKlady(lkt, onShotCallback, movementFinishedCallback);
     lkt.childrenAnimals.push(klady);
     lkt.childrenToSpawn.push(new DeerHuhn.AnimalToSpawn(klady, 2000));
 
@@ -394,12 +416,14 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.Odvozka = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.Odvozka = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Odvozka', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.odvozka), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.odvozka),
+            onShotCallback, 
             5, 
             30.0/1000, 
             scenePath, 
@@ -419,12 +443,13 @@ DeerHuhn.Animals.Odvozka.prototype.getScore = function (gameTime) {
  * Create a collector on a random path.
  *
  * @constructs {DeerHuhn.Animals.Odvozka}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Odvozka} A collector.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.roadPaths);
-    return new DeerHuhn.Animals.Odvozka(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.Odvozka(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka);
 
@@ -433,12 +458,14 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.Ovce = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.Ovce = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Ovce', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.ovce), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.ovce),
+            onShotCallback, 
             3, 
             5.0/1000, 
             scenePath, 
@@ -458,12 +485,13 @@ DeerHuhn.Animals.Ovce.prototype.getScore = function (gameTime) {
  * Create a sheep on a random path.
  *
  * @constructs {DeerHuhn.Animals.Ovce}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Ovce} A sheep.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createOvce = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createOvce = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.fieldPaths, this.barnPaths, this.housePaths);
-    return new DeerHuhn.Animals.Ovce(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.Ovce(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createOvce);
 
@@ -472,12 +500,14 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.Prase = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.Prase = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Prase', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.prase), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.prase),
+            onShotCallback, 
             5, 
             70.0/1000, 
             scenePath, 
@@ -503,12 +533,13 @@ DeerHuhn.Animals.Prase.prototype.getScore = function (gameTime) {
  * Create a wild boar on a random path.
  *
  * @constructs {DeerHuhn.Animals.Prase}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Prase} A wild boar.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createPrase = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createPrase = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
-    return new DeerHuhn.Animals.Prase(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.Prase(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createPrase);
 
@@ -516,18 +547,19 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  * Create a wild boar family on a random path.
  *
  * @constructs {DeerHuhn.Animals.Prase}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target. The callback is also used for the children animals.
  * @return {DeerHuhn.Animals.Prase} A wild boar with family.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createVlacek = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createVlacek = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
-    var prase = new DeerHuhn.Animals.Prase(path, movementFinishedCallback);
+    var prase = new DeerHuhn.Animals.Prase(path, onShotCallback, movementFinishedCallback);
 
-    var numChildren = randInt(1, 5);
+    var numChildren = randInt(2, 4);
     var childSpawnDelay = 700;
 
     for (var i=1; i <= numChildren; i++) {
-        var sele = this.createSeleForPrase(prase, movementFinishedCallback);
+        var sele = this.createSeleForPrase(prase, onShotCallback, movementFinishedCallback);
         prase.childrenAnimals.push(sele);
         prase.childrenToSpawn.push(new DeerHuhn.AnimalToSpawn(sele, i*childSpawnDelay));
     }
@@ -541,12 +573,14 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.Sele = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.Sele = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Sele', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.sele), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.sele),
+            onShotCallback, 
             8, 
             70.0/1000, 
             scenePath, 
@@ -566,12 +600,13 @@ DeerHuhn.Animals.Sele.prototype.getScore = function (gameTime) {
  * Create a wild boar child on a random path.
  *
  * @constructs {DeerHuhn.Animals.Sele}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Sele} A wild boar child.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createSele = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createSele = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
-    return new DeerHuhn.Animals.Sele(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.Sele(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createSele);
 
@@ -580,11 +615,12 @@ DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.pro
  *
  * @constructs {DeerHuhn.Animals.Sele}
  * @param {DeerHuhn.Animals.Prase} The parent of this wild boar child.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Sele} A wild boar child.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createSeleForPrase = function (prase, movementFinishedCallback) {
-    var sele = new DeerHuhn.Animals.Sele(prase.scenePath, movementFinishedCallback);
+DeerHuhn.Animals.AnimalFactory.prototype.createSeleForPrase = function (prase, onShotCallback, movementFinishedCallback) {
+    var sele = new DeerHuhn.Animals.Sele(prase.scenePath, onShotCallback, movementFinishedCallback);
     sele.parentAnimal = prase;
     return sele;
 };
@@ -594,12 +630,14 @@ DeerHuhn.Animals.AnimalFactory.prototype.createSeleForPrase = function (prase, m
  *
  * @constructor
  * @param {DeerHuhn.ScenePath} scenePath The path this object moves along.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  */
-DeerHuhn.Animals.Srna = function (scenePath, movementFinishedCallback) {
+DeerHuhn.Animals.Srna = function (scenePath, onShotCallback, movementFinishedCallback) {
     DeerHuhn.Animal.call(this, 
             'Srna', 
-            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.srna), 
+            new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.srna),
+            onShotCallback, 
             6, 
             60.0/1000, 
             scenePath, 
@@ -622,11 +660,12 @@ DeerHuhn.Animals.Srna.prototype.getScore = function (gameTime) {
  * Create a deer on a random path.
  *
  * @constructs {DeerHuhn.Animals.Srna}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Srna} A deer.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createSrna = function (movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createSrna = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.barnPaths, this.fieldPaths);
-    return new DeerHuhn.Animals.Srna(path, movementFinishedCallback);
+    return new DeerHuhn.Animals.Srna(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.push(DeerHuhn.Animals.AnimalFactory.prototype.createSrna);
