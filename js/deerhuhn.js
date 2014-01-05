@@ -444,16 +444,18 @@ DeerHuhn.prototype = {
         this.addSprite(animal.sprite);
         this.animals.push(animal);
 
-        var spawnFunction = function (childToSpawn) {
-            // do not spawn children if the parent has been killed in the meantime
-            if (childToSpawn.animal.parentAnimal === null)
-                return;
-
-            this.addAnimal(childToSpawn.animal);
-        };
         for (var i=0; i < animal.childrenToSpawn.length; i++) {
             var childToSpawn = animal.childrenToSpawn[i];
-            setTimeout(spawnFunction.bind(this, childToSpawn), childToSpawn.delay);
+            var timer = new DeerHuhn.PausableTimeout(function(childToSpawn) {
+                this.pausableObjects.remove(timer);
+                // do not spawn children if the parent has been killed in the meantime
+                if (childToSpawn.animal.parentAnimal === null)
+                    return;
+
+                this.addAnimal(childToSpawn.animal);
+            }.bind(this, childToSpawn), childToSpawn.delay);
+            this.pausableObjects.push(timer);
+            timer.start();
         }
 
         animal.childrenToSpawn = [];
