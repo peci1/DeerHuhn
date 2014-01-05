@@ -301,8 +301,14 @@ DeerHuhn.prototype = {
     },
 
     initHUD: function() {
+        var ignoreClicksCallback = function () {
+            return false;
+        };
+
         var pointsDate = new PIXI.Sprite(PIXI.TextureCache['datum_body.png']);
         pointsDate.initialScale = 0.5;
+        pointsDate.interactive = true;
+        pointsDate.click = ignoreClicksCallback;
         pointsDate.onresize = function () {
             pointsDate.position.x = 0.99*this.rendererWidth - pointsDate.width;
             pointsDate.position.y = 0.99*this.rendererHeight - pointsDate.height;
@@ -345,6 +351,8 @@ DeerHuhn.prototype = {
         for (var i=0; i < this.MAX_AMMO; i++) {
             var bullet = new PIXI.Sprite(PIXI.TextureCache['naboj.png']);
             bullet.initialScale = 0.5;
+            bullet.interactive = true;
+            bullet.click = ignoreClicksCallback;
             bullet.onresize = ammoResize.bind(null, bullet, i);
 
             this.addSprite(bullet);
@@ -353,6 +361,8 @@ DeerHuhn.prototype = {
         }
 
         var noAmmo = new PIXI.Sprite(PIXI.TextureCache['naboje-zadne.png']);
+        noAmmo.interactive = true;
+        noAmmo.click = ignoreClicksCallback;
         noAmmo.onresize = ammoResize.bind(null, noAmmo, 0);
 
         this.addSprite(noAmmo);
