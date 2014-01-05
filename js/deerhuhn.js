@@ -56,6 +56,9 @@ var DeerHuhn = function (canvasContainerId) {
     this.pauseStartTime = null;
     this.pausableObjects = [this.gameTime];
 
+    // objects that need position updates via updatePosition(timeDelta) calls
+    this.movingObjects = [];
+
     // fps
     this.lastAnimationFrameTime = null;
     this.fps = 0;
@@ -159,7 +162,7 @@ DeerHuhn.prototype = {
 
         this.scrollBackground();
 
-        this.updateAnimalPositions(timeDelta);
+        this.updateMovingObjects(timeDelta);
 
         this.renderer.render(this.stage);
 
@@ -457,6 +460,7 @@ DeerHuhn.prototype = {
         this.backgroundLayers[animal.scenePosition.layer].addChild(animal.sprite);
         this.addSprite(animal.sprite);
         this.animals.push(animal);
+        this.movingObjects.push(animal);
 
         for (var i=0; i < animal.childrenToSpawn.length; i++) {
             var childToSpawn = animal.childrenToSpawn[i];
@@ -487,12 +491,13 @@ DeerHuhn.prototype = {
         this.backgroundLayers[animal.scenePosition.layer].removeChild(animal.sprite);
         this.removeSprite(animal.sprite);
         this.animals.remove(animal);
+        this.movingObjects.remove(animal);
     },
 
-    updateAnimalPositions: function(timeDelta) {
-        for (var i = 0; i < this.animals.length; i++) {
-            var animal = this.animals[i];
-            animal.updatePosition(timeDelta);
+    updateMovingObjects: function(timeDelta) {
+        for (var i = 0; i < this.movingObjects.length; i++) {
+            var movingObject = this.movingObjects[i];
+            movingObject.updatePosition(timeDelta);
         }
     },
 
