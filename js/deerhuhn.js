@@ -59,6 +59,9 @@ var DeerHuhn = function (canvasContainerId) {
     // objects that need position updates via updatePosition(timeDelta) calls
     this.movingObjects = [];
 
+    // sound
+    this.sounds = {};
+
     // fps
     this.lastAnimationFrameTime = null;
     this.fps = 0;
@@ -223,8 +226,11 @@ DeerHuhn.prototype = {
             if (!isLeft)
                 return true;
 
-            if (this.canShoot())
+            if (this.canShoot()) {
                 this.shoot();
+            } else {
+                this.sounds.noAmmo.play();
+            }
 
             console.log('Clicked layer ' + mouse.target.name);
             return false; // stop event bubbling
@@ -273,6 +279,8 @@ DeerHuhn.prototype = {
         }
 
         this.initHUD();
+
+        this.initSounds();
 
         this.initAnimals();
 
@@ -412,6 +420,37 @@ DeerHuhn.prototype = {
             this.bulletSprites[i].visible = this.ammo >= (i+1);
     },
 
+    initSounds: function() {
+        this.sounds.mainTheme = new DeerHuhn.SoundSample({
+            urls: this.getSoundFiles('sound/les_opt'),
+            autoplay: true,
+            loop: true,
+            volume: 1
+        });
+
+        this.sounds.shot = new DeerHuhn.SoundSample({
+            urls: this.getSoundFiles('sound/vystrel_opt'),
+            volume: 1
+        });
+
+        this.sounds.noAmmo = new DeerHuhn.SoundSample({
+            urls: this.getSoundFiles('sound/prazdno_opt'),
+            volume: 1
+        });
+
+        this.sounds.reload = new DeerHuhn.SoundSample({
+            urls: this.getSoundFiles('sound/nabit_opt'),
+            volume: 1
+        });
+        
+        for (var sound in this.sounds)
+            this.pausableObjects.push(this.sounds[sound]);
+    },
+
+    getSoundFiles: function (baseName) {
+        return [baseName + '.ogg', baseName + '.mp4', baseName + '.webm', baseName + '.mp3'];
+    },
+
     initAnimals: function() {
         for (var i = 0; i < 10; i++) {
             this.addRandomAnimal();
@@ -428,6 +467,7 @@ DeerHuhn.prototype = {
 
             if (!this.canShoot()) {
                 console.log('no ammo -> cannot shoot');
+                this.sounds.noAmmo.play();
                 return;
             }
 
@@ -467,6 +507,8 @@ DeerHuhn.prototype = {
             this.addSprite(movingPoints.sprite);
             this.movingObjects.push(movingPoints);
             this.stage.addChild(movingPoints.sprite);
+
+            this.sounds.shot.play();
 
             animal.movementFinishedCallback(animal);
         }; 
@@ -541,15 +583,13 @@ DeerHuhn.prototype = {
 
         this.ammo -= 1;
         this.updateAmmo();
-        //TODO play sound
+        this.sounds.shot.play();
     },
 
     reloadAmmo: function() {
         if (this.reloadingAmmo === true)
             return;
 
-        //TODO playSound
-        
         // implement 1000ms delay between reload request and actual reload
         var reloadTimer = new DeerHuhn.PausableTimeout(function() {
             this.ammo = this.MAX_AMMO;
@@ -560,6 +600,8 @@ DeerHuhn.prototype = {
         this.pausableObjects.push(reloadTimer);
         reloadTimer.start();
         this.reloadingAmmo = true;
+
+        this.sounds.reload.play();
     },
 
     initializeImages: function() {
@@ -1567,6 +1609,83 @@ DeerHuhn.MovingPoints.prototype.updatePosition = function(timeDelta, globalScale
 
     this.sprite.position.x = this.startingPoint.x + this.movementPercentComplete * (this.finalPoint.x - this.startingPoint.x);
     this.sprite.position.y = this.startingPoint.y + this.movementPercentComplete * (this.finalPoint.y - this.startingPoint.y);
+};
+
+// CLASS DeerHuhn.SoundSample
+
+/**
+ * A sound sample that can be played during the game and can be automatically paused.
+ *
+ * @constructor
+ * @param {object} howlConfig Config of the Howler sound.
+ */
+DeerHuhn.SoundSample = function (howlConfig) {
+    /**
+     * The sound object.
+     *
+     * @property
+     *
+     * @private
+     * @readonly
+     * @type {Howl}
+     */
+    this.howl = new Howl(howlConfig);
+
+    /**
+     * True if the sound sample is currently playing.
+     *
+     * @property
+     *
+     * @public
+     * @type {boolean}
+     */
+    this.playing = howlConfig.autoplay === true;
+
+    /**
+     * True if the sound sample should be resumed after unPause.
+     *
+     * @property
+     *
+     * @private
+     * @type {boolean}
+     */
+    this.resumeAfterUnPause = this.playing;
+
+    this.howl.on('play', function () {
+        this.playing = true;
+    }.bind(this));
+
+    this.howl.on('pause', function () {
+        this.playing = false;
+    }.bind(this));
+
+    this.howl.on('end', function () {
+        this.playing = false;
+    }.bind(this));
+};
+
+/**
+ * Pause the sound.
+ */
+DeerHuhn.SoundSample.prototype.pause = function () {
+    this.resumeAfterUnPause = this.playing;
+    if (this.playing)
+        this.howl.pause();
+};
+
+/**
+ * Unpause the sound.
+ */
+DeerHuhn.SoundSample.prototype.unPause = function () {
+    if (this.resumeAfterUnPause)
+        this.howl.play();
+};
+
+/**
+ * Play the sound. If the sound is already playing, play it in parallel to it.
+ */
+DeerHuhn.SoundSample.prototype.play = function() {
+    this.howl.play();
 };
 
 // MISC UTILITIES
