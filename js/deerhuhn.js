@@ -431,12 +431,26 @@ DeerHuhn.prototype = {
                 return;
             }
 
+            var points = animal.getScore(this.gameTime);
+
             //TODO development code
-            console.log(animal.name + ' killed, ' + animal.getScore(this.gameTime) + ' points');
+            console.log(animal.name + ' killed, ' + points + ' points');
             
-            this.points += animal.getScore(this.gameTime);
+            this.points += points;
             this.updatePoints();
             this.shoot();
+
+            // show the moving score flying to the pointsText
+            var animalGlobalPosition = new PIXI.Point(animal.sprite.worldTransform[2], animal.sprite.worldTransform[5]);
+            var pointsTextGlobalPosition = new PIXI.Point(this.pointsText.worldTransform[2], this.pointsText.worldTransform[5]);
+            var movingPoints = new DeerHuhn.MovingPoints(points, 800.0/1000, animalGlobalPosition, pointsTextGlobalPosition, function () {
+                this.removeSprite(movingPoints.sprite);
+                this.movingObjects.remove(movingPoints);
+                this.stage.removeChild(movingPoints.sprite);
+            }.bind(this));
+            this.addSprite(movingPoints.sprite);
+            this.movingObjects.push(movingPoints);
+            this.stage.addChild(movingPoints.sprite);
 
             animal.movementFinishedCallback(animal);
         }; 
@@ -497,7 +511,7 @@ DeerHuhn.prototype = {
     updateMovingObjects: function(timeDelta) {
         for (var i = 0; i < this.movingObjects.length; i++) {
             var movingObject = this.movingObjects[i];
-            movingObject.updatePosition(timeDelta);
+            movingObject.updatePosition(timeDelta, this.renderingScale);
         }
     },
 
@@ -1439,6 +1453,105 @@ DeerHuhn.Animals.AnimalFactory.prototype.createRandomAnimal = function (onShotCa
 DeerHuhn.Animals.AnimalFactory.factories = [];
 
 // animals are defined in js\deerhuhn.animals.js
+
+// CLASS DeerHuhn.MovingPoints
+
+/**
+ * A score text moving towards the score counter.
+ *
+ * @constructor
+ * @param {int} points The number of points to represent.
+ * @param {number} speed Speed of the object in px/ms.
+ * @param {PIXI.Point} startingPoint The starting point.
+ * @param {PIXI.Point} finalPoint The final point.
+ * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
+ */
+DeerHuhn.MovingPoints = function (points, speed, startingPoint, finalPoint, movementFinishedCallback) {
+    var color = (points >= 0 ? '#8E8D5B' : '#FF0000');
+    this.sprite = new PIXI.Text(points+'', {font: 'bold 120px HelveticaBlack', fill: color});
+
+    /**
+     * The number of points to represent.
+     *
+     * @property
+     * @protected
+     * @readonly
+     * @type {int}
+     */
+    this.points = points;
+
+    /**
+     * Speed of the object in px/ms.
+     *
+     * @property
+     * @protected
+     * @readonly
+     * @type {number}
+     */
+    this.speed = speed;
+
+    /**
+     * The starting point.
+     *
+     * @property
+     * @protected
+     * @readonly
+     * @type {PIXI.Point}
+     */
+    this.startingPoint = startingPoint;
+
+    /**
+     * The final point.
+     *
+     * @property
+     * @protected
+     * @readonly
+     * @type {PIXI.Point}
+     */
+    this.finalPoint = finalPoint;
+
+    this.length = Math.sqrt( Math.pow(startingPoint.x - finalPoint.x, 2) + Math.pow(startingPoint.y - finalPoint.y, 2) );
+
+    /**
+     * The callback to call when the object arrives at its target.
+     *
+     * @property
+     * @protected
+     * @readonly
+     * @type {movementFinishedCallback}
+     */
+    this.movementFinishedCallback = movementFinishedCallback;
+
+    /**
+     * Percent (0.0 - 1.0) of the path already completed.
+     *
+     * @property
+     * @protected
+     * @type {float}
+     */
+    this.movementPercentComplete = 0.0;
+
+    this.sprite.position = this.startingPoint.clone();
+};
+
+/**
+ * Update the sprite position.
+ *
+ * @param {int} timeDelta The number of miliseconds from the last position update.
+ * @param {float} globalScale The global scale of the game.
+ */
+DeerHuhn.MovingPoints.prototype.updatePosition = function(timeDelta, globalScale) {
+    // we alter the speed by the rendering scale to be the same for all screen sizes
+    this.movementPercentComplete += timeDelta * this.speed * globalScale / this.length;
+    if (this.movementPercentComplete >= 1) {
+        this.movementPercentComplete = 1;
+        if (this.movementFinishedCallback !== undefined)
+            this.movementFinishedCallback(this);
+    }
+
+    this.sprite.position.x = this.startingPoint.x + this.movementPercentComplete * (this.finalPoint.x - this.startingPoint.x);
+    this.sprite.position.y = this.startingPoint.y + this.movementPercentComplete * (this.finalPoint.y - this.startingPoint.y);
+};
 
 // MISC UTILITIES
 
