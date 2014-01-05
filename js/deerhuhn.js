@@ -440,6 +440,22 @@ DeerHuhn.prototype = {
             this.updatePoints();
             this.shoot();
 
+            // show the smoke cloud
+            var smokeSprite = new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.vystrel);
+            var smoke = new DeerHuhn.AnimatedObject(smokeSprite, function () {}, 2);
+            var layer = this.backgroundLayers[animal.scenePosition.layer];
+            layer.addChild(smoke.sprite);
+            this.addSprite(smoke.sprite);
+            smoke.sprite.position = animal.sprite.position.clone();
+
+            var smokeTimer = new DeerHuhn.PausableTimeout(function () {
+                layer.removeChild(smoke.sprite);
+                this.removeSprite(smoke.sprite);
+                this.pausableObjects.remove(smokeTimer);
+            }.bind(this), 1000);
+            this.pausableObjects.push(smokeTimer);
+            smokeTimer.start();
+
             // show the moving score flying to the pointsText
             var animalGlobalPosition = new PIXI.Point(animal.sprite.worldTransform[2], animal.sprite.worldTransform[5]);
             var pointsTextGlobalPosition = new PIXI.Point(this.pointsText.worldTransform[2], this.pointsText.worldTransform[5]);
