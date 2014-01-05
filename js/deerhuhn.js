@@ -313,23 +313,27 @@ DeerHuhn.prototype = {
 
         // date
         
-        this.dateText = new PIXI.Text(' 1. 3.', {font: '150px HelveticaLight', fill: '#8E8D5B'});
+        this.dateText = new PIXI.Text(' 1. 3.', {font: '120px HelveticaLight', fill: '#8E8D5B'});
         this.dateText.dontScale = true;
         // set the position
         this.updateDate();
 
         this.addSprite(this.dateText);
         pointsDate.addChild(this.dateText);
+        //addSprite sets the scale to current renderingScale, but we don't want that
+        this.dateText.scale.x = this.dateText.scale.y = 1;
 
         // points
         
-        this.pointsText = new PIXI.Text('0', {font: '170px HelveticaBlack'});
+        this.pointsText = new PIXI.Text('0', {font: 'bold 120px HelveticaBlack'});
         this.pointsText.dontScale = true;
         // set the position
         this.updatePoints();
 
         this.addSprite(this.pointsText);
         pointsDate.addChild(this.pointsText);
+        //addSprite sets the scale to current renderingScale, but we don't want that
+        this.pointsText.scale.x = this.pointsText.scale.y = 1;
 
         // ammo
 
@@ -370,8 +374,8 @@ DeerHuhn.prototype = {
         this.dateText.setText(day + month);
         this.dateText.updateText();
 
-        this.dateText.position.x = 280 - this.dateText.width;
-        this.dateText.position.y = 240 - this.dateText.height;
+        this.dateText.position.x = 300 - this.dateText.width;
+        this.dateText.position.y = 250 - this.dateText.height;
     },
 
     updatePoints: function () {
@@ -386,7 +390,7 @@ DeerHuhn.prototype = {
         this.pointsText.updateText();
 
         this.pointsText.position.x = 560 - this.pointsText.width/2;
-        this.pointsText.position.y = 250 - this.pointsText.height;
+        this.pointsText.position.y = 260 - this.pointsText.height;
     },
 
     updateAmmo: function() {
