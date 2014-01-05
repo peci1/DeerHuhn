@@ -381,6 +381,9 @@ DeerHuhn.prototype = {
         this.noAmmoSprite = noAmmo;
 
         this.updateAmmo();
+
+
+        //TODO add music and sound muting
     },
 
     updateDate: function () {
@@ -496,17 +499,13 @@ DeerHuhn.prototype = {
             this.pausableObjects.push(smokeTimer);
             smokeTimer.start();
 
-            // show the moving score flying to the pointsText
-            var animalGlobalPosition = new PIXI.Point(animal.sprite.worldTransform[2], animal.sprite.worldTransform[5]);
-            var pointsTextGlobalPosition = new PIXI.Point(this.pointsText.worldTransform[2], this.pointsText.worldTransform[5]);
-            var movingPoints = new DeerHuhn.MovingPoints(points, 800.0/1000, animalGlobalPosition, pointsTextGlobalPosition, function () {
-                this.removeSprite(movingPoints.sprite);
-                this.movingObjects.remove(movingPoints);
-                this.stage.removeChild(movingPoints.sprite);
-            }.bind(this));
-            this.addSprite(movingPoints.sprite);
-            this.movingObjects.push(movingPoints);
-            this.stage.addChild(movingPoints.sprite);
+            // show the fading score
+            var fadingPoints = new DeerHuhn.FadingPoints(points, 1000, animal.scenePosition, function () {
+                this.removeSprite(fadingPoints.sprite);
+                layer.removeChild(fadingPoints.sprite);
+            }.bind(this), this);
+            this.addSprite(fadingPoints.sprite);
+            layer.addChild(fadingPoints.sprite);
 
             this.sounds.shot.play();
 
@@ -1512,20 +1511,29 @@ DeerHuhn.Animals.AnimalFactory.factories = [];
 
 // animals are defined in js\deerhuhn.animals.js
 
-// CLASS DeerHuhn.MovingPoints
+// CLASS DeerHuhn.FadingPoints
 
 /**
- * A score text moving towards the score counter.
+ * A score text blending until transparent.
  *
  * @constructor
  * @param {int} points The number of points to represent.
- * @param {number} speed Speed of the object in px/ms.
- * @param {PIXI.Point} startingPoint The starting point.
- * @param {PIXI.Point} finalPoint The final point.
- * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
+ * @param {number} duration The duration until fully transparent (in ms).
+ * @param {DeerHuhn.ScenePosition} position The position to display at (in layer frame).
+ * @param {movementFinishedCallback} fadingFinishedCallback The callback to call when the object fades out.
+ * @param {DeerHuhn} deerHuhn The game object (to allow registering the timers). //XXX needs refactoring
  */
-DeerHuhn.MovingPoints = function (points, speed, startingPoint, finalPoint, movementFinishedCallback) {
+DeerHuhn.FadingPoints = function (points, duration, position, fadingFinishedCallback, deerHuhn) {
     var color = (points >= 0 ? '#8E8D5B' : '#FF0000');
+
+    /**
+     * The sprite displaying the text with the points.
+     *
+     * @property
+     * @protected
+     * @readonly
+     * @type {PIXI.Sprite}
+     */
     this.sprite = new PIXI.Text(points+'', {font: 'bold 120px HelveticaBlack', fill: color});
 
     /**
@@ -1539,76 +1547,49 @@ DeerHuhn.MovingPoints = function (points, speed, startingPoint, finalPoint, move
     this.points = points;
 
     /**
-     * Speed of the object in px/ms.
+     * The duration until fully transparent (in ms).
      *
      * @property
      * @protected
      * @readonly
      * @type {number}
      */
-    this.speed = speed;
+    this.duration = duration;
 
     /**
-     * The starting point.
+     * The position to display at (in layer frame).
      *
      * @property
      * @protected
      * @readonly
-     * @type {PIXI.Point}
+     * @type {DeerHuhn.ScenePosition}
      */
-    this.startingPoint = startingPoint;
+    this.position = position;
 
     /**
-     * The final point.
-     *
-     * @property
-     * @protected
-     * @readonly
-     * @type {PIXI.Point}
-     */
-    this.finalPoint = finalPoint;
-
-    this.length = Math.sqrt( Math.pow(startingPoint.x - finalPoint.x, 2) + Math.pow(startingPoint.y - finalPoint.y, 2) );
-
-    /**
-     * The callback to call when the object arrives at its target.
+     * The callback to call when the object fades out.
      *
      * @property
      * @protected
      * @readonly
      * @type {movementFinishedCallback}
      */
-    this.movementFinishedCallback = movementFinishedCallback;
+    this.fadingFinishedCallback = fadingFinishedCallback;
 
-    /**
-     * Percent (0.0 - 1.0) of the path already completed.
-     *
-     * @property
-     * @protected
-     * @type {float}
-     */
-    this.movementPercentComplete = 0.0;
+    this.numFadingSteps = 10.0;
 
-    this.sprite.position = this.startingPoint.clone();
-};
+    this.sprite.position = this.position;
 
-/**
- * Update the sprite position.
- *
- * @param {int} timeDelta The number of miliseconds from the last position update.
- * @param {float} globalScale The global scale of the game.
- */
-DeerHuhn.MovingPoints.prototype.updatePosition = function(timeDelta, globalScale) {
-    // we alter the speed by the rendering scale to be the same for all screen sizes
-    this.movementPercentComplete += timeDelta * this.speed * globalScale / this.length;
-    if (this.movementPercentComplete >= 1) {
-        this.movementPercentComplete = 1;
-        if (this.movementFinishedCallback !== undefined)
-            this.movementFinishedCallback(this);
-    }
-
-    this.sprite.position.x = this.startingPoint.x + this.movementPercentComplete * (this.finalPoint.x - this.startingPoint.x);
-    this.sprite.position.y = this.startingPoint.y + this.movementPercentComplete * (this.finalPoint.y - this.startingPoint.y);
+    var fadingTimer = new DeerHuhn.PausableInterval(function () {
+        this.sprite.alpha -= 1/this.numFadingSteps;
+        if (this.sprite.alpha <= 0) {
+            fadingTimer.stop();
+            deerHuhn.pausableObjects.remove(fadingTimer);
+            this.fadingFinishedCallback(this);
+        }
+    }.bind(this), this.duration/this.numFadingSteps);
+    fadingTimer.start();
+    deerHuhn.pausableObjects.push(fadingTimer);
 };
 
 // CLASS DeerHuhn.SoundSample
