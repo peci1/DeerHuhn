@@ -5,6 +5,7 @@ var DeerHuhn = function (canvasContainerId) {
     this.rendererWidth = this.GAME_CONTAINER.offsetWidth - 8;
     this.rendererHeight = Math.min(this.GAME_CONTAINER.offsetHeight - 8, this.MAX_HEIGHT);
     this.renderingScale = this.rendererHeight/this.MAX_HEIGHT;
+    this.MAX_AMMO = 5;
 
     // scrolling
     // whether the background is scrolling; 0: no scrolling; -1: scrolling left; 1: scrolling right
@@ -45,6 +46,11 @@ var DeerHuhn = function (canvasContainerId) {
 
     this.points = 0;
 
+    // the number of ammunition available
+    this.ammo = this.MAX_AMMO;
+    // true if the ammo is reloading (cannot shoot)
+    this.reloadingAmmo = false;
+
     // pausing
     this.isPaused = false;
     this.pauseStartTime = null;
@@ -57,6 +63,8 @@ var DeerHuhn = function (canvasContainerId) {
     // HUD
     this.dateText = null;
     this.pointsText = null;
+    this.bulletSprites = [];
+    this.noAmmoSprite = null;
 
     // variables filled after the assets are loaded
     this.backgroundLayers = [];
@@ -97,7 +105,28 @@ var DeerHuhn = function (canvasContainerId) {
     if (hidden !== null && document[hidden])
         this.blur();
 
-    this.renderer.view.addEventListener('mousemove', this.mousemove.bind(this), true);
+    addEvent(this.renderer.view, 'mousemove', this.mousemove.bind(this), true);
+
+    // disable right-click menu
+    addEvent(this.renderer.view, 'contextmenu', function (evt) {
+        evt.preventDefault();
+        return false;
+    });
+
+    // right-click for reloading
+    this.stage.click = function (mouse) {
+        var evt = mouse.originalEvent;
+        if ("which" in evt)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+            isRight = evt.which == 3; 
+        else if ("button" in evt)  // IE, Opera 
+            isRight = evt.button == 2;
+
+        if (!isRight)
+            return true;
+
+        this.reloadAmmo();
+        return false; // stop event bubbling
+    }.bind(this);
 
     // other init
     PIXI.Keys.init();
@@ -182,6 +211,18 @@ DeerHuhn.prototype = {
 
     onLoad: function() {
         var layerClick = function (mouse) {
+            var evt = mouse.originalEvent;
+            if ("which" in evt)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+                isLeft = evt.which == 1; 
+            else if ("button" in evt)  // IE, Opera 
+                isLeft = evt.button == 1;
+
+            if (!isLeft)
+                return true;
+
+            if (this.canShoot())
+                this.shoot();
+
             console.log('Clicked layer ' + mouse.target.name);
             return false; // stop event bubbling
         };
@@ -201,7 +242,7 @@ DeerHuhn.prototype = {
 
             // TODO development code
             var layer = this;
-            this.backgroundLayers[i].click = layerClick;
+            this.backgroundLayers[i].click = layerClick.bind(this);
 
             this.addSprite(this.backgroundLayers[i]);
             this.stage.addChild(this.backgroundLayers[i]);
@@ -270,6 +311,8 @@ DeerHuhn.prototype = {
         this.addSprite(pointsDate);
         this.stage.addChild(pointsDate);
 
+        // date
+        
         this.dateText = new PIXI.Text(' 1. 3.', {font: '150px HelveticaLight', fill: '#8E8D5B'});
         this.dateText.dontScale = true;
         // set the position
@@ -278,6 +321,8 @@ DeerHuhn.prototype = {
         this.addSprite(this.dateText);
         pointsDate.addChild(this.dateText);
 
+        // points
+        
         this.pointsText = new PIXI.Text('0', {font: '170px HelveticaBlack'});
         this.pointsText.dontScale = true;
         // set the position
@@ -285,6 +330,32 @@ DeerHuhn.prototype = {
 
         this.addSprite(this.pointsText);
         pointsDate.addChild(this.pointsText);
+
+        // ammo
+
+        var ammoResize = function (bullet, i) {
+            bullet.position.x = 0.99*this.rendererWidth - 1.1*pointsDate.width - (i+1)*(1.1*bullet.width);
+            bullet.position.y = 0.99*this.rendererHeight - bullet.height;
+        }.bind(this);
+
+        for (var i=0; i < this.MAX_AMMO; i++) {
+            var bullet = new PIXI.Sprite(PIXI.TextureCache['naboj.png']);
+            bullet.initialScale = 0.5;
+            bullet.onresize = ammoResize.bind(null, bullet, i);
+
+            this.addSprite(bullet);
+            this.stage.addChild(bullet);
+            this.bulletSprites[i] = bullet;
+        }
+
+        var noAmmo = new PIXI.Sprite(PIXI.TextureCache['naboje-zadne.png']);
+        noAmmo.onresize = ammoResize.bind(null, noAmmo, 0);
+
+        this.addSprite(noAmmo);
+        this.stage.addChild(noAmmo);
+        this.noAmmoSprite = noAmmo;
+
+        this.updateAmmo();
     },
 
     updateDate: function () {
@@ -318,6 +389,12 @@ DeerHuhn.prototype = {
         this.pointsText.position.y = 250 - this.pointsText.height;
     },
 
+    updateAmmo: function() {
+        this.noAmmoSprite.visible = this.ammo === 0;
+        for (var i=0; i<this.bulletSprites.length; i++)
+            this.bulletSprites[i].visible = this.ammo >= (i+1);
+    },
+
     initAnimals: function() {
         for (var i = 0; i < 10; i++) {
             this.addRandomAnimal();
@@ -332,11 +409,17 @@ DeerHuhn.prototype = {
             if (!(animal instanceof DeerHuhn.ShootableObject))
                 throw new Error('Wrong type of animal in callback');
 
+            if (!this.canShoot()) {
+                console.log('no ammo -> cannot shoot');
+                return;
+            }
+
             //TODO development code
             console.log(animal.name + ' killed, ' + animal.getScore(this.gameTime) + ' points');
             
             this.points += animal.getScore(this.gameTime);
             this.updatePoints();
+            this.shoot();
 
             animal.movementFinishedCallback(animal);
         }; 
@@ -395,6 +478,37 @@ DeerHuhn.prototype = {
             var animal = this.animals[i];
             animal.updatePosition(timeDelta);
         }
+    },
+
+    canShoot: function() {
+        return this.ammo > 0 && this.reloadingAmmo === false;
+    },
+
+    shoot: function() {
+        if (this.reloadingAmmo === true)
+            return;
+
+        this.ammo -= 1;
+        this.updateAmmo();
+        //TODO play sound
+    },
+
+    reloadAmmo: function() {
+        if (this.reloadingAmmo === true)
+            return;
+
+        //TODO playSound
+        
+        // implement 1000ms delay between reload request and actual reload
+        var reloadTimer = new DeerHuhn.PausableTimeout(function() {
+            this.ammo = this.MAX_AMMO;
+            this.updateAmmo();
+            this.pausableObjects.remove(reloadTimer);
+            this.reloadingAmmo = false;
+        }.bind(this), 1000);
+        this.pausableObjects.push(reloadTimer);
+        reloadTimer.start();
+        this.reloadingAmmo = true;
     },
 
     initializeImages: function() {
@@ -970,7 +1084,16 @@ DeerHuhn.ShootableObject = function (sprite, onShotCallback) {
     this.sprite.setInteractive(true);
 
     // click means shot
-    var onClick = function () {
+    var onClick = function (mouse) {
+        var evt = mouse.originalEvent;
+        if ("which" in evt)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+            isLeft = evt.which == 1; 
+        else if ("button" in evt)  // IE, Opera 
+            isLeft = evt.button == 1;
+
+        if (!isLeft)
+            return true;
+
         this.onShotCallback(this);
         return false; // stop event bubbling
     };

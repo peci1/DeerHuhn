@@ -1,7 +1,8 @@
-function addEvent(obj, type, fn) {
+function addEvent(obj, type, fn, capture) {
 
+    if (capture === undefined) capture = false;
     if (obj.addEventListener) {
-        obj.addEventListener(type, fn, false);
+        obj.addEventListener(type, fn, capture);
         EventCache.add(obj, type, fn);
     } else if (obj.attachEvent) {
         obj["e" + type + fn] = fn;
