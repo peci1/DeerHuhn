@@ -6,6 +6,21 @@ var DeerHuhn = function (canvasContainerId) {
     this.rendererHeight = Math.min(this.GAME_CONTAINER.offsetHeight - 8, this.MAX_HEIGHT);
     this.renderingScale = this.rendererHeight/this.MAX_HEIGHT;
     this.MAX_AMMO = 5;
+    this.animalKindFrequency = {
+        Liska: 10,
+        AutoCervene: 20,
+        AutoModre: 30,
+        KachnaPlove: 50,
+        Kachna: 20,
+        LKT: 100,
+        LKTWithKlady: 100,
+        Odvozka: 150,
+        Ovce: 30,
+        Prase: 30,
+        Vlacek: 100,
+        Sele: 20,
+        Srna: 40
+    };
 
     // scrolling
     // whether the background is scrolling; 0: no scrolling; -1: scrolling left; 1: scrolling right
@@ -455,13 +470,7 @@ DeerHuhn.prototype = {
     },
 
     initAnimals: function() {
-        for (var i = 0; i < 10; i++) {
-            this.addRandomAnimal();
-        }
-    },
-
-    addRandomAnimal: function() {
-        var onShotCallback = function(animal) {
+        this.animalOnShotCallback = function(animal) {
             if (!(this instanceof DeerHuhn))
                 throw new Error('Wrong type of this in callback');
 
@@ -510,7 +519,7 @@ DeerHuhn.prototype = {
             animal.movementFinishedCallback(animal);
         }; 
 
-        var movementFinishedCallback = function(animal) {
+        this.animalMovementFinishedCallback = function(animal) {
             if (!(this instanceof DeerHuhn))
                 throw new Error('Bad type of this in callback.');
 
@@ -520,9 +529,24 @@ DeerHuhn.prototype = {
             this.removeAnimal(animal);
         };
 
-        var animal = this.animalFactory.createRandomAnimal(
-            onShotCallback.bind(this), movementFinishedCallback.bind(this));
-        this.addAnimal(animal);
+        // spawn every day
+        var spawnTimer = new DeerHuhn.PausableInterval(this.spawnRandomAnimals.bind(this), 600);
+        this.pausableObjects.push(spawnTimer);
+        spawnTimer.start();
+    },
+
+    spawnRandomAnimals: function () {
+        for (var kind in this.animalKindFrequency) {
+            var probability = 1.0 / this.animalKindFrequency[kind];
+            if (Math.random() < probability) {
+                var factory = DeerHuhn.Animals.AnimalFactory.factories[kind];
+                var animal = factory.call(this.animalFactory,
+                    this.animalOnShotCallback.bind(this), 
+                    this.animalMovementFinishedCallback.bind(this)
+                );
+                this.addAnimal(animal);
+            }
+        }
     },
 
     addAnimal: function(animal) {
@@ -1494,10 +1518,10 @@ DeerHuhn.Animals.AnimalFactory.prototype.getRandomPath = function(paths) {
  * @return {DeerHuhn.Animal} A random animal on a random path.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createRandomAnimal = function (onShotCallback, movementFinishedCallback) {
-    var numFactories = DeerHuhn.Animals.AnimalFactory.factories.length;
-    var randFactoryIdx = randInt(0, numFactories-1);
+    var keys = Object.keys(DeerHuhn.Animals.AnimalFactory.factories);
+    var randFactoryIdx = randInt(0, keys.length-1);
 
-    var randFactory = DeerHuhn.Animals.AnimalFactory.factories[randFactoryIdx];
+    var randFactory = DeerHuhn.Animals.AnimalFactory.factories[keys[randFactoryIdx]];
     return randFactory.call(this, onShotCallback, movementFinishedCallback);
 };
 
