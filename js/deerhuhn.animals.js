@@ -110,7 +110,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createLiska = function (onShotCallback,
     var path = this.getRandomPath(this.forrestPaths, this.barnPaths, this.housePaths);
     return new DeerHuhn.Animals.Liska(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["Liska"] = DeerHuhn.Animals.AnimalFactory.prototype.createLiska;
+DeerHuhn.Animals.AnimalFactory.factories.Liska = DeerHuhn.Animals.AnimalFactory.prototype.createLiska;
 
 /**
  * A red car.
@@ -152,7 +152,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createAutoCervene = function (onShotCal
     var path = this.getRandomPath(this.roadPaths);
     return new DeerHuhn.Animals.AutoCervene(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["AutoCervene"] = DeerHuhn.Animals.AnimalFactory.prototype.createAutoCervene;
+DeerHuhn.Animals.AnimalFactory.factories.AutoCervene = DeerHuhn.Animals.AnimalFactory.prototype.createAutoCervene;
 
 /**
  * A blue car.
@@ -194,7 +194,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createAutoModre = function (onShotCallb
     var path = this.getRandomPath(this.roadPaths);
     return new DeerHuhn.Animals.AutoModre(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["AutoModre"] = DeerHuhn.Animals.AnimalFactory.prototype.createAutoModre;
+DeerHuhn.Animals.AnimalFactory.factories.AutoModre = DeerHuhn.Animals.AnimalFactory.prototype.createAutoModre;
 
 /**
  * A floating duck.
@@ -239,7 +239,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createKachnaPlove = function (onShotCal
     var path = this.getRandomPath(this.waterPaths);
     return new DeerHuhn.Animals.KachnaPlove(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["KachnaPlove"] = DeerHuhn.Animals.AnimalFactory.prototype.createKachnaPlove;
+DeerHuhn.Animals.AnimalFactory.factories.KachnaPlove = DeerHuhn.Animals.AnimalFactory.prototype.createKachnaPlove;
 
 /**
  * A flying duck.
@@ -291,7 +291,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createKachna = function (onShotCallback
 
     return new DeerHuhn.Animals.Kachna(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["Kachna"] = DeerHuhn.Animals.AnimalFactory.prototype.createKachna;
+DeerHuhn.Animals.AnimalFactory.factories.Kachna = DeerHuhn.Animals.AnimalFactory.prototype.createKachna;
 
 /**
  * A block of logs.
@@ -345,7 +345,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createKlady = function (parentLKT, onSh
     return klady;
 };
 // we don't want a block of logs to be constructed automatically
-//DeerHuhn.Animals.AnimalFactory.factories["Klady"] = DeerHuhn.Animals.AnimalFactory.prototype.createKlady;
+//DeerHuhn.Animals.AnimalFactory.factories.Klady = DeerHuhn.Animals.AnimalFactory.prototype.createKlady;
 
 /**
  * A tractor.
@@ -387,7 +387,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createLKT = function (onShotCallback, m
     var path = this.getRandomPath(this.forrestPaths);
     return new DeerHuhn.Animals.LKT(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["LKT"] = DeerHuhn.Animals.AnimalFactory.prototype.createLKT;
+DeerHuhn.Animals.AnimalFactory.factories.LKT = DeerHuhn.Animals.AnimalFactory.prototype.createLKT;
 
 /**
  * Create a tractor handling a block of woods on a random path.
@@ -409,7 +409,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (onShotCa
 
     return lkt;
 };
-DeerHuhn.Animals.AnimalFactory.factories["LKTWithKlady"] = DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady;
+DeerHuhn.Animals.AnimalFactory.factories.LKTWithKlady = DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady;
 
 /**
  * A collector.
@@ -451,7 +451,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka = function (onShotCallbac
     var path = this.getRandomPath(this.roadPaths);
     return new DeerHuhn.Animals.Odvozka(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["Odvozka"] = DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka;
+DeerHuhn.Animals.AnimalFactory.factories.Odvozka = DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka;
 
 /**
  * A sheep.
@@ -493,7 +493,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createOvce = function (onShotCallback, 
     var path = this.getRandomPath(this.forrestPaths, this.fieldPaths, this.barnPaths, this.housePaths);
     return new DeerHuhn.Animals.Ovce(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["Ovce"] = DeerHuhn.Animals.AnimalFactory.prototype.createOvce;
+DeerHuhn.Animals.AnimalFactory.factories.Ovce = DeerHuhn.Animals.AnimalFactory.prototype.createOvce;
 
 /**
  * A wild boar.
@@ -541,7 +541,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createPrase = function (onShotCallback,
     var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
     return new DeerHuhn.Animals.Prase(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["Prase"] = DeerHuhn.Animals.AnimalFactory.prototype.createPrase;
+DeerHuhn.Animals.AnimalFactory.factories.Prase = DeerHuhn.Animals.AnimalFactory.prototype.createPrase;
 
 /**
  * Create a wild boar family on a random path.
@@ -566,7 +566,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createVlacek = function (onShotCallback
 
     return prase;
 };
-DeerHuhn.Animals.AnimalFactory.factories["Vlacek"] = DeerHuhn.Animals.AnimalFactory.prototype.createVlacek;
+DeerHuhn.Animals.AnimalFactory.factories.Vlacek = DeerHuhn.Animals.AnimalFactory.prototype.createVlacek;
 
 /**
  * A wild boar child.
@@ -608,7 +608,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createSele = function (onShotCallback, 
     var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
     return new DeerHuhn.Animals.Sele(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["Sele"] = DeerHuhn.Animals.AnimalFactory.prototype.createSele;
+DeerHuhn.Animals.AnimalFactory.factories.Sele = DeerHuhn.Animals.AnimalFactory.prototype.createSele;
 
 /**
  * Create a wild boar child on a random path.
@@ -668,4 +668,4 @@ DeerHuhn.Animals.AnimalFactory.prototype.createSrna = function (onShotCallback, 
     var path = this.getRandomPath(this.forrestPaths, this.barnPaths, this.fieldPaths);
     return new DeerHuhn.Animals.Srna(path, onShotCallback, movementFinishedCallback);
 };
-DeerHuhn.Animals.AnimalFactory.factories["Srna"] = DeerHuhn.Animals.AnimalFactory.prototype.createSrna;
+DeerHuhn.Animals.AnimalFactory.factories.Srna = DeerHuhn.Animals.AnimalFactory.prototype.createSrna;
