@@ -70,6 +70,54 @@ DeerHuhn.Animals.AnimalFactory.prototype.forrestPaths = [
     new DeerHuhn.ScenePath(4, 3295, 286, 3647, 391),
 ];
 
+DeerHuhn.Animals.AnimalFactory.prototype.budkaPositions = [
+    new DeerHuhn.ScenePositionWithScale(0, 2190, 272, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 3280, 310, 1)
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.souskaPositions = [
+    new DeerHuhn.ScenePositionWithScale(3, 914, 554, 1),
+    new DeerHuhn.ScenePositionWithScale(3, 2309, 167, 1),
+    new DeerHuhn.ScenePositionWithScale(3, 1591, 727, 1)
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.vetevPositions = [
+    new DeerHuhn.ScenePositionWithScale(0, 3044, 225, 1)
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.chorosPositions = [
+    new DeerHuhn.ScenePositionWithScale(0, 2185, 362, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 2175, 392, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 2200, 450, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 2185, 630, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 3240, 300, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 3210, 350, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 3260, 400, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 3280, 490, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 3240, 580, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 3210, 650, 1)
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.kvitkoPositions = [
+    new DeerHuhn.ScenePositionWithScale(0, 1750, 920, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 1880, 910, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 1994, 850, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 1955, 890, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 2340, 910, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 2434, 895, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 2500, 920, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 2800, 870, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 4000, 880, 1),
+    new DeerHuhn.ScenePositionWithScale(0, 3600, 900, 1)
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.vykukujiciSrnecPositions = [
+    new DeerHuhn.ScenePositionWithScale(3, 1444, 423, 1),
+    new DeerHuhn.ScenePositionWithScale(2, 1344, 490, new PIXI.Point(-1, 1)),
+    new DeerHuhn.ScenePositionWithScale(3, 280, 670, 1),
+    new DeerHuhn.ScenePositionWithScale(3, 2611, 550, new PIXI.Point(-1, 1))
+];
+
 /**
  * A fox.
  *
@@ -669,3 +717,243 @@ DeerHuhn.Animals.AnimalFactory.prototype.createSrna = function (onShotCallback, 
     return new DeerHuhn.Animals.Srna(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.Srna = DeerHuhn.Animals.AnimalFactory.prototype.createSrna;
+
+
+// STATIC OBJECTS
+
+/**
+ * A bird's house.
+ *
+ * @constructor
+ * @param {DeerHuhn.ScenePosition} scenePosition Position in the scene.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ */
+DeerHuhn.Animals.Budka = function (scenePosition, onShotCallback) {
+    DeerHuhn.StaticShootableObject.call(this,  
+            'Budka',
+            new PIXI.Sprite(PIXI.TextureCache['budka.png']),
+            scenePosition,
+            onShotCallback);
+};
+DeerHuhn.Animals.Budka.prototype = Object.create(DeerHuhn.StaticShootableObject.prototype);
+DeerHuhn.Animals.Budka.prototype.constructor = DeerHuhn.Animals.Budka;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Budka.prototype.getScore = function (gameTime) {
+    return -20;
+};
+
+/**
+ * Create a bird's house on a random position.
+ *
+ * @constructs {DeerHuhn.Animals.Budka}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ * @return {DeerHuhn.Animals.Budka} A bird's house.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.createBudka = function (onShotCallback) {
+    var position = this.getRandomObject(this.budkaPositions);
+    return new DeerHuhn.Animals.Budka(position, onShotCallback);
+};
+
+
+
+/**
+ * A dead tree.
+ *
+ * @constructor
+ * @param {DeerHuhn.ScenePosition} scenePosition Position in the scene.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ */
+DeerHuhn.Animals.Souska = function (scenePosition, onShotCallback) {
+    var textures = [PIXI.TextureCache['souska_rovna.png'], PIXI.TextureCache['souska_v_porostu.png'], PIXI.TextureCache['souska_vychylena.png']];
+    var randIdx = randInt(0, textures.length-1);
+    DeerHuhn.StaticShootableObject.call(this,  
+            'Souška',
+            new PIXI.Sprite(textures[randIdx]),
+            scenePosition,
+            onShotCallback);
+};
+DeerHuhn.Animals.Souska.prototype = Object.create(DeerHuhn.StaticShootableObject.prototype);
+DeerHuhn.Animals.Souska.prototype.constructor = DeerHuhn.Animals.Souska;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Souska.prototype.getScore = function (gameTime) {
+    return 20;
+};
+
+/**
+ * Create a dead tree on a random position.
+ *
+ * @constructs {DeerHuhn.Animals.Souska}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ * @return {DeerHuhn.Animals.Budka} A dead tree.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.createSouska = function (onShotCallback) {
+    var position = this.getRandomObject(this.souskaPositions);
+    return new DeerHuhn.Animals.Souska(position, onShotCallback);
+};
+
+
+
+/**
+ * A dead tree branch.
+ *
+ * @constructor
+ * @param {DeerHuhn.ScenePosition} scenePosition Position in the scene.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ */
+DeerHuhn.Animals.Vetev = function (scenePosition, onShotCallback) {
+    DeerHuhn.StaticShootableObject.call(this,  
+            'Větev',
+            new PIXI.Sprite(PIXI.TextureCache['vetev.png']),
+            scenePosition,
+            onShotCallback);
+};
+DeerHuhn.Animals.Vetev.prototype = Object.create(DeerHuhn.StaticShootableObject.prototype);
+DeerHuhn.Animals.Vetev.prototype.constructor = DeerHuhn.Animals.Vetev;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Vetev.prototype.getScore = function (gameTime) {
+    return 10;
+};
+
+/**
+ * Create a dead tree branch on a random position.
+ *
+ * @constructs {DeerHuhn.Animals.Vetev}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ * @return {DeerHuhn.Animals.Vetev} A dead tree branch
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.createVetev = function (onShotCallback) {
+    var position = this.getRandomObject(this.vetevPositions);
+    return new DeerHuhn.Animals.Vetev(position, onShotCallback);
+};
+
+
+
+/**
+ * A tree mushroom.
+ *
+ * @constructor
+ * @param {DeerHuhn.ScenePosition} scenePosition Position in the scene.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ */
+DeerHuhn.Animals.Choros = function (scenePosition, onShotCallback) {
+    DeerHuhn.StaticShootableObject.call(this,  
+            'Choroš',
+            new PIXI.Sprite(PIXI.TextureCache['choros.png']),
+            scenePosition,
+            onShotCallback);
+};
+DeerHuhn.Animals.Choros.prototype = Object.create(DeerHuhn.StaticShootableObject.prototype);
+DeerHuhn.Animals.Choros.prototype.constructor = DeerHuhn.Animals.Choros;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Choros.prototype.getScore = function (gameTime) {
+    return 15;
+};
+
+/**
+ * Create a tree mushroom on a random position.
+ *
+ * @constructs {DeerHuhn.Animals.Choros}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ * @return {DeerHuhn.Animals.Choros} A dead tree branch
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.createChoros = function (onShotCallback) {
+    var position = this.getRandomObject(this.chorosPositions);
+    return new DeerHuhn.Animals.Choros(position, onShotCallback);
+};
+
+
+
+/**
+ * A flower.
+ *
+ * @constructor
+ * @param {DeerHuhn.ScenePosition} scenePosition Position in the scene.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ */
+DeerHuhn.Animals.Kvitko = function (scenePosition, onShotCallback) {
+    var textures = [PIXI.TextureCache['kvitko_cervene.png'], PIXI.TextureCache['kvitko_oranzove.png']];
+    var randIdx = randInt(0, textures.length-1);
+    DeerHuhn.StaticShootableObject.call(this,  
+            'Kvítko',
+            new PIXI.Sprite(textures[randIdx]),
+            scenePosition,
+            onShotCallback);
+};
+DeerHuhn.Animals.Kvitko.prototype = Object.create(DeerHuhn.StaticShootableObject.prototype);
+DeerHuhn.Animals.Kvitko.prototype.constructor = DeerHuhn.Animals.Kvitko;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Kvitko.prototype.getScore = function (gameTime) {
+    return 5;
+};
+
+/**
+ * Create a flower on a random position.
+ *
+ * @constructs {DeerHuhn.Animals.Kvitko}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ * @return {DeerHuhn.Animals.Kvitko} A flower.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.createKvitko = function (onShotCallback) {
+    var position = this.getRandomObject(this.kvitkoPositions);
+    return new DeerHuhn.Animals.Kvitko(position, onShotCallback);
+};
+DeerHuhn.Animals.AnimalFactory.staticFactories.Kvitko = DeerHuhn.Animals.AnimalFactory.prototype.createKvitko;
+
+
+
+/**
+ * A static deer.
+ *
+ * @constructor
+ * @param {DeerHuhn.ScenePosition} scenePosition Position in the scene.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ */
+DeerHuhn.Animals.VykukujiciSrnec = function (scenePosition, onShotCallback) {
+    DeerHuhn.StaticShootableObject.call(this,  
+            'Srna',
+            new PIXI.Sprite(PIXI.TextureCache['srna_kouka.png']),
+            scenePosition,
+            onShotCallback);
+
+    this.hideAfter = 5000;
+};
+DeerHuhn.Animals.VykukujiciSrnec.prototype = Object.create(DeerHuhn.StaticShootableObject.prototype);
+DeerHuhn.Animals.VykukujiciSrnec.prototype.constructor = DeerHuhn.Animals.VykukujiciSrnec;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.VykukujiciSrnec.prototype.getScore = function (gameTime) {
+    if (gameTime.getMonth() >= 5 && gameTime.getDay() >= 16 && gameTime.getMonth() < 10) 
+        return 15;
+    else
+        return -15;
+};
+
+/**
+ * Create a static deer on a random position.
+ *
+ * @constructs {DeerHuhn.Animals.VykukujiciSrnec}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ * @return {DeerHuhn.Animals.VykukujiciSrnec} A static deer.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.createVykukujiciSrnec = function (onShotCallback) {
+    var position = this.getRandomObject(this.vykukujiciSrnecPositions);
+    return new DeerHuhn.Animals.VykukujiciSrnec(position, onShotCallback);
+};
+DeerHuhn.Animals.AnimalFactory.staticFactories.VykukujiciSrnec = DeerHuhn.Animals.AnimalFactory.prototype.createVykukujiciSrnec;

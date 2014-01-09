@@ -19,7 +19,9 @@ var DeerHuhn = function (canvasContainerId) {
         Prase: 30,
         Vlacek: 100,
         Sele: 20,
-        Srna: 40
+        Srna: 40,
+        Kvitko: 15,
+        VykukujiciSrnec: 10//60
     };
 
     // scrolling
@@ -311,8 +313,10 @@ DeerHuhn.prototype = {
 
     addSprite: function(sprite) {
         this.sprites.push(sprite);
-        sprite.scale.x = this.renderingScale;
-        sprite.scale.y = this.renderingScale;
+
+        var initialScale = (sprite.initialScale !== undefined ? sprite.initialScale : new PIXI.Point(1,1));
+        sprite.scale.x = initialScale.x * this.renderingScale;
+        sprite.scale.y = initialScale.y * this.renderingScale;
 
         if ('unPause' in sprite) {
             this.pausableObjects.push(sprite);
@@ -332,7 +336,7 @@ DeerHuhn.prototype = {
         };
 
         var pointsDate = new PIXI.Sprite(PIXI.TextureCache['datum_body.png']);
-        pointsDate.initialScale = 0.5;
+        pointsDate.initialScale = new PIXI.Point(0.5,0.5);
         pointsDate.interactive = true;
         pointsDate.click = ignoreClicksCallback;
         pointsDate.onresize = function () {
@@ -376,7 +380,7 @@ DeerHuhn.prototype = {
 
         for (var i=0; i < this.MAX_AMMO; i++) {
             var bullet = new PIXI.Sprite(PIXI.TextureCache['naboj.png']);
-            bullet.initialScale = 0.5;
+            bullet.initialScale = new PIXI.Point(0.5,0.5);
             bullet.interactive = true;
             bullet.click = ignoreClicksCallback;
             bullet.onresize = ammoResize.bind(null, bullet, i);
@@ -516,18 +520,37 @@ DeerHuhn.prototype = {
             this.addSprite(fadingPoints.sprite);
             layer.addChild(fadingPoints.sprite);
 
-            animal.movementFinishedCallback(animal);
-        }; 
+            if (animal.movementFinishedCallback !== undefined)
+                animal.movementFinishedCallback(animal);
+        }.bind(this); 
 
         this.animalMovementFinishedCallback = function(animal) {
             if (!(this instanceof DeerHuhn))
                 throw new Error('Bad type of this in callback.');
 
-            if (!(animal instanceof DeerHuhn.MovingAnimatedObject))
+            if (!(animal instanceof DeerHuhn.ShootableObject))
                 throw new Error('Bad type of animal in callback.');
 
             this.removeAnimal(animal);
-        };
+        }.bind(this);
+
+        this.staticObjectOnShotCallback = function(animal) {
+            this.animalOnShotCallback.call(this, animal);
+            this.animalMovementFinishedCallback.call(this, animal);
+        }.bind(this);
+
+        // add one-time static shootable objects
+        this.addAnimal(this.animalFactory.createBudka(this.staticObjectOnShotCallback));
+
+        for (var i=0; i < 3; i++) {
+            this.addAnimal(this.animalFactory.createSouska(this.staticObjectOnShotCallback));
+        }
+
+        this.addAnimal(this.animalFactory.createVetev(this.staticObjectOnShotCallback));
+
+        for (var i=0; i < 4; i++) {
+            this.addAnimal(this.animalFactory.createChoros(this.staticObjectOnShotCallback));
+        }
 
         // spawn every day
         var spawnTimer = new DeerHuhn.PausableInterval(this.spawnRandomAnimals.bind(this), 600);
@@ -539,11 +562,19 @@ DeerHuhn.prototype = {
         for (var kind in this.animalKindFrequency) {
             var probability = 1.0 / this.animalKindFrequency[kind];
             if (Math.random() < probability) {
-                var factory = DeerHuhn.Animals.AnimalFactory.factories[kind];
-                var animal = factory.call(this.animalFactory,
-                    this.animalOnShotCallback.bind(this), 
-                    this.animalMovementFinishedCallback.bind(this)
-                );
+                var animal;
+                if (DeerHuhn.Animals.AnimalFactory.factories[kind] !== undefined) {
+                    var factory = DeerHuhn.Animals.AnimalFactory.factories[kind];
+                    animal = factory.call(this.animalFactory,
+                        this.animalOnShotCallback, 
+                        this.animalMovementFinishedCallback
+                    );
+                } else {
+                    var factory = DeerHuhn.Animals.AnimalFactory.staticFactories[kind];
+                    animal = factory.call(this.animalFactory,
+                        this.staticObjectOnShotCallback
+                    );
+                }
                 this.addAnimal(animal);
             }
         }
@@ -553,7 +584,9 @@ DeerHuhn.prototype = {
         this.backgroundLayers[animal.scenePosition.layer].addChild(animal.sprite);
         this.addSprite(animal.sprite);
         this.animals.push(animal);
-        this.movingObjects.push(animal);
+
+        if (animal instanceof DeerHuhn.MovingAnimatedObject)
+            this.movingObjects.push(animal);
 
         for (var i=0; i < animal.childrenToSpawn.length; i++) {
             var childToSpawn = animal.childrenToSpawn[i];
@@ -570,21 +603,35 @@ DeerHuhn.prototype = {
         }
 
         animal.childrenToSpawn = [];
+
+        
+        if (animal.hideAfter !== undefined) {
+            var timer = new DeerHuhn.PausableTimeout(function(animal) {
+                this.pausableObjects.remove(timer);
+                this.animalMovementFinishedCallback.call(this, animal);
+            }.bind(this, animal), animal.hideAfter);
+            this.pausableObjects.push(timer);
+            timer.start();
+        }
     },
 
     removeAnimal: function(animal) {
-        if (animal.parentAnimal !== null) {
+        if (animal.parentAnimal !== undefined && animal.parentAnimal !== null) {
             animal.parentAnimal.childrenAnimals.remove(animal);
         }
 
-        for (var i = 0; i < animal.childrenAnimals.length; i++) {
-            animal.childrenAnimals[i].parentAnimal = null;
+        if (animal.childrenAnimals !== undefined) {
+            for (var i = 0; i < animal.childrenAnimals.length; i++) {
+                animal.childrenAnimals[i].parentAnimal = null;
+            }
         }
 
         this.backgroundLayers[animal.scenePosition.layer].removeChild(animal.sprite);
         this.removeSprite(animal.sprite);
         this.animals.remove(animal);
-        this.movingObjects.remove(animal);
+
+        if (animal instanceof DeerHuhn.MovingAnimatedObject)
+            this.movingObjects.remove(animal);
     },
 
     updateMovingObjects: function(timeDelta) {
@@ -651,12 +698,12 @@ DeerHuhn.prototype = {
         for (var i = 0; i < this.sprites.length; i++) {
 
             if (this.sprites[i].dontScale !== true) {
-                var initialScale = 1.0;
+                var initialScale = new PIXI.Point(1.0, 1.0);
                 if (this.sprites[i].initialScale !== undefined)
                     initialScale = this.sprites[i].initialScale;
 
-                this.sprites[i].scale.x = this.renderingScale * initialScale;
-                this.sprites[i].scale.y = this.renderingScale * initialScale;
+                this.sprites[i].scale.x = this.renderingScale * initialScale.x;
+                this.sprites[i].scale.y = this.renderingScale * initialScale.y;
             }
 
             if (this.sprites[i].onresize !== undefined) {
@@ -1103,6 +1150,22 @@ DeerHuhn.ScenePosition = function(layer, x, y) {
     this.y = y;
 };
 
+// CLASS DeerHuhn.ScenePositionWithScale
+
+/**
+ * A class specifying a position in a layered scene along with scale of the object (may be negative to flip the object).
+ */
+DeerHuhn.ScenePositionWithScale = function (layer, x, y, scale) {
+    DeerHuhn.ScenePosition.call(this, layer, x, y);
+
+    if (typeof scale === "number")
+        this.scale = new PIXI.Point(scale,scale);
+    else
+        this.scale = new PIXI.Point(scale.x,scale.y);
+};
+DeerHuhn.ScenePositionWithScale.prototype = Object.create(DeerHuhn.ScenePosition.prototype);
+DeerHuhn.ScenePositionWithScale.prototype.constructor = DeerHuhn.ScenePositionWithScale;
+
 // CLASS DeerHuhn.ScenePath
 
 /*
@@ -1477,32 +1540,45 @@ DeerHuhn.Animals.AnimalFactory = function() {
 };
 
 /**
+ * Choose a random object from the given set.
+ *
+ * @param {...Object[]} objects Objects to choose from.
+ * @return {Object} A random object from the given lists.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.getRandomObject = function(objects) {
+    var objectArrays = arguments;
+    var numObjects = 0;
+    for (var i = 0; i < arguments.length; i++)
+        numObjects += objectArrays[i].length;
+
+    var randPositionIdx = randInt(0, numObjects-1);
+
+    var selected = null;
+    for (var i = 0; i < objectArrays.length; i++) {
+        if (randPositionIdx >= objectArrays[i].length) {
+            randPositionIdx -= objectArrays[i].length;
+        } else {
+            selected = objectArrays[i][randPositionIdx];
+            break;
+        }
+    }
+
+    if (selected === null) {
+        console.log('Error in selecting random object from ' + arguments.length + ' arguments.');
+    }
+
+    return selected;
+};
+
+
+/**
  * Choose a random path from the given set.
  *
  * @param {...DeerHuhn.ScenePath[]} paths All possible paths to choose from.
  * @return {DeerHuhn.ScenePath} A random path from the given lists (might have reversed direction).
  */
 DeerHuhn.Animals.AnimalFactory.prototype.getRandomPath = function(paths) {
-    var pathArrays = arguments;
-    var numPaths = 0;
-    for (var i = 0; i < arguments.length; i++)
-        numPaths += pathArrays[i].length;
-
-    var randPositionIdx = randInt(0, numPaths-1);
-
-    var path = null;
-    for (var i = 0; i < pathArrays.length; i++) {
-        if (randPositionIdx >= pathArrays[i].length) {
-            randPositionIdx -= pathArrays[i].length;
-        } else {
-            path = pathArrays[i][randPositionIdx];
-            break;
-        }
-    }
-
-    if (path === null) {
-        console.log('Error in selecting random path from ' + arguments.length + ' arguments.');
-    }
+    var path = this.getRandomObject.apply(this, arguments);
 
     if (Math.random() > 0.5)
         path = path.reverse();
@@ -1530,7 +1606,35 @@ DeerHuhn.Animals.AnimalFactory.prototype.createRandomAnimal = function (onShotCa
  */
 DeerHuhn.Animals.AnimalFactory.factories = [];
 
+/**
+ * The array of registered factories for static shootable objects.
+ */
+DeerHuhn.Animals.AnimalFactory.staticFactories = [];
+
 // animals are defined in js\deerhuhn.animals.js
+
+// CLASS StaticShootableObject
+
+/**
+ * An object that is not moving but can be shot (a bird's house for example).
+ */
+DeerHuhn.StaticShootableObject = function (name, sprite, scenePosition, onShotCallback) {
+    DeerHuhn.ShootableObject.call(this, sprite, onShotCallback);
+
+    this.name = name;
+
+    this.sprite = sprite;
+    this.sprite.name = this.name;
+    this.sprite.initialScale = new PIXI.Point(scenePosition.scale.x, scenePosition.scale.y);
+
+    this.scenePosition = scenePosition;
+    this.sprite.position.x = scenePosition.x;
+    this.sprite.position.y = scenePosition.y;
+
+    this.childrenToSpawn = [];
+};
+DeerHuhn.StaticShootableObject.prototype = Object.create(DeerHuhn.ShootableObject.prototype);
+DeerHuhn.StaticShootableObject.prototype.constructor = DeerHuhn.StaticShootableObject;
 
 // CLASS DeerHuhn.FadingPoints
 
