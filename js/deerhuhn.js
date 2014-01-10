@@ -499,6 +499,8 @@ DeerHuhn.prototype = {
             // show the smoke cloud
             var smokeSprite = new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.vystrel);
             var smoke = new DeerHuhn.AnimatedObject(smokeSprite, function () {}, 2);
+            smokeSprite.setInteractive(false);
+
             var layer = this.backgroundLayers[animal.scenePosition.layer];
             layer.addChild(smoke.sprite);
             this.addSprite(smoke.sprite);
