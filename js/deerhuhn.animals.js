@@ -890,6 +890,9 @@ DeerHuhn.Animals.Kvitko = function (scenePosition, onShotCallback) {
             new PIXI.Sprite(textures[randIdx]),
             scenePosition,
             onShotCallback);
+
+    var hideTime = randInt(3, 10) * 1000;
+    this.hideAfter = hideTime;
 };
 DeerHuhn.Animals.Kvitko.prototype = Object.create(DeerHuhn.StaticShootableObject.prototype);
 DeerHuhn.Animals.Kvitko.prototype.constructor = DeerHuhn.Animals.Kvitko;
