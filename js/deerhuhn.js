@@ -541,13 +541,15 @@ DeerHuhn.prototype = {
         // add one-time static shootable objects
         this.addAnimal(this.animalFactory.createBudka(this.staticObjectOnShotCallback));
 
-        for (var i=0; i < 3; i++) {
+        var numDeadTrees = randInt(0, 3);
+        for (var i=0; i < numDeadTrees; i++) {
             this.addAnimal(this.animalFactory.createSouska(this.staticObjectOnShotCallback));
         }
 
         this.addAnimal(this.animalFactory.createVetev(this.staticObjectOnShotCallback));
 
-        for (var i=0; i < 3; i++) {
+        var numMushrooms = randInt(0, 3);
+        for (var i=0; i < numMushrooms; i++) {
             this.addAnimal(this.animalFactory.createChoros(this.staticObjectOnShotCallback));
         }
 
