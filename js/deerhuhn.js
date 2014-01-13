@@ -477,7 +477,7 @@ DeerHuhn.prototype = {
             if (!this.canShoot()) {
                 console.log('no ammo -> cannot shoot');
                 this.sounds.noAmmo.play();
-                return;
+                return false;
             }
 
             var points = animal.getScore(this.gameTime);
@@ -517,6 +517,8 @@ DeerHuhn.prototype = {
 
             if (animal.movementFinishedCallback !== undefined)
                 animal.movementFinishedCallback(animal);
+
+            return true;
         }.bind(this); 
 
         this.animalMovementFinishedCallback = function(animal) {
@@ -530,8 +532,10 @@ DeerHuhn.prototype = {
         }.bind(this);
 
         this.staticObjectOnShotCallback = function(animal) {
-            this.animalOnShotCallback.call(this, animal);
-            this.animalMovementFinishedCallback.call(this, animal);
+            if (this.animalOnShotCallback.call(this, animal)) {
+                // the shot succeeded (enough ammo...)
+                this.animalMovementFinishedCallback.call(this, animal);
+            }
         }.bind(this);
 
         // add one-time static shootable objects
@@ -1221,6 +1225,7 @@ DeerHuhn.SceneObject = function (sprite) {
  * @callback onShotCallback
  * @this DeerHuhn
  * @param {DeerHuhn.ShootableObject} animal The shot object.
+ * @return {boolean} True if the object was really shot (enough ammo and so on).
  */
 
 /**
