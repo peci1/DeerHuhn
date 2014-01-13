@@ -20,8 +20,8 @@ var DeerHuhn = function (canvasContainerId) {
         Vlacek: 100,
         Sele: 20,
         Srna: 40,
-        Kvitko: 15,
-        VykukujiciSrnec: 10//60
+        Kvitko: 40,
+        VykukujiciSrnec: 90
     };
 
     // scrolling
@@ -543,7 +543,7 @@ DeerHuhn.prototype = {
 
         this.addAnimal(this.animalFactory.createVetev(this.staticObjectOnShotCallback));
 
-        for (var i=0; i < 4; i++) {
+        for (var i=0; i < 3; i++) {
             this.addAnimal(this.animalFactory.createChoros(this.staticObjectOnShotCallback));
         }
 
