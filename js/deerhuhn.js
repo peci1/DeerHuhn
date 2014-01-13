@@ -1,6 +1,6 @@
 var DeerHuhn = function (canvasContainerId) {    
     // canvas & dimensions
-    this.MAX_HEIGHT=960;
+    this.MAX_HEIGHT=DeerHuhn.SCENE_HEIGHT;
     this.GAME_CONTAINER = document.getElementById(canvasContainerId);
     this.rendererWidth = this.GAME_CONTAINER.offsetWidth - 8;
     this.rendererHeight = Math.min(this.GAME_CONTAINER.offsetHeight - 8, this.MAX_HEIGHT);
@@ -35,7 +35,7 @@ var DeerHuhn = function (canvasContainerId) {
 
     // renderer setup
     var interactive = true;
-    this.stage = new PIXI.Stage(0xAAFFFF, interactive);
+    this.stage = new PIXI.ScalableStage(0xAAFFFF, interactive);
     this.stage.name = 'Stage';
     this.renderer = PIXI.autoDetectRenderer(this.rendererWidth, this.rendererHeight);
     this.GAME_CONTAINER.appendChild(this.renderer.view);
@@ -155,6 +155,9 @@ var DeerHuhn = function (canvasContainerId) {
     PIXI.Keys.init();
 };
 
+DeerHuhn.SCENE_HEIGHT = 960;
+DeerHuhn.BASIC_ANIMAL_SCALE = DeerHuhn.SCENE_HEIGHT * 1.0 / 1937;
+
 DeerHuhn.prototype = {
 
     scrollBackground: function()
@@ -167,7 +170,7 @@ DeerHuhn.prototype = {
 
         for (var i = 0; i < this.backgroundLayers.length; i++) {
             var layer = this.backgroundLayers[i];
-            layer.position.x = this.scrollPercentage * (-layer.width + this.rendererWidth);
+            layer.position.x = this.scrollPercentage * (-layer.width + this.rendererWidth / this.renderingScale);
         }
     },
 
@@ -314,10 +317,6 @@ DeerHuhn.prototype = {
     addSprite: function(sprite) {
         this.sprites.push(sprite);
 
-        var initialScale = (sprite.initialScale !== undefined ? sprite.initialScale : new PIXI.Point(1,1));
-        sprite.scale.x = initialScale.x * this.renderingScale;
-        sprite.scale.y = initialScale.y * this.renderingScale;
-
         if ('unPause' in sprite) {
             this.pausableObjects.push(sprite);
         }
@@ -336,12 +335,12 @@ DeerHuhn.prototype = {
         };
 
         var pointsDate = new PIXI.Sprite(PIXI.TextureCache['datum_body.png']);
-        pointsDate.initialScale = new PIXI.Point(0.5,0.5);
+        pointsDate.scale.x = pointsDate.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
         pointsDate.interactive = true;
         pointsDate.click = ignoreClicksCallback;
         pointsDate.onresize = function () {
-            pointsDate.position.x = 0.99*this.rendererWidth - pointsDate.width;
-            pointsDate.position.y = 0.99*this.rendererHeight - pointsDate.height;
+            pointsDate.position.x = 0.99*this.rendererWidth/this.renderingScale - pointsDate.width;
+            pointsDate.position.y = 0.99*this.rendererHeight/this.renderingScale - pointsDate.height;
         }.bind(this);
 
         this.addSprite(pointsDate);
@@ -350,37 +349,31 @@ DeerHuhn.prototype = {
         // date
         
         this.dateText = new PIXI.Text(' 1. 3.', {font: '120px HelveticaLight', fill: '#8E8D5B'});
-        this.dateText.dontScale = true;
         // set the position
         this.updateDate();
 
         this.addSprite(this.dateText);
         pointsDate.addChild(this.dateText);
-        //addSprite sets the scale to current renderingScale, but we don't want that
-        this.dateText.scale.x = this.dateText.scale.y = 1;
 
         // points
         
         this.pointsText = new PIXI.Text('0', {font: 'bold 120px HelveticaBlack'});
-        this.pointsText.dontScale = true;
         // set the position
         this.updatePoints();
 
         this.addSprite(this.pointsText);
         pointsDate.addChild(this.pointsText);
-        //addSprite sets the scale to current renderingScale, but we don't want that
-        this.pointsText.scale.x = this.pointsText.scale.y = 1;
 
         // ammo
 
         var ammoResize = function (bullet, i) {
-            bullet.position.x = 0.99*this.rendererWidth - 1.1*pointsDate.width - (i+1)*(1.1*bullet.width);
-            bullet.position.y = 0.99*this.rendererHeight - bullet.height;
+            bullet.position.x = 0.99*this.rendererWidth/this.renderingScale - 1.1*pointsDate.width - (i+1)*(1.1*bullet.width);
+            bullet.position.y = 0.99*this.rendererHeight/this.renderingScale - bullet.height;
         }.bind(this);
 
         for (var i=0; i < this.MAX_AMMO; i++) {
             var bullet = new PIXI.Sprite(PIXI.TextureCache['naboj.png']);
-            bullet.initialScale = new PIXI.Point(0.5,0.5);
+            bullet.scale.x = bullet.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
             bullet.interactive = true;
             bullet.click = ignoreClicksCallback;
             bullet.onresize = ammoResize.bind(null, bullet, i);
@@ -697,21 +690,17 @@ DeerHuhn.prototype = {
         this.renderingScale = this.rendererHeight/this.MAX_HEIGHT;
 
         this.renderer.resize(this.rendererWidth, this.rendererHeight);
+
+        // the scaling propagates to children
+        this.stage.scale.x = this.stage.scale.y = this.renderingScale; 
+
         for (var i = 0; i < this.sprites.length; i++) {
-
-            if (this.sprites[i].dontScale !== true) {
-                var initialScale = new PIXI.Point(1.0, 1.0);
-                if (this.sprites[i].initialScale !== undefined)
-                    initialScale = this.sprites[i].initialScale;
-
-                this.sprites[i].scale.x = this.renderingScale * initialScale.x;
-                this.sprites[i].scale.y = this.renderingScale * initialScale.y;
-            }
-
             if (this.sprites[i].onresize !== undefined) {
                 this.sprites[i].onresize();
             }
         }
+
+        this.stage.updateTransform();
     },
 
     pause: function() {
@@ -1488,6 +1477,8 @@ DeerHuhn.Animal = function(name, sprite, onShotCallback, animationSpeed, sceneSp
      * @type {DeerHuhn.Animal[]}
      */
     this.childrenAnimals = [];
+
+    this.sprite.scale.x = this.sprite.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
 };
 DeerHuhn.Animal.prototype = Object.create(DeerHuhn.MovingAnimatedObject.prototype);
 DeerHuhn.Animal.prototype.constructor = DeerHuhn.Animal;
@@ -1627,7 +1618,7 @@ DeerHuhn.StaticShootableObject = function (name, sprite, scenePosition, onShotCa
 
     this.sprite = sprite;
     this.sprite.name = this.name;
-    this.sprite.initialScale = new PIXI.Point(scenePosition.scale.x, scenePosition.scale.y);
+    this.sprite.scale = new PIXI.Point(scenePosition.scale.x, scenePosition.scale.y);
 
     this.scenePosition = scenePosition;
     this.sprite.position.x = scenePosition.x;

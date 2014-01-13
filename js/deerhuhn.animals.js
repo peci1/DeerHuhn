@@ -71,51 +71,51 @@ DeerHuhn.Animals.AnimalFactory.prototype.forrestPaths = [
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.budkaPositions = [
-    new DeerHuhn.ScenePositionWithScale(0, 2190, 272, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 3280, 310, 1)
+    new DeerHuhn.ScenePositionWithScale(0, 2190, 272, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 3280, 310, DeerHuhn.BASIC_ANIMAL_SCALE)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.souskaPositions = [
-    new DeerHuhn.ScenePositionWithScale(3, 914, 554, 1),
-    new DeerHuhn.ScenePositionWithScale(3, 2309, 167, 1),
-    new DeerHuhn.ScenePositionWithScale(3, 1591, 727, 1)
+    new DeerHuhn.ScenePositionWithScale(3, 914, 554, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(3, 2309, 167, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(3, 1591, 727, DeerHuhn.BASIC_ANIMAL_SCALE)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.vetevPositions = [
-    new DeerHuhn.ScenePositionWithScale(0, 3044, 225, 1)
+    new DeerHuhn.ScenePositionWithScale(0, 3044, 225, DeerHuhn.BASIC_ANIMAL_SCALE)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.chorosPositions = [
-    new DeerHuhn.ScenePositionWithScale(0, 2185, 362, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 2175, 392, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 2200, 450, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 2185, 630, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 3240, 300, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 3210, 350, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 3260, 400, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 3280, 490, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 3240, 580, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 3210, 650, 1)
+    new DeerHuhn.ScenePositionWithScale(0, 2185, 362, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 2175, 392, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 2200, 450, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 2185, 630, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 3240, 300, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 3210, 350, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 3260, 400, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 3280, 490, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 3240, 580, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 3210, 650, DeerHuhn.BASIC_ANIMAL_SCALE)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.kvitkoPositions = [
-    new DeerHuhn.ScenePositionWithScale(0, 1750, 920, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 1880, 910, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 1994, 850, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 1955, 890, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 2340, 910, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 2434, 895, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 2500, 920, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 2800, 870, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 4000, 880, 1),
-    new DeerHuhn.ScenePositionWithScale(0, 3600, 900, 1)
+    new DeerHuhn.ScenePositionWithScale(0, 1750, 920, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 1880, 910, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 1994, 850, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 1955, 890, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 2340, 910, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 2434, 895, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 2500, 920, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 2800, 870, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 4000, 880, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(0, 3600, 900, DeerHuhn.BASIC_ANIMAL_SCALE)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.vykukujiciSrnecPositions = [
-    new DeerHuhn.ScenePositionWithScale(3, 1444, 423, 1),
-    new DeerHuhn.ScenePositionWithScale(2, 1344, 490, new PIXI.Point(-1, 1)),
-    new DeerHuhn.ScenePositionWithScale(3, 280, 670, 1),
-    new DeerHuhn.ScenePositionWithScale(3, 2611, 550, new PIXI.Point(-1, 1))
+    new DeerHuhn.ScenePositionWithScale(3, 1444, 423, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(2, 1344, 490, new PIXI.Point(-DeerHuhn.BASIC_ANIMAL_SCALE, DeerHuhn.BASIC_ANIMAL_SCALE)),
+    new DeerHuhn.ScenePositionWithScale(3, 280, 670, DeerHuhn.BASIC_ANIMAL_SCALE),
+    new DeerHuhn.ScenePositionWithScale(3, 2611, 550, new PIXI.Point(-DeerHuhn.BASIC_ANIMAL_SCALE, DeerHuhn.BASIC_ANIMAL_SCALE))
 ];
 
 /**

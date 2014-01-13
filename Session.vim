@@ -2,10 +2,10 @@ let SessionLoad = 1
 if &cp | set nocp | endif
 let s:cpo_save=&cpo
 set cpo&vim
-inoremap <expr> <Down> pumvisible() ? "\" : "\<Down>"
-inoremap <expr> <S-Tab> pumvisible() ? "\" : "\<S-Tab>"
-inoremap <expr> <Up> pumvisible() ? "\" : "\<Up>"
 inoremap <C-Space> 
+inoremap <expr> <Up> pumvisible() ? "\" : "\<Up>"
+inoremap <expr> <S-Tab> pumvisible() ? "\" : "\<S-Tab>"
+inoremap <expr> <Down> pumvisible() ? "\" : "\<Down>"
 imap <silent> <Plug>IMAP_JumpBack =IMAP_Jumpfunc('b', 0)
 imap <silent> <Plug>IMAP_JumpForward =IMAP_Jumpfunc('', 0)
 inoremap <C-F5> :CheckSyntax!
@@ -54,9 +54,9 @@ xmap <silent> i,w <Plug>CamelCaseMotion_iw
 omap <silent> i,e <Plug>CamelCaseMotion_ie
 omap <silent> i,b <Plug>CamelCaseMotion_ib
 omap <silent> i,w <Plug>CamelCaseMotion_iw
-nnoremap <C-F4> c
-nnoremap <C-Tab> w
 nmap <S-Insert> "+gP
+nnoremap <C-Tab> w
+nnoremap <C-F4> c
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
 vmap <silent> <Plug>IMAP_JumpBack `<i=IMAP_Jumpfunc('b', 0)
 vmap <silent> <Plug>IMAP_JumpForward i=IMAP_Jumpfunc('', 0)
@@ -111,6 +111,7 @@ set background=dark
 set backspace=indent,eol,start
 set backup
 set backupdir=C:\\Users\\MARTIN~1\\AppData\\Local\\Temp//,C:/Program\ Files\ (x86)/Vim/_backup//
+set balloonexpr=SyntasticBalloonsExprNotifier()
 set completefunc=youcompleteme#Complete
 set completeopt=preview,menuone
 set cpoptions=aAceFsB
@@ -143,12 +144,13 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +38 index.htm
+badd +48 index.htm
 badd +1 ¨
-badd +667 js\deerhuhn.js
+badd +319 js\deerhuhn.js
 badd +4 css\main.css
 badd +73 js\pixi.transparencyhitarea.js
-badd +0 js\deerhuhn.animals.js
+badd +129 js\deerhuhn.animals.js
+badd +13 js\pixi.scalablestage.js
 args index.htm
 edit js\deerhuhn.js
 set splitbelow splitright
@@ -158,7 +160,10 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-3wincmd k
+wincmd _ | wincmd |
+split
+4wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -166,14 +171,135 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 34 + 21) / 42)
-exe '2resize ' . ((&lines * 1 + 21) / 42)
+exe '1resize ' . ((&lines * 2 + 21) / 42)
+exe '2resize ' . ((&lines * 31 + 21) / 42)
 exe '3resize ' . ((&lines * 1 + 21) / 42)
 exe '4resize ' . ((&lines * 1 + 21) / 42)
+exe '5resize ' . ((&lines * 1 + 21) / 42)
+argglobal
+enew
+let s:cpo_save=&cpo
+set cpo&vim
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
+imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <silent> g <Plug>delimitMateJumpMany
+imap <buffer>  <Plug>delimitMateBS
+imap <buffer> " <Plug>delimitMate"
+imap <buffer> ' <Plug>delimitMate'
+imap <buffer> ( <Plug>delimitMate(
+imap <buffer> ) <Plug>delimitMate)
+imap <buffer> [ <Plug>delimitMate[
+imap <buffer> ] <Plug>delimitMate]
+imap <buffer> ` <Plug>delimitMate`
+imap <buffer> { <Plug>delimitMate{
+imap <buffer> } <Plug>delimitMate}
+let &cpo=s:cpo_save
+unlet s:cpo_save
+setlocal keymap=
+setlocal noarabic
+setlocal noautoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=wipe
+setlocal buflisted
+setlocal buftype=nofile
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal colorcolumn=
+setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+setlocal commentstring=/*%s*/
+setlocal complete=.,w,b,u,t,i
+setlocal concealcursor=
+setlocal conceallevel=0
+setlocal completefunc=youcompleteme#Complete
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal expandtab
+if &filetype != ''
+setlocal filetype=
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldmarker={{{,}}}
+setlocal foldmethod=manual
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tcq
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=2
+setlocal imsearch=2
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,128-167,224-235
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal nomodifiable
+setlocal nrformats=octal,hex
+setlocal nonumber
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal previewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norelativenumber
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=4
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=
+setlocal noswapfile
+setlocal synmaxcol=3000
+if &syntax != ''
+setlocal syntax=
+endif
+setlocal tabstop=4
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal noundofile
+setlocal undolevels=-123456
+setlocal winfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+wincmd w
 argglobal
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-Tab> <Plug>delimitMateS-Tab
 imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
 nnoremap <buffer> <silent> <Plug>(jsdoc) :call jsdoc#insert()
@@ -193,7 +319,7 @@ unlet s:cpo_save
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
-setlocal balloonexpr=QuickfixsignsBalloon()
+setlocal balloonexpr=
 setlocal nobinary
 setlocal bufhidden=
 setlocal buflisted
@@ -241,10 +367,10 @@ setlocal iminsert=2
 setlocal imsearch=2
 setlocal include=
 setlocal includeexpr=
-setlocal indentexpr=
-setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal indentexpr=GetJavascriptIndent()
+setlocal indentkeys=0{,0},0),0],0,,!^F,o,O,e
 setlocal noinfercase
-setlocal iskeyword=@,48-57,_,128-167,224-235
+setlocal iskeyword=@,48-57,_,128-167,224-235,$
 setlocal keywordprg=
 setlocal nolinebreak
 setlocal nolisp
@@ -256,7 +382,7 @@ setlocal modifiable
 setlocal nrformats=octal,hex
 setlocal nonumber
 setlocal numberwidth=4
-setlocal omnifunc=javascriptcomplete#CompleteJS
+setlocal omnifunc=tern#Complete
 setlocal path=
 setlocal nopreserveindent
 setlocal nopreviewwindow
@@ -292,12 +418,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 196 - ((21 * winheight(0) + 17) / 34)
+let s:l = 14 - ((13 * winheight(0) + 15) / 31)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-196
-normal! 06|
+14
+normal! 019|
 wincmd w
 argglobal
 edit js\deerhuhn.animals.js
@@ -322,7 +448,7 @@ unlet s:cpo_save
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
-setlocal balloonexpr=QuickfixsignsBalloon()
+setlocal balloonexpr=
 setlocal nobinary
 setlocal bufhidden=
 setlocal buflisted
@@ -421,12 +547,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
+let s:l = 85 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+85
+normal! 035|
 wincmd w
 argglobal
 edit index.htm
@@ -552,11 +678,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 38 - ((0 * winheight(0) + 0) / 1)
+let s:l = 46 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-38
+46
 normal! 021|
 wincmd w
 argglobal
@@ -681,17 +807,19 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 4 - ((0 * winheight(0) + 0) / 1)
+let s:l = 10 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-4
-normal! 034|
+10
+normal! 0
 wincmd w
-exe '1resize ' . ((&lines * 34 + 21) / 42)
-exe '2resize ' . ((&lines * 1 + 21) / 42)
+3wincmd w
+exe '1resize ' . ((&lines * 2 + 21) / 42)
+exe '2resize ' . ((&lines * 31 + 21) / 42)
 exe '3resize ' . ((&lines * 1 + 21) / 42)
 exe '4resize ' . ((&lines * 1 + 21) / 42)
+exe '5resize ' . ((&lines * 1 + 21) / 42)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
