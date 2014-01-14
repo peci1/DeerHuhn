@@ -681,8 +681,11 @@ DeerHuhn.prototype = {
         
         if (animal.hideAfter !== undefined) {
             var timer = new DeerHuhn.PausableTimeout(function(animal) {
-                this.pausableObjects.remove(timer);
-                this.animalMovementFinishedCallback.call(this, animal);
+                if (this.animals.indexOf(animal) >= 0) {
+                    // the animal may not exist because it has already been shot
+                    this.pausableObjects.remove(timer);
+                    this.animalMovementFinishedCallback.call(this, animal);
+                }
             }.bind(this, animal), animal.hideAfter);
             this.pausableObjects.push(timer);
             timer.start();
