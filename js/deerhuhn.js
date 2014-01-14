@@ -290,6 +290,15 @@ DeerHuhn.prototype = {
             this.stage.addChild(this.backgroundLayers[i]);
         }
 
+        // add the false background in foreground (for displaying points above all layers)
+        for (var i=11; i >= 6; i--) {
+            this.backgroundLayers[i] = new PIXI.DisplayObjectContainer();
+            this.backgroundLayers[i].name = "False background " + (i-6);
+            this.backgroundLayers[i].width = this.backgroundLayers[i-6].width;
+            this.backgroundLayers[i].height = this.backgroundLayers[i-6].height;
+            this.stage.addChild(this.backgroundLayers[i]);
+        }
+
         // init animations
         for (var textureId in PIXI.TextureCache) {
             if (PIXI.TextureCache.hasOwnProperty(textureId)) {
@@ -578,12 +587,13 @@ DeerHuhn.prototype = {
             smokeTimer.start();
 
             // show the fading score
+            var falseLayer = this.backgroundLayers[animal.scenePosition.layer + 6];
             var fadingPoints = new DeerHuhn.FadingPoints(points, 1000, animal.scenePosition, function () {
                 this.removeSprite(fadingPoints.sprite);
-                layer.removeChild(fadingPoints.sprite);
+                falseLayer.removeChild(fadingPoints.sprite);
             }.bind(this), this);
             this.addSprite(fadingPoints.sprite);
-            layer.addChild(fadingPoints.sprite);
+            falseLayer.addChild(fadingPoints.sprite);
 
             if (animal.movementFinishedCallback !== undefined)
                 animal.movementFinishedCallback(animal);
