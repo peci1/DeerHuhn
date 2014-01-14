@@ -661,8 +661,19 @@ DeerHuhn.prototype = {
         }
     },
 
-    addAnimal: function(animal) {
-        this.backgroundLayers[animal.scenePosition.layer].addChild(animal.sprite);
+    addAnimal: function(animal, animalToAddBefore) {
+        var layer = this.backgroundLayers[animal.scenePosition.layer];
+        if (animalToAddBefore === undefined) {
+            layer.addChild(animal.sprite);
+        } else {
+            var parentIndex = layer.children.indexOf(animalToAddBefore.sprite);
+            if (parentIndex < 0) {
+                // the parent was killed before this animal has been spawned
+                layer.addChild(animal.sprite);
+            } else {
+                layer.addChildAt(animal.sprite, parentIndex);
+            }
+        }
         this.addSprite(animal.sprite);
         this.animals.push(animal);
 
@@ -680,7 +691,10 @@ DeerHuhn.prototype = {
                 if (childToSpawn.animal.parentAnimal === null)
                     return;
 
-                this.addAnimal(childToSpawn.animal);
+                if (childToSpawn.addUnderParent)
+                    this.addAnimal(childToSpawn.animal, animal);
+                else
+                    this.addAnimal(childToSpawn.animal);
             }.bind(this, childToSpawn), childToSpawn.delay);
             this.pausableObjects.push(timer);
             timer.start();
@@ -1661,8 +1675,9 @@ DeerHuhn.Animal.prototype.constructor = DeerHuhn.Animal;
  * @constructor
  * @param {DeerHuhn.Animal} animal The animal to spawn.
  * @param {int} delay Delay before spawning (in ms).
+ * @param {boolean} addUnderParent If true, the child should be added under its parent in the layer order.
  */
-DeerHuhn.AnimalToSpawn = function (animal, delay) {
+DeerHuhn.AnimalToSpawn = function (animal, delay, addUnderParent) {
     /**
      * The animal to spawn.
      * 
@@ -1682,6 +1697,16 @@ DeerHuhn.AnimalToSpawn = function (animal, delay) {
      * @type {int}
      */
     this.delay = delay;
+
+    /**
+     * If true, the child should be added under its parent in the layer order.
+     * 
+     * @property
+     * @public
+     * @readonly
+     * @type {boolean}
+     */
+    this.addUnderParent = (addUnderParent !== undefined) ? addUnderParent : false;
 };
 
 // ANIMALS

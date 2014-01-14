@@ -474,7 +474,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (onShotCa
     lkt.movementFinishedCallback = movementFinished;
 
     lkt.childrenAnimals.push(klady);
-    lkt.childrenToSpawn.push(new DeerHuhn.AnimalToSpawn(klady, 2000));
+    lkt.childrenToSpawn.push(new DeerHuhn.AnimalToSpawn(klady, 2000, true));
 
     lkt.name = "LKT s náloží";
 
