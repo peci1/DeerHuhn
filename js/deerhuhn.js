@@ -73,6 +73,9 @@ var DeerHuhn = function (canvasContainerId) {
     this.isPaused = false;
     this.pauseStartTime = null;
     this.pausableObjects = [this.gameTime];
+    /** The timer managing the timeout when unpausing. */
+    this.unPauseCountdownTimer = null;
+    this.unPauseCountdownDigits = [];
 
     // objects that need position updates via updatePosition(timeDelta) calls
     this.movingObjects = [];
@@ -139,6 +142,9 @@ var DeerHuhn = function (canvasContainerId) {
 
     // right-click for reloading
     this.stage.click = function (mouse) {
+        if (this.isPaused)
+            return;
+
         var evt = mouse.originalEvent;
         if ("which" in evt)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
             isRight = evt.which == 3; 
@@ -175,22 +181,25 @@ DeerHuhn.prototype = {
         }
     },
 
-    animate: function() {
-        if (this.isPaused)
+    animate: function(forceEvenIfPaused) {
+        if ((forceEvenIfPaused === undefined || forceEvenIfPaused === false) && this.isPaused)
             return;
 
-        var timeDelta = this.calculateTimeDelta(new Date());
-        this.fps = this.calculateFps(timeDelta);
+        if (!this.isPaused) {
+            var timeDelta = this.calculateTimeDelta(new Date());
+            this.fps = this.calculateFps(timeDelta);
 
-        this.processKeys();
+            this.processKeys();
 
-        this.scrollBackground();
+            this.scrollBackground();
 
-        this.updateMovingObjects(timeDelta);
+            this.updateMovingObjects(timeDelta);
+        }
 
         this.renderer.render(this.stage);
 
-        requestAnimFrame(this.animate.bind(this));
+        if (!this.isPaused)
+            requestAnimFrame(this.animate.bind(this));
     },
 
     calculateTimeDelta: function(now) {
@@ -238,6 +247,9 @@ DeerHuhn.prototype = {
 
     onLoad: function() {
         var layerClick = function (mouse) {
+            if (this.isPaused)
+                return;
+
             var evt = mouse.originalEvent;
             if ("which" in evt)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
                 isLeft = evt.which == 1; 
@@ -395,8 +407,8 @@ DeerHuhn.prototype = {
 
         this.updateAmmo();
 
-
-
+        // "situations" - what is allowed to shoot at
+        
         var allowedShooting = new PIXI.Sprite(PIXI.TextureCache['situace.png']);
         allowedShooting.interactive = false;
         allowedShooting.onresize = function () {
@@ -423,6 +435,26 @@ DeerHuhn.prototype = {
             this.addSprite(sign);
             allowedShooting.addChild(sign);
             this.dontShootSigns[animalKind] = sign;
+        }
+
+        // unpausing countdown digits
+        
+        var numCountDownDigits = 3;
+        var countDownDigitOnResize = function (i) {
+            var digit = this.unPauseCountdownDigits[i];
+            digit.position.x = 0.5*this.rendererWidth/this.renderingScale - digit.width/2;
+            digit.position.y = 0.5*this.rendererHeight/this.renderingScale - digit.height/2;
+        }.bind(this);
+
+        for (var i=0; i<numCountDownDigits; i++) {
+            var digit = new PIXI.Text((numCountDownDigits-i)+'', {font: '240px HelveticaLight', fill: '#8E8D5B'});
+            digit.visible = false;
+            
+            digit.onresize = countDownDigitOnResize.bind(this, i);
+
+            this.unPauseCountdownDigits.push(digit);
+            this.addSprite(digit);
+            this.stage.addChild(digit);
         }
 
         //TODO add music and sound muting
@@ -534,6 +566,7 @@ DeerHuhn.prototype = {
             var layer = this.backgroundLayers[animal.scenePosition.layer];
             layer.addChild(smoke.sprite);
             this.addSprite(smoke.sprite);
+            this.pausableObjects.push(smoke);
             smoke.sprite.position = animal.sprite.position.clone();
 
             var smokeTimer = new DeerHuhn.PausableTimeout(function () {
@@ -623,6 +656,9 @@ DeerHuhn.prototype = {
         this.addSprite(animal.sprite);
         this.animals.push(animal);
 
+        if (animal instanceof DeerHuhn.AnimatedObject)
+            this.pausableObjects.push(animal);
+
         if (animal instanceof DeerHuhn.MovingAnimatedObject)
             this.movingObjects.push(animal);
 
@@ -668,6 +704,9 @@ DeerHuhn.prototype = {
         this.removeSprite(animal.sprite);
         this.animals.remove(animal);
 
+        if (animal instanceof DeerHuhn.AnimatedObject)
+            this.pausableObjects.remove(animal);
+
         if (animal instanceof DeerHuhn.MovingAnimatedObject)
             this.movingObjects.remove(animal);
     },
@@ -680,7 +719,7 @@ DeerHuhn.prototype = {
     },
 
     canShoot: function() {
-        return this.ammo > 0 && this.reloadingAmmo === false;
+        return !this.isPaused && this.ammo > 0 && this.reloadingAmmo === false;
     },
 
     shoot: function() {
@@ -747,8 +786,23 @@ DeerHuhn.prototype = {
     },
 
     pause: function() {
+        if (this.unPauseCountdownTimer !== null) {
+            this.unPauseCountdownTimer.stop();
+            this.pausableObjects.remove(this.unPauseCountdownTimer);
+            this.unPauseCountdownTimer = null;
+        }
+
+        for (var i=0; i < this.unPauseCountdownDigits.length; i++)
+            this.unPauseCountdownDigits[0].visible = false;
+
+        this.animate(true);
+
+        if (this.isPaused)
+            return;
+
         this.isPaused = true;
         this.pauseStartTime = new Date();
+
         for (var obj in this.pausableObjects) {
             if ('pause' in this.pausableObjects[obj]) {
                 this.pausableObjects[obj].pause();
@@ -761,17 +815,52 @@ DeerHuhn.prototype = {
         if (!this.isPaused || this.pauseStartTime === null)
             return;
 
-        this.isPaused = false;
-        var timeDelta = new Date().valueOf() - this.pauseStartTime.valueOf();
+        // sometimes the unpause callback is called twice, this should handle that case
+        if (this.unPauseCountdownTimer !== null)
+            return;
 
-        for (var obj in this.pausableObjects) {
-            if ('unPause' in this.pausableObjects[obj]) {
-                this.pausableObjects[obj].unPause(timeDelta);
-            }
-        }
+        for (var i=0; i< this.unPauseCountdownDigits.length; i++)
+            this.unPauseCountdownDigits[0].visible = false;
 
-        this.lastAnimationFrameTime = new Date();
-        this.animate();
+        // 3 seconds timeout
+        this.unPauseCountdownTimer = new DeerHuhn.PausableTimeout(function () {
+            this.pausableObjects.remove(this.unPauseCountdownTimer);
+            this.unPauseCountdownTimer = new DeerHuhn.PausableTimeout(function () {
+                this.pausableObjects.remove(this.unPauseCountdownTimer);
+                this.unPauseCountdownTimer = new DeerHuhn.PausableTimeout(function () {
+
+                    this.unPauseCountdownTimer = null;
+
+                    this.isPaused = false;
+                    var timeDelta = new Date().valueOf() - this.pauseStartTime.valueOf();
+
+                    for (var obj in this.pausableObjects) {
+                        if ('unPause' in this.pausableObjects[obj]) {
+                            this.pausableObjects[obj].unPause(timeDelta);
+                        }
+                    }
+
+                    this.unPauseCountdownDigits[2].visible = false;
+
+                    this.lastAnimationFrameTime = new Date();
+                    this.animate(true);
+                }.bind(this), 1000);
+                this.pausableObjects.push(this.unPauseCountdownTimer);
+                this.unPauseCountdownTimer.start();
+                this.unPauseCountdownDigits[1].visible = false;
+                this.unPauseCountdownDigits[2].visible = true;
+                this.animate(true);
+            }.bind(this), 1000);
+            this.pausableObjects.push(this.unPauseCountdownTimer);
+            this.unPauseCountdownTimer.start();
+            this.unPauseCountdownDigits[0].visible = false;
+            this.unPauseCountdownDigits[1].visible = true;
+            this.animate(true);
+        }.bind(this), 1000);
+        this.pausableObjects.push(this.unPauseCountdownTimer);
+        this.unPauseCountdownTimer.start();
+        this.unPauseCountdownDigits[0].visible = true;
+        this.animate(true);
     },
 
     blur: function() {
@@ -891,6 +980,14 @@ DeerHuhn.PausableTimeout.prototype.unPause = function (timeDelta) {
     } else {
         this.timerId = window.setTimeout(timerCallback.bind(this), delay);
     }
+};
+
+/**
+ * Stop the timeout (both before and after firing).
+ */
+DeerHuhn.PausableTimeout.prototype.stop = function() {
+    this.pause();
+    this.fired = true;
 };
 
 // CLASS DeerHuhn.PausableInterval
@@ -1361,6 +1458,14 @@ DeerHuhn.AnimatedObject = function (sprite, onShotCallback, animationSpeed) {
 };
 DeerHuhn.AnimatedObject.prototype = Object.create(DeerHuhn.ShootableObject.prototype);
 DeerHuhn.AnimatedObject.prototype.constructor = DeerHuhn.AnimatedObject;
+
+DeerHuhn.AnimatedObject.prototype.pause = function () {
+    this.sprite.stop();
+};
+
+DeerHuhn.AnimatedObject.prototype.unPause = function () {
+    this.sprite.play();
+};
 
 // CLASS DeerHuhn.MovingAnimatedObject
 

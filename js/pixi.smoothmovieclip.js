@@ -51,6 +51,10 @@ PIXI.SmoothMovieClip.prototype.updateTransform = function()
 	
 	// we multiply animationSpeed by the current elapsed time from last render
 	this.currentFrame += this.animationSpeed * renderTimeDelta / 1000.0;
+
+    // BUG WORKAROUND sometimes renderTimeDelta is negative and then it causes problems
+    if (this.currentFrame < 0)
+        this.currentFrame = 0;
 	
 	var round = (this.currentFrame + 0.5) | 0;
 	
