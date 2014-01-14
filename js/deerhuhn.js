@@ -1917,10 +1917,14 @@ DeerHuhn.SingletonSoundSample = function (howlConfig) {
 DeerHuhn.SingletonSoundSample.prototype.pause = function () {
     this.resumeAfterUnPause = this.isPlaying();
 
-    if (this.howlId !== null)
-        this.howl.pause(this.howlId);
-    else
-        this.howl.pause();
+    try {
+        if (this.howlId !== null)
+            this.howl.pause(this.howlId);
+        else
+            this.howl.pause();
+    } catch (e) {
+        // if you call pause twice or more times, web audio will not like you, because you can only call stop() once
+    }
 };
 
 /**
@@ -1999,7 +2003,11 @@ DeerHuhn.SoundSample.prototype.pause = function () {
     this.playingIds = playing;
 
     for (var i=0; i<this.playingIds.length; i++) {
-        this.howl.pause(this.playingIds[i]);
+        try {
+            this.howl.pause(this.playingIds[i]);
+        } catch (e) {
+           // if you call pause twice or more times, web audio will not like you, because you can only call stop() once
+        }
     }
 };
 
