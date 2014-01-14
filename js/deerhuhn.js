@@ -1388,6 +1388,15 @@ DeerHuhn.ShootableObject = function (sprite, onShotCallback) {
      */
     this.onShotCallback = onShotCallback;
 
+    /**
+     * True if this object has already been shot.
+     *
+     * @property
+     * @public
+     * @type {boolean}
+     */
+    this.shot = false;
+
     // we can click through transparent areas of objects
     var useWebGL = (this.renderer instanceof PIXI.WebGLRenderer);
     this.sprite.hitArea = PIXI.TransparencyHitArea.create(this.sprite, useWebGL);
@@ -1405,7 +1414,7 @@ DeerHuhn.ShootableObject = function (sprite, onShotCallback) {
         if (!isLeft)
             return true;
 
-        this.onShotCallback(this);
+        this.onShot();
         return false; // stop event bubbling
     };
     this.sprite.click = onClick.bind(this);
@@ -1417,6 +1426,7 @@ DeerHuhn.ShootableObject.prototype.constructor = DeerHuhn.ShootableObject;
  * Process the shot event (should call {@link DeerHuhn.ShootableObject.onShotCallback}).
  */
 DeerHuhn.ShootableObject.prototype.onShot = function () {
+    this.shot = true;
     this.onShotCallback(this);
 };
 

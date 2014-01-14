@@ -460,8 +460,19 @@ DeerHuhn.Animals.AnimalFactory.factories.LKT = DeerHuhn.Animals.AnimalFactory.pr
 DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths);
 
-    var lkt = new DeerHuhn.Animals.LKT(path, onShotCallback, movementFinishedCallback);
+    var lkt = new DeerHuhn.Animals.LKT(path, onShotCallback, movementFinished);
     var klady = this.createKlady(lkt, onShotCallback, movementFinishedCallback);
+
+    var movementFinished = function() {
+        movementFinishedCallback.call(null, lkt);
+        // remove also the wood
+        if (!klady.shot && lkt.childrenAnimals.indexOf(klady) > 0)
+            // only remove when the wood has not yet been shot
+            // if the player shoots the tractor before the wood appears, do not try to remove the wood
+            movementFinishedCallback.call(null, klady);
+    }.bind(this);
+    lkt.movementFinishedCallback = movementFinished;
+
     lkt.childrenAnimals.push(klady);
     lkt.childrenToSpawn.push(new DeerHuhn.AnimalToSpawn(klady, 2000));
 
