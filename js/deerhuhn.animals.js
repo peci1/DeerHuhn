@@ -314,6 +314,18 @@ DeerHuhn.Animals.Kachna.prototype.constructor = DeerHuhn.Animals.Kachna;
  * @inheritDoc
  */
 DeerHuhn.Animals.Kachna.prototype.getScore = function (gameTime) {
+    return DeerHuhn.Animals.Kachna.getStaticScore(gameTime);    
+};
+
+/**
+ * Return the score for shooting the animal regardless of its specific properties.
+ *
+ * This e.g. ignores the number of children or so.
+ *
+ * @param {GameTime} gameTime The time of the game.
+ * @return {int} The score for shooting the animal regardless of its specific properties.
+ */
+DeerHuhn.Animals.Kachna.getStaticScore = function (gameTime) {
     if (gameTime.getMonth() >= 9)
         return 10;
     else
@@ -526,6 +538,18 @@ DeerHuhn.Animals.Ovce.prototype.constructor = DeerHuhn.Animals.Ovce;
  * @inheritDoc
  */
 DeerHuhn.Animals.Ovce.prototype.getScore = function (gameTime) {
+    return DeerHuhn.Animals.Ovce.getStaticScore(gameTime);
+};
+
+/**
+ * Return the score for shooting the animal regardless of its specific properties.
+ *
+ * This e.g. ignores the number of children or so.
+ *
+ * @param {GameTime} gameTime The time of the game.
+ * @return {int} The score for shooting the animal regardless of its specific properties.
+ */
+DeerHuhn.Animals.Ovce.getStaticScore = function (gameTime) {
     return -20;
 };
 
@@ -571,7 +595,20 @@ DeerHuhn.Animals.Prase.prototype.getScore = function (gameTime) {
     if (this.childrenAnimals.length > 0)
         // negative points for shooting mother boar
         return -25;
-    else if (gameTime.getMonth() < 8)
+    else 
+        return DeerHuhn.Animals.Prase.getStaticScore(gameTime);
+};
+
+/**
+ * Return the score for shooting the animal regardless of its specific properties.
+ *
+ * This e.g. ignores the number of children or so.
+ *
+ * @param {GameTime} gameTime The time of the game.
+ * @return {int} The score for shooting the animal regardless of its specific properties.
+ */
+DeerHuhn.Animals.Prase.getStaticScore = function (gameTime) {
+    if (gameTime.getMonth() < 8)
         return -25;
     else
         return 25;
@@ -698,7 +735,19 @@ DeerHuhn.Animals.Srna.prototype.constructor = DeerHuhn.Animals.Srna;
  * @inheritDoc
  */
 DeerHuhn.Animals.Srna.prototype.getScore = function (gameTime) {
-    if (gameTime.getMonth() >= 5 && gameTime.getDay() >= 16 && gameTime.getMonth() < 10) 
+    return DeerHuhn.Animals.Srna.getStaticScore(gameTime);
+};
+
+/**
+ * Return the score for shooting the animal regardless of its specific properties.
+ *
+ * This e.g. ignores the number of children or so.
+ *
+ * @param {GameTime} gameTime The time of the game.
+ * @return {int} The score for shooting the animal regardless of its specific properties.
+ */
+DeerHuhn.Animals.Srna.getStaticScore = function (gameTime) {
+    if (((gameTime.getMonth() >= 5 && gameTime.getDay() >= 16) || gameTime.getMonth() >= 6) && gameTime.getMonth() < 10) 
         return 15;
     else
         return -15;
@@ -942,10 +991,7 @@ DeerHuhn.Animals.VykukujiciSrnec.prototype.constructor = DeerHuhn.Animals.Vykuku
  * @inheritDoc
  */
 DeerHuhn.Animals.VykukujiciSrnec.prototype.getScore = function (gameTime) {
-    if (gameTime.getMonth() >= 5 && gameTime.getDay() >= 16 && gameTime.getMonth() < 10) 
-        return 15;
-    else
-        return -15;
+    return DeerHuhn.Animals.Srna.getStaticScore(gameTime);
 };
 
 /**

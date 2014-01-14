@@ -44,6 +44,7 @@ var DeerHuhn = function (canvasContainerId) {
 
     var dateChangeCallback = function () {
         this.updateDate();
+        this.updateDontShootSigns();
     }.bind(this);
 
     var gameOverCallback = function () {
@@ -395,6 +396,35 @@ DeerHuhn.prototype = {
         this.updateAmmo();
 
 
+
+        var allowedShooting = new PIXI.Sprite(PIXI.TextureCache['situace.png']);
+        allowedShooting.interactive = false;
+        allowedShooting.onresize = function () {
+            allowedShooting.position.x = 0.99*this.rendererWidth/this.renderingScale - allowedShooting.width;
+            allowedShooting.position.y = 0.01*this.rendererHeight/this.renderingScale;
+        }.bind(this);
+
+        this.addSprite(allowedShooting);
+        this.stage.addChild(allowedShooting);
+
+        // sele and liska can always be shot
+        var animalKinds = ['Ovce', 'Kachna', 'Prase', 'Srna'/*, 'Sele', 'Liska'*/];
+        var signPositionsX = [28, 165, 305, 469];
+
+        this.dontShootSigns = {};
+        for (var i=0; i < animalKinds.length; i++) {
+            var animalKind = animalKinds[i];
+            var sign = new PIXI.Sprite(PIXI.TextureCache['naboje-zadne.png']);
+
+            sign.scale.x = sign.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
+            sign.position.x = signPositionsX[i];
+            sign.position.y = 25;
+
+            this.addSprite(sign);
+            allowedShooting.addChild(sign);
+            this.dontShootSigns[animalKind] = sign;
+        }
+
         //TODO add music and sound muting
     },
 
@@ -433,6 +463,13 @@ DeerHuhn.prototype = {
         this.noAmmoSprite.visible = this.ammo === 0;
         for (var i=0; i<this.bulletSprites.length; i++)
             this.bulletSprites[i].visible = this.ammo >= (i+1);
+    },
+
+    updateDontShootSigns: function() {
+        for (var animalKind in this.dontShootSigns) {
+            var canShootAnimal = DeerHuhn.Animals[animalKind].getStaticScore.call(null, this.gameTime) > 0;
+            this.dontShootSigns[animalKind].visible = !canShootAnimal;
+        }
     },
 
     initSounds: function() {
