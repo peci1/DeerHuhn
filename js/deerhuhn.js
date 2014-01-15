@@ -662,6 +662,10 @@ DeerHuhn.prototype = {
     },
 
     addAnimal: function(animal, animalToAddBefore) {
+        // this happens when there is no free path for the animal
+        if (animal === null)
+            return;
+
         var layer = this.backgroundLayers[animal.scenePosition.layer];
         if (animalToAddBefore === undefined) {
             layer.addChild(animal.sprite);
@@ -709,6 +713,8 @@ DeerHuhn.prototype = {
                     // the animal may not exist because it has already been shot
                     this.pausableObjects.remove(timer);
                     this.animalMovementFinishedCallback.call(this, animal);
+                    if (animal.onHidden !== undefined)
+                        animal.onHidden();
                 }
             }.bind(this, animal), animal.hideAfter);
             this.pausableObjects.push(timer);
@@ -1308,6 +1314,10 @@ DeerHuhn.ScenePosition = function(layer, x, y) {
     this.y = y;
 };
 
+DeerHuhn.ScenePosition.prototype.equals = function(other) {
+    return this.layer === other.layer && this.x === other.x && this.y === other.y;
+};
+
 // CLASS DeerHuhn.ScenePositionWithScale
 
 /**
@@ -1357,6 +1367,10 @@ DeerHuhn.ScenePath.prototype = {
         return new DeerHuhn.ScenePath(this.layer, 
             this.endPosition.x, this.endPosition.y,
             this.startPosition.x, this.startPosition.y);
+    },
+
+    equals: function (other) {
+        return this.layer === other.layer && this.startPosition.equals(other.startPosition) && this.endPosition.equals(other.endPosition);
     }
 };
 
@@ -1727,53 +1741,157 @@ DeerHuhn.Animals.animationTexturesCache = [];
  * @constructor
  */
 DeerHuhn.Animals.AnimalFactory = function() {
+    /**
+     * The paths used by some animals this time.
+     * @property
+     *
+     * @protected
+     * @readonly (contents can change)
+     * @type {DeerHuhn.ScenePath[]}
+     */
+    this.occupiedPaths = [];
+
+    /**
+     * The positions used by some static objects this time.
+     * @property
+     *
+     * @protected
+     * @readonly (contents can change)
+     * @type {DeerHuhn.ScenePosition[]}
+     */
+    this.occupiedPositions = [];
 };
 
 /**
- * Choose a random object from the given set.
+ * Choose a random object from the given set excluding objects present in occupied.
  *
- * @param {...Object[]} objects Objects to choose from.
- * @return {Object} A random object from the given lists.
+ * If both objects from #objects and #occupied support the #equals method, they are compared using that one.
+ *
+ * @param {Object[]} objects Objects to choose from.
+ * @param {Object[]} occupied The objects treated as occupied.
+ * @return {Object} A random object from the given list.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.getRandomObject = function(objects) {
-    var objectArrays = arguments;
-    var numObjects = 0;
-    for (var i = 0; i < arguments.length; i++)
-        numObjects += objectArrays[i].length;
+DeerHuhn.Animals.AnimalFactory.prototype.getRandomObject = function(objects, occupied) {
+    if (objects.length === 0)
+        return null;
 
-    var randPositionIdx = randInt(0, numObjects-1);
+    var availableObjects = [];
 
-    var selected = null;
-    for (var i = 0; i < objectArrays.length; i++) {
-        if (randPositionIdx >= objectArrays[i].length) {
-            randPositionIdx -= objectArrays[i].length;
-        } else {
-            selected = objectArrays[i][randPositionIdx];
-            break;
+    if (occupied.length > 0) {
+        var equalsAvailable = objects[0].equals !== undefined && occupied[0].equals !== undefined;
+        var indexOf;
+        if (equalsAvailable)
+            indexOf = Array.prototype.indexOfUsingEquals;
+        else
+            indexOf = Array.prototype.indexOf;
+
+        // TODO possibly inefficient
+        for (var i=0; i < objects.length; i++) {
+            if (indexOf.call(occupied, objects[i]) < 0)
+                availableObjects.push(objects[i]);
         }
+    } else {
+        availableObjects = objects;
     }
+    
+    if (availableObjects.length === 0)
+        return null;
 
-    if (selected === null) {
-        console.log('Error in selecting random object from ' + arguments.length + ' arguments.');
-    }
-
-    return selected;
+    var randPositionIdx = randInt(0, availableObjects.length-1);
+    return availableObjects[randPositionIdx];
 };
 
 
 /**
- * Choose a random path from the given set.
+ * Choose a random path from the given set. The path must be unoccupied (occupied paths in #occupiedPaths).
  *
  * @param {...DeerHuhn.ScenePath[]} paths All possible paths to choose from.
- * @return {DeerHuhn.ScenePath} A random path from the given lists (might have reversed direction).
+ * @return {DeerHuhn.ScenePath} A random path from the given lists (might have reversed direction). Null, if there is no unoccupied path.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.getRandomPath = function(paths) {
-    var path = this.getRandomObject.apply(this, arguments);
+    var argPaths = Array.prototype.concat.apply([], arguments);
+    var path = this.getRandomObject(argPaths, this.occupiedPaths);
+
+    if (path === null)
+        return null;
 
     if (Math.random() > 0.5)
         path = path.reverse();
 
     return path;
+};
+
+/**
+ * Set the given path as occupied.
+ *
+ * @param {DeerHuhn.ScenePath} path The path to set as occupied.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.occupyPath = function(path) {
+    this.occupiedPaths.push(path);
+    this.occupiedPaths.push(path.reverse());
+};
+
+/**
+ * Set the given path as free.
+ *
+ * @param {DeerHuhn.ScenePath} path The path to set as free.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.freePath = function(path) {
+    this.occupiedPaths.removeUsingEquals(path);
+    this.occupiedPaths.removeUsingEquals(path.reverse());
+};
+
+/**
+ * Choose a random position from the given set. The position must be unoccupied (occupied positions in #occupiedPositions).
+ *
+ * @param {...DeerHuhn.ScenePosition[]} positions All possible positions to choose from.
+ * @return {DeerHuhn.ScenePosition} A random positions from the given lists. Null, if there is no unoccupied position.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.getRandomPosition = function(positions) {
+    var argPositions = Array.prototype.concat.apply([], arguments);
+    return this.getRandomObject(argPositions, this.occupiedPositions);
+};
+
+/**
+ * Set the given position as occupied.
+ *
+ * @param {DeerHuhn.ScenePosition} position The position to set as occupied.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.occupyPosition = function(position) {
+    this.occupiedPositions.push(position);
+};
+
+/**
+ * Set the given position as free.
+ *
+ * @param {DeerHuhn.ScenePosition} position The position to set as free.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.freePosition = function(position) {
+    this.occupiedPositions.removeUsingEquals(position);
+};
+
+/**
+ * Wrap the given movementFinishedCallback to make the animal's path free after the animal disappears.
+ *
+ * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the animal disappears.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.wrapMovementFinishedCallback = function(movementFinishedCallback) {
+    return function (animal) {
+        this.freePath(animal.scenePath);
+        movementFinishedCallback.call(null, animal);
+    }.bind(this);
+};
+
+/**
+ * Wrap the given onShotCallback to make the animal's path free after the animal is shot.
+ *
+ * @param {onShotCallback} onShotCallback The callback to call when the animal is shot.
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.wrapOnShotCallback = function(onShotCallback) {
+    return function (animal) {
+        this.freePosition(animal.scenePosition);
+        onShotCallback.call(null, animal);
+    }.bind(this);
 };
 
 /**
@@ -2091,6 +2209,34 @@ Array.prototype.remove = function(val) {
     }
     return this;
 };
+
+/*
+ * Classical indexOf but comparing using an equals() method.
+ */
+Array.prototype.indexOfUsingEquals = function(val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i].equals(val)) {
+            return i;
+        }
+    }
+    return -1;
+};
+
+/*
+ * Add a "remove by value" to array prototype. It only removes first instance of the value.
+ *
+ * This implementation need all the array's objects to have an equals() method.
+ */
+Array.prototype.removeUsingEquals = function(val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i].equals(val)) {
+            this.splice(i, 1);
+            break;
+        }
+    }
+    return this;
+};
+
 
 function randInt(min, max) {
     var result = Math.floor((Math.random() * ((max*1.0 + 1) - min)) + min);

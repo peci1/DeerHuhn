@@ -156,7 +156,9 @@ DeerHuhn.Animals.Liska.prototype.getScore = function (gameTime) {
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createLiska = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.barnPaths, this.housePaths);
-    return new DeerHuhn.Animals.Liska(path, onShotCallback, movementFinishedCallback);
+    if (path === null) return null;
+    this.occupyPath(path);
+    return new DeerHuhn.Animals.Liska(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
 };
 DeerHuhn.Animals.AnimalFactory.factories.Liska = DeerHuhn.Animals.AnimalFactory.prototype.createLiska;
 
@@ -198,6 +200,7 @@ DeerHuhn.Animals.AutoCervene.prototype.getScore = function (gameTime) {
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createAutoCervene = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.roadPaths);
+    if (path === null) return null;
     return new DeerHuhn.Animals.AutoCervene(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.AutoCervene = DeerHuhn.Animals.AnimalFactory.prototype.createAutoCervene;
@@ -240,6 +243,7 @@ DeerHuhn.Animals.AutoModre.prototype.getScore = function (gameTime) {
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createAutoModre = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.roadPaths);
+    if (path === null) return null;
     return new DeerHuhn.Animals.AutoModre(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.AutoModre = DeerHuhn.Animals.AnimalFactory.prototype.createAutoModre;
@@ -285,7 +289,9 @@ DeerHuhn.Animals.KachnaPlove.prototype.getScore = function (gameTime) {
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createKachnaPlove = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.waterPaths);
-    return new DeerHuhn.Animals.KachnaPlove(path, onShotCallback, movementFinishedCallback);
+    if (path === null) return null;
+    this.occupyPath(path);
+    return new DeerHuhn.Animals.KachnaPlove(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
 };
 DeerHuhn.Animals.AnimalFactory.factories.KachnaPlove = DeerHuhn.Animals.AnimalFactory.prototype.createKachnaPlove;
 
@@ -348,8 +354,9 @@ DeerHuhn.Animals.AnimalFactory.prototype.createKachna = function (onShotCallback
     var yRight = randInt(20, 940);
 
     var path = new DeerHuhn.ScenePath(layer, -50, yLeft, 3800, yRight);
+    this.occupyPath(path);
 
-    return new DeerHuhn.Animals.Kachna(path, onShotCallback, movementFinishedCallback);
+    return new DeerHuhn.Animals.Kachna(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
 };
 DeerHuhn.Animals.AnimalFactory.factories.Kachna = DeerHuhn.Animals.AnimalFactory.prototype.createKachna;
 
@@ -445,7 +452,9 @@ DeerHuhn.Animals.LKT.prototype.getScore = function (gameTime) {
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createLKT = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths);
-    return new DeerHuhn.Animals.LKT(path, onShotCallback, movementFinishedCallback);
+    if (path === null) return null;
+    this.occupyPath(path);
+    return new DeerHuhn.Animals.LKT(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
 };
 DeerHuhn.Animals.AnimalFactory.factories.LKT = DeerHuhn.Animals.AnimalFactory.prototype.createLKT;
 
@@ -459,12 +468,15 @@ DeerHuhn.Animals.AnimalFactory.factories.LKT = DeerHuhn.Animals.AnimalFactory.pr
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths);
+    if (path === null) return null;
+    this.occupyPath(path);
 
-    var lkt = new DeerHuhn.Animals.LKT(path, onShotCallback, movementFinished);
+    var lkt = new DeerHuhn.Animals.LKT(path, onShotCallback, movementFinishedCallback);
     var klady = this.createKlady(lkt, onShotCallback, movementFinishedCallback);
 
     var movementFinished = function() {
-        movementFinishedCallback.call(null, lkt);
+        var cb = this.wrapMovementFinishedCallback(movementFinishedCallback);
+        cb.call(null, lkt);
         // remove also the wood
         if (!klady.shot && lkt.childrenAnimals.indexOf(klady) > 0)
             // only remove when the wood has not yet been shot
@@ -520,6 +532,7 @@ DeerHuhn.Animals.Odvozka.prototype.getScore = function (gameTime) {
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.roadPaths);
+    if (path === null) return null;
     return new DeerHuhn.Animals.Odvozka(path, onShotCallback, movementFinishedCallback);
 };
 DeerHuhn.Animals.AnimalFactory.factories.Odvozka = DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka;
@@ -574,7 +587,9 @@ DeerHuhn.Animals.Ovce.getStaticScore = function (gameTime) {
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createOvce = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.fieldPaths, this.barnPaths, this.housePaths);
-    return new DeerHuhn.Animals.Ovce(path, onShotCallback, movementFinishedCallback);
+    if (path === null) return null;
+    this.occupyPath(path);
+    return new DeerHuhn.Animals.Ovce(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
 };
 DeerHuhn.Animals.AnimalFactory.factories.Ovce = DeerHuhn.Animals.AnimalFactory.prototype.createOvce;
 
@@ -635,7 +650,9 @@ DeerHuhn.Animals.Prase.getStaticScore = function (gameTime) {
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createPrase = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
-    return new DeerHuhn.Animals.Prase(path, onShotCallback, movementFinishedCallback);
+    if (path === null) return null;
+    this.occupyPath(path);
+    return new DeerHuhn.Animals.Prase(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
 };
 DeerHuhn.Animals.AnimalFactory.factories.Prase = DeerHuhn.Animals.AnimalFactory.prototype.createPrase;
 
@@ -649,7 +666,9 @@ DeerHuhn.Animals.AnimalFactory.factories.Prase = DeerHuhn.Animals.AnimalFactory.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createVlacek = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
-    var prase = new DeerHuhn.Animals.Prase(path, onShotCallback, movementFinishedCallback);
+    if (path === null) return null;
+    this.occupyPath(path);
+    var prase = new DeerHuhn.Animals.Prase(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
 
     var numChildren = randInt(2, 4);
     var childSpawnDelay = 700;
@@ -702,7 +721,9 @@ DeerHuhn.Animals.Sele.prototype.getScore = function (gameTime) {
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createSele = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.cropsPaths, this.barnPaths, this.fieldPaths);
-    return new DeerHuhn.Animals.Sele(path, onShotCallback, movementFinishedCallback);
+    if (path === null) return null;
+    this.occupyPath(path);
+    return new DeerHuhn.Animals.Sele(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
 };
 DeerHuhn.Animals.AnimalFactory.factories.Sele = DeerHuhn.Animals.AnimalFactory.prototype.createSele;
 
@@ -774,7 +795,9 @@ DeerHuhn.Animals.Srna.getStaticScore = function (gameTime) {
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createSrna = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.forrestPaths, this.barnPaths, this.fieldPaths);
-    return new DeerHuhn.Animals.Srna(path, onShotCallback, movementFinishedCallback);
+    if (path === null) return null;
+    this.occupyPath(path);
+    return new DeerHuhn.Animals.Srna(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
 };
 DeerHuhn.Animals.AnimalFactory.factories.Srna = DeerHuhn.Animals.AnimalFactory.prototype.createSrna;
 
@@ -813,7 +836,8 @@ DeerHuhn.Animals.Budka.prototype.getScore = function (gameTime) {
  * @return {DeerHuhn.Animals.Budka} A bird's house.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createBudka = function (onShotCallback) {
-    var position = this.getRandomObject(this.budkaPositions);
+    var position = this.getRandomPosition(this.budkaPositions);
+    if (position === null) return null;
     return new DeerHuhn.Animals.Budka(position, onShotCallback);
 };
 
@@ -853,8 +877,17 @@ DeerHuhn.Animals.Souska.prototype.getScore = function (gameTime) {
  * @return {DeerHuhn.Animals.Budka} A dead tree.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createSouska = function (onShotCallback) {
-    var position = this.getRandomObject(this.souskaPositions);
-    return new DeerHuhn.Animals.Souska(position, onShotCallback);
+    var position = this.getRandomPosition(this.souskaPositions);
+    if (position === null) return null;
+    this.occupyPosition(position);
+
+    var animal = new DeerHuhn.Animals.Souska(position, this.wrapOnShotCallback(onShotCallback));
+
+    animal.onHidden = function () {
+        this.freePosition(position);
+    }.bind(this);
+
+    return animal;
 };
 
 
@@ -891,7 +924,8 @@ DeerHuhn.Animals.Vetev.prototype.getScore = function (gameTime) {
  * @return {DeerHuhn.Animals.Vetev} A dead tree branch
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createVetev = function (onShotCallback) {
-    var position = this.getRandomObject(this.vetevPositions);
+    var position = this.getRandomPosition(this.vetevPositions);
+    if (position === null) return null;
     return new DeerHuhn.Animals.Vetev(position, onShotCallback);
 };
 
@@ -929,8 +963,17 @@ DeerHuhn.Animals.Choros.prototype.getScore = function (gameTime) {
  * @return {DeerHuhn.Animals.Choros} A dead tree branch
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createChoros = function (onShotCallback) {
-    var position = this.getRandomObject(this.chorosPositions);
-    return new DeerHuhn.Animals.Choros(position, onShotCallback);
+    var position = this.getRandomPosition(this.chorosPositions);
+    if (position === null) return null;
+    this.occupyPosition(position);
+
+    var animal = new DeerHuhn.Animals.Choros(position, this.wrapOnShotCallback(onShotCallback));
+
+    animal.onHidden = function () {
+        this.freePosition(position);
+    }.bind(this);
+
+    return animal;
 };
 
 
@@ -972,8 +1015,17 @@ DeerHuhn.Animals.Kvitko.prototype.getScore = function (gameTime) {
  * @return {DeerHuhn.Animals.Kvitko} A flower.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createKvitko = function (onShotCallback) {
-    var position = this.getRandomObject(this.kvitkoPositions);
-    return new DeerHuhn.Animals.Kvitko(position, onShotCallback);
+    var position = this.getRandomPosition(this.kvitkoPositions);
+    if (position === null) return null;
+    this.occupyPosition(position);
+
+    var animal = new DeerHuhn.Animals.Kvitko(position, this.wrapOnShotCallback(onShotCallback));
+
+    animal.onHidden = function () {
+        this.freePosition(position);
+    }.bind(this);
+
+    return animal;
 };
 DeerHuhn.Animals.AnimalFactory.staticFactories.Kvitko = DeerHuhn.Animals.AnimalFactory.prototype.createKvitko;
 
@@ -1013,7 +1065,16 @@ DeerHuhn.Animals.VykukujiciSrnec.prototype.getScore = function (gameTime) {
  * @return {DeerHuhn.Animals.VykukujiciSrnec} A static deer.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createVykukujiciSrnec = function (onShotCallback) {
-    var position = this.getRandomObject(this.vykukujiciSrnecPositions);
-    return new DeerHuhn.Animals.VykukujiciSrnec(position, onShotCallback);
+    var position = this.getRandomPosition(this.vykukujiciSrnecPositions);
+    if (position === null) return null;
+    this.occupyPosition(position);
+
+    var animal = new DeerHuhn.Animals.VykukujiciSrnec(position, this.wrapOnShotCallback(onShotCallback));
+
+    animal.onHidden = function () {
+        this.freePosition(position);
+    }.bind(this);
+
+    return animal;
 };
 DeerHuhn.Animals.AnimalFactory.staticFactories.VykukujiciSrnec = DeerHuhn.Animals.AnimalFactory.prototype.createVykukujiciSrnec;
