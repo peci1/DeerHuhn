@@ -792,6 +792,11 @@ DeerHuhn.prototype = {
 
     initializeImages: function() {
         var assets = [
+            'HelveticaLight.webfont',
+            'HelveticaLightBold.webfont',
+            'HelveticaBlack.webfont',
+            'images/sprites-menu.json',
+            'images/menu-pozadi.png',
             'images/vrstva0.png', 
             'images/vrstva1.png', 
             'images/vrstva2.png', 
@@ -801,7 +806,7 @@ DeerHuhn.prototype = {
             'images/sprites-interactive.json', 
             'images/sprites-passive.json'
         ];
-        var loader = new PIXI.AssetLoader(assets);
+        var loader = new PIXI.FontAwareAssetLoader(assets);
         //loader.onProgress = onAssetLoaderProgress //TODO
         loader.onComplete = this.onLoad.bind(this);
         loader.load();
