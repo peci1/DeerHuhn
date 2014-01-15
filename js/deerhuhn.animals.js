@@ -478,9 +478,10 @@ DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (onShotCa
         var cb = this.wrapMovementFinishedCallback(movementFinishedCallback);
         cb.call(null, lkt);
         // remove also the wood
-        if (!klady.shot && lkt.childrenAnimals.indexOf(klady) > 0)
+        if (!klady.shot && lkt.childrenToSpawn.length === 0 && klady.sprite.parent !== null)
             // only remove when the wood has not yet been shot
             // if the player shoots the tractor before the wood appears, do not try to remove the wood
+            // the .parent check is there to avoid synchronization issues, which can occur relatively often
             movementFinishedCallback.call(null, klady);
     }.bind(this);
     lkt.movementFinishedCallback = movementFinished;
