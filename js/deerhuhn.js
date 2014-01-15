@@ -33,10 +33,19 @@ var DeerHuhn = function (canvasContainerId) {
     this.scrollPercentage = 0.0;
     this.SCROLL_PERCENTAGE_STEP_PER_SECOND = 35/100.0;
 
-    // renderer setup
+    // stages setup
     var interactive = true;
-    this.stage = new PIXI.ScalableStage(0xAAFFFF, interactive);
-    this.stage.name = 'Stage';
+    this.stages = {};
+    this.stages.menu = new PIXI.ScalableStage(0xAAFFFF, interactive);
+    this.stages.menu.name = "Menu stage";
+    this.stages.game = new PIXI.ScalableStage(0xAAFFFF, interactive);
+    this.stages.game.name = "Game stage";
+    this.stages.gameOver = new PIXI.ScalableStage(0xAAFFFF, interactive);
+    this.stages.gameOver.name = "Game over stage";
+
+    this.stage = this.stages.menu;
+
+    // renderer setup
     this.renderer = PIXI.autoDetectRenderer(this.rendererWidth, this.rendererHeight);
     this.GAME_CONTAINER.appendChild(this.renderer.view);
 
@@ -143,7 +152,7 @@ var DeerHuhn = function (canvasContainerId) {
     });
 
     // right-click for reloading
-    this.stage.click = function (mouse) {
+    this.stages.game.click = function (mouse) {
         if (this.isPaused)
             return;
 
@@ -289,7 +298,7 @@ DeerHuhn.prototype = {
             this.backgroundLayers[i].click = layerClick.bind(this);
 
             this.addSprite(this.backgroundLayers[i]);
-            this.stage.addChild(this.backgroundLayers[i]);
+            this.stages.game.addChild(this.backgroundLayers[i]);
         }
 
         // add the false background in foreground (for displaying points above all layers)
@@ -298,7 +307,7 @@ DeerHuhn.prototype = {
             this.backgroundLayers[i].name = "False background " + (i-6);
             this.backgroundLayers[i].width = this.backgroundLayers[i-6].width;
             this.backgroundLayers[i].height = this.backgroundLayers[i-6].height;
-            this.stage.addChild(this.backgroundLayers[i]);
+            this.stages.game.addChild(this.backgroundLayers[i]);
         }
 
         // init animations
@@ -321,6 +330,8 @@ DeerHuhn.prototype = {
                 }
             }
         }
+
+        this.initMenu();
 
         this.initHUD();
 
@@ -353,6 +364,144 @@ DeerHuhn.prototype = {
             this.pausableObjects.remove(sprite);
     },
 
+    initMenu: function() {
+        // the background image
+        var background = PIXI.Sprite.fromImage('images/menu-pozadi.png');
+        background.anchor.x = 0.5;
+        background.position.y = 0;
+        background.onresize = function () {
+            background.position.x = 0.5*this.rendererWidth/this.renderingScale;
+        }.bind(this);
+
+        this.stages.menu.addChild(background);
+        this.addSprite(background);
+
+        // the foreground image
+        var foreground = new PIXI.Sprite(PIXI.TextureCache['uvodni_obrazek.png']);
+        foreground.interactive = true;
+        foreground.anchor.x = 0.5;
+        foreground.position.y = 0;
+        foreground.onresize = function () {
+            // do not allow the left edge to go out of view
+            foreground.position.x = Math.max(0.5*foreground.width, 0.5*this.rendererWidth/this.renderingScale);
+        }.bind(this);
+
+        this.stages.menu.addChild(foreground);
+        this.addSprite(foreground);
+
+        var linkFontSize = '57px';
+
+        // link to www.fld.czu.cz
+        var linkWWW = new PIXI.DisplayObjectContainer();
+        linkWWW.interactive = true;
+        linkWWW.buttonMode = true;
+
+        var linkWWW1 = new PIXI.Text('www.', {font: linkFontSize+' HelveticaLightBold', fill: '#336666'});
+        linkWWW.addChild(linkWWW1);
+        var linkWWW2 = new PIXI.Text('fld.czu.cz', {font: linkFontSize+' HelveticaBlack', fill: '#336666'});
+        linkWWW.addChild(linkWWW2);
+        linkWWW2.position.x = linkWWW1.width;
+
+        linkWWW.position = new PIXI.Point(105 - 0.5*foreground.width, 795);
+        linkWWW.rotation = -3*Math.PI/180;
+
+        linkWWW.click = function (mouse) {
+            document.getElementById('wwwLink').click(mouse.originalEvent);
+        };
+
+        foreground.addChild(linkWWW);
+        this.addSprite(linkWWW);
+
+        // link to Facebook
+        linkFontSize = '50px';
+
+        var linkFB = new PIXI.DisplayObjectContainer();
+        linkFB.interactive = true;
+        linkFB.buttonMode = true;
+
+        var linkFB1 = new PIXI.Text('facebook.com/', {font: linkFontSize+' HelveticaLightBold', fill: '#339966'});
+        linkFB.addChild(linkFB1);
+        var linkFB2 = new PIXI.Text('fld.czu.cz', {font: linkFontSize+' HelveticaBlack', fill: '#339966'});
+        linkFB.addChild(linkFB2);
+        linkFB2.position.x = linkFB1.width;
+
+        linkFB.position = new PIXI.Point(105 - 0.5*foreground.width, 865);
+        linkFB.rotation = -3*Math.PI/180;
+
+        linkFB.click = function (mouse) {
+            document.getElementById('fbLink').click(mouse.originalEvent);
+        };
+
+        foreground.addChild(linkFB);
+        this.addSprite(linkFB);
+
+        // PLAY button
+        var playDarkTexture = PIXI.TextureCache['hrat_tm.png'];
+        var playLightTexture = PIXI.TextureCache['hrat_sv.png'];
+        var playBtn = new PIXI.Sprite(playDarkTexture);
+        playBtn.interactive = true;
+        playBtn.buttonMode = true;
+        playBtn.position = new PIXI.Point(60 - 0.5*foreground.width, 630);
+        playBtn.scale.x = playBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
+
+        playBtn.click = function (mouse) {
+            // TODO start the game
+        };
+        playBtn.mouseover = function (mouse) {
+            playBtn.setTexture(playLightTexture);
+        };
+        playBtn.mouseout = function (mouse) {
+            playBtn.setTexture(playDarkTexture);
+        };
+
+        foreground.addChild(playBtn);
+        this.addSprite(playBtn);
+
+        // RULES button
+        var rulesDarkTexture = PIXI.TextureCache['pravidla_tm.png'];
+        var rulesLightTexture = PIXI.TextureCache['pravidla_sv.png'];
+        var rulesBtn = new PIXI.Sprite(rulesDarkTexture);
+        rulesBtn.interactive = true;
+        rulesBtn.buttonMode = true;
+        rulesBtn.position = new PIXI.Point(240 - 0.5*foreground.width, 630);
+        rulesBtn.scale.x = rulesBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
+
+        rulesBtn.click = function (mouse) {
+            // TODO show the rules
+        };
+        rulesBtn.mouseover = function (mouse) {
+            rulesBtn.setTexture(rulesLightTexture);
+        };
+        rulesBtn.mouseout = function (mouse) {
+            rulesBtn.setTexture(rulesDarkTexture);
+        };
+
+        foreground.addChild(rulesBtn);
+        this.addSprite(rulesBtn);
+
+        // SCORE button
+        var scoreDarkTexture = PIXI.TextureCache['skore_tm.png'];
+        var scoreLightTexture = PIXI.TextureCache['skore_sv.png'];
+        var scoreBtn = new PIXI.Sprite(scoreDarkTexture);
+        scoreBtn.interactive = true;
+        scoreBtn.buttonMode = true;
+        scoreBtn.position = new PIXI.Point(540 - 0.5*foreground.width, 632);
+        scoreBtn.scale.x = scoreBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
+
+        scoreBtn.click = function (mouse) {
+            // TODO show the score
+        };
+        scoreBtn.mouseover = function (mouse) {
+            scoreBtn.setTexture(scoreLightTexture);
+        };
+        scoreBtn.mouseout = function (mouse) {
+            scoreBtn.setTexture(scoreDarkTexture);
+        };
+
+        foreground.addChild(scoreBtn);
+        this.addSprite(scoreBtn);
+    },
+
     initHUD: function() {
         var ignoreClicksCallback = function () {
             return false;
@@ -368,7 +517,7 @@ DeerHuhn.prototype = {
         }.bind(this);
 
         this.addSprite(pointsDate);
-        this.stage.addChild(pointsDate);
+        this.stages.game.addChild(pointsDate);
 
         // date
         
@@ -403,7 +552,7 @@ DeerHuhn.prototype = {
             bullet.onresize = ammoResize.bind(null, bullet, i);
 
             this.addSprite(bullet);
-            this.stage.addChild(bullet);
+            this.stages.game.addChild(bullet);
             this.bulletSprites[i] = bullet;
         }
 
@@ -413,7 +562,7 @@ DeerHuhn.prototype = {
         noAmmo.onresize = ammoResize.bind(null, noAmmo, 0);
 
         this.addSprite(noAmmo);
-        this.stage.addChild(noAmmo);
+        this.stages.game.addChild(noAmmo);
         this.noAmmoSprite = noAmmo;
 
         this.updateAmmo();
@@ -428,7 +577,7 @@ DeerHuhn.prototype = {
         }.bind(this);
 
         this.addSprite(allowedShooting);
-        this.stage.addChild(allowedShooting);
+        this.stages.game.addChild(allowedShooting);
 
         // sele and liska can always be shot
         var animalKinds = ['Ovce', 'Kachna', 'Prase', 'Srna'/*, 'Sele', 'Liska'*/];
@@ -465,7 +614,7 @@ DeerHuhn.prototype = {
 
             this.unPauseCountdownDigits.push(digit);
             this.addSprite(digit);
-            this.stage.addChild(digit);
+            this.stages.game.addChild(digit);
         }
 
         var mask = new PIXI.Graphics();
@@ -820,7 +969,10 @@ DeerHuhn.prototype = {
         this.renderer.resize(this.rendererWidth, this.rendererHeight);
 
         // the scaling propagates to children
-        this.stage.scale.x = this.stage.scale.y = this.renderingScale; 
+        for (var stageName in this.stages) {
+            var stage = this.stages[stageName];
+            stage.scale.x = stage.scale.y = this.renderingScale; 
+        }
 
         for (var i = 0; i < this.sprites.length; i++) {
             if (this.sprites[i].onresize !== undefined) {
@@ -828,7 +980,10 @@ DeerHuhn.prototype = {
             }
         }
 
-        this.stage.updateTransform();
+        for (var stageName in this.stages) {
+            var stage = this.stages[stageName];
+            stage.updateTransform();
+        }
     },
 
     pause: function() {
@@ -846,7 +1001,7 @@ DeerHuhn.prototype = {
         if (this.isPaused)
             return;
 
-        this.stage.addChild(this.pauseMask);
+        this.stages.game.addChild(this.pauseMask);
 
         this.isPaused = true;
         this.pauseStartTime = new Date();
@@ -889,7 +1044,7 @@ DeerHuhn.prototype = {
                     }
 
                     this.unPauseCountdownDigits[2].visible = false;
-                    this.stage.removeChild(this.pauseMask);
+                    this.stages.game.removeChild(this.pauseMask);
 
                     this.lastAnimationFrameTime = new Date();
                     this.animate(true);

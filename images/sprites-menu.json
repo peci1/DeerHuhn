@@ -1,0 +1,45 @@
+{
+"frames": {
+	"hrat_sv.png": {
+		"frame": {"x":1059, "y":1176, "w":382, "h":214},
+		"spriteSourceSize": {"x":0,"y":0,"w":382,"h":214},
+		"sourceSize": {"w":382,"h":214}
+	},
+	"hrat_tm.png": {
+		"frame": {"x":1059, "y":961, "w":382, "h":214},
+		"spriteSourceSize": {"x":0,"y":0,"w":382,"h":214},
+		"sourceSize": {"w":382,"h":214}
+	},
+	"pravidla_sv.png": {
+		"frame": {"x":0, "y":1176, "w":618, "h":214},
+		"spriteSourceSize": {"x":0,"y":0,"w":618,"h":214},
+		"sourceSize": {"w":618,"h":214}
+	},
+	"pravidla_tm.png": {
+		"frame": {"x":0, "y":961, "w":618, "h":214},
+		"spriteSourceSize": {"x":0,"y":0,"w":618,"h":214},
+		"sourceSize": {"w":618,"h":214}
+	},
+	"skore_sv.png": {
+		"frame": {"x":619, "y":1176, "w":439, "h":214},
+		"spriteSourceSize": {"x":0,"y":0,"w":439,"h":214},
+		"sourceSize": {"w":439,"h":214}
+	},
+	"skore_tm.png": {
+		"frame": {"x":619, "y":961, "w":439, "h":214},
+		"spriteSourceSize": {"x":0,"y":0,"w":439,"h":214},
+		"sourceSize": {"w":439,"h":214}
+	},
+	"uvodni_obrazek.png": {
+		"frame": {"x":0, "y":0, "w":1590, "h":960},
+		"spriteSourceSize": {"x":0,"y":0,"w":1590,"h":960},
+		"sourceSize": {"w":1590,"h":960}
+	}
+
+},
+"meta": {
+	"image": "sprites-menu.png",
+	"size": {"w": 1591, "h": 1391},
+	"scale": "1"
+}
+}
