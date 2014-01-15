@@ -76,6 +76,8 @@ var DeerHuhn = function (canvasContainerId) {
     /** The timer managing the timeout when unpausing. */
     this.unPauseCountdownTimer = null;
     this.unPauseCountdownDigits = [];
+    /** The mask used for overlaying the game when paused. */
+    this.pauseMask = null;
 
     // objects that need position updates via updatePosition(timeDelta) calls
     this.movingObjects = [];
@@ -466,6 +468,12 @@ DeerHuhn.prototype = {
             this.stage.addChild(digit);
         }
 
+        var mask = new PIXI.Graphics();
+        mask.beginFill(0x000000, 0.5);
+        mask.drawRect(0, 0, 5000, 5000);
+        mask.endFill();
+
+        this.pauseMask = mask;
         //TODO add music and sound muting
     },
 
@@ -833,6 +841,8 @@ DeerHuhn.prototype = {
         if (this.isPaused)
             return;
 
+        this.stage.addChild(this.pauseMask);
+
         this.isPaused = true;
         this.pauseStartTime = new Date();
 
@@ -874,6 +884,7 @@ DeerHuhn.prototype = {
                     }
 
                     this.unPauseCountdownDigits[2].visible = false;
+                    this.stage.removeChild(this.pauseMask);
 
                     this.lastAnimationFrameTime = new Date();
                     this.animate(true);
