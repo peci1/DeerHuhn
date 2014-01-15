@@ -1,7 +1,9 @@
 DeerHuhn.Animals.AnimalFactory.prototype.roadPaths = [
-    new DeerHuhn.ScenePath(3, 93, 327, 644, 399),
     new DeerHuhn.ScenePath(4, 2650, 333, 3705, 333),
-    new DeerHuhn.ScenePath(3, 2248, 784, 3106, 525),
+];
+
+DeerHuhn.Animals.AnimalFactory.prototype.forrestRoadPaths = [
+    new DeerHuhn.ScenePath(3, 93, 327, 644, 399),
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.cropsPaths = [
@@ -42,8 +44,8 @@ DeerHuhn.Animals.AnimalFactory.prototype.forrestPaths = [
     new DeerHuhn.ScenePath(3, -14, 459, 896, 618),
     new DeerHuhn.ScenePath(3, -40, 514, 484, 622),
     new DeerHuhn.ScenePath(3, -23, 667, 458, 643),
+    new DeerHuhn.ScenePath(3, 415, 951, 1366, 576), 
     new DeerHuhn.ScenePath(3, 394, 907, 880, 921),
-    new DeerHuhn.ScenePath(3, 415, 951, 1366, 576), //almost road path
     new DeerHuhn.ScenePath(3, 533, 633, 875, 657),
     new DeerHuhn.ScenePath(3, 556, 639, 1138, 808), //near lake
     new DeerHuhn.ScenePath(3, 637, 444, 1766, 772),
@@ -451,7 +453,7 @@ DeerHuhn.Animals.LKT.prototype.getScore = function (gameTime) {
  * @return {DeerHuhn.Animals.LKT} A tractor.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createLKT = function (onShotCallback, movementFinishedCallback) {
-    var path = this.getRandomPath(this.forrestPaths);
+    var path = this.getRandomPath(this.forrestRoadPaths);
     if (path === null) return null;
     this.occupyPath(path);
     return new DeerHuhn.Animals.LKT(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
@@ -467,7 +469,7 @@ DeerHuhn.Animals.AnimalFactory.factories.LKT = DeerHuhn.Animals.AnimalFactory.pr
  * @return {DeerHuhn.Animals.LKT} A tractor.
  */
 DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (onShotCallback, movementFinishedCallback) {
-    var path = this.getRandomPath(this.forrestPaths);
+    var path = this.getRandomPath(this.forrestRoadPaths);
     if (path === null) return null;
     this.occupyPath(path);
 
@@ -534,7 +536,8 @@ DeerHuhn.Animals.Odvozka.prototype.getScore = function (gameTime) {
 DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka = function (onShotCallback, movementFinishedCallback) {
     var path = this.getRandomPath(this.roadPaths);
     if (path === null) return null;
-    return new DeerHuhn.Animals.Odvozka(path, onShotCallback, movementFinishedCallback);
+    this.occupyPath(path);
+    return new DeerHuhn.Animals.Odvozka(path, onShotCallback, this.wrapMovementFinishedCallback(movementFinishedCallback));
 };
 DeerHuhn.Animals.AnimalFactory.factories.Odvozka = DeerHuhn.Animals.AnimalFactory.prototype.createOdvozka;
 
