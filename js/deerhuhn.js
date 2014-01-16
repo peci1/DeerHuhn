@@ -2257,8 +2257,6 @@ DeerHuhn.SingletonSoundSample.prototype.pause = function () {
     try {
         if (this.howlId !== null)
             this.howl.pause(this.howlId);
-        else
-            this.howl.pause();
     } catch (e) {
         // if you call pause twice or more times, web audio will not like you, because you can only call stop() once
     }
