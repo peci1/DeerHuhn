@@ -3,7 +3,7 @@ PIXI.Keys = {
 	pressedModifiers: [],
 	modifiers: {ctrl: 'ctrl', alt: 'alt', meta: 'meta', shift: 'shift'},
 	// shorthands for some basic key codes
-	keyCodes: {left: 37, right: 39, up: 38, down: 40 }
+	keyCodes: {left: 37, right: 39, up: 38, down: 40, esc: 27, escape: 27 }
 };
 
 PIXI.Keys.init = function() {
