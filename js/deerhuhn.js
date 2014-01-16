@@ -42,23 +42,29 @@ var DeerHuhn = function (canvasContainerId) {
     this.stages.game.name = "Game stage";
     this.stages.gameOver = new PIXI.ScalableStage(0xAAFFFF, interactive);
     this.stages.gameOver.name = "Game over stage";
+    this.stages.rules = new PIXI.ScalableStage(0xAAFFFF, interactive);
+    this.stages.rules.name = "Rules stage";
+    this.stages.score = new PIXI.ScalableStage(0xAAFFFF, interactive);
+    this.stages.score.name = "Score stage";
 
-    this.stage = this.stages.menu;
+    this.stageName = 'menu';
+    this.stage = this.stages[this.stageName];
+
+    /** Names of all the stages that form the menu. */
+    this.menuStageNames = ['menu', 'rules', 'score', 'gameOver'];
+
+    this.stageShownListeners = {};
+    this.stageHiddenListeners = {};
+    for (var stage in this.stages) {
+        this.stageShownListeners[stage] = [];
+        this.stageHiddenListeners[stage] = [];
+    }
 
     // renderer setup
     this.renderer = PIXI.autoDetectRenderer(this.rendererWidth, this.rendererHeight);
     this.GAME_CONTAINER.appendChild(this.renderer.view);
 
     this.useWebGl = (this.renderer instanceof PIXI.WebGLRenderer);
-
-    var dateChangeCallback = function () {
-        this.updateDate();
-        this.updateDontShootSigns();
-    }.bind(this);
-
-    var gameOverCallback = function () {
-        console.log('Game over!'); //TODO development code
-    }.bind(this);
 
     /**
      * The time of the game.
@@ -69,7 +75,7 @@ var DeerHuhn = function (canvasContainerId) {
      * @readonly
      * @type {DeerHuhn.GameTime}
      */
-    this.gameTime = new DeerHuhn.GameTime(dateChangeCallback, gameOverCallback);
+    this.gameTime = null;
 
     this.points = 0;
 
@@ -81,7 +87,7 @@ var DeerHuhn = function (canvasContainerId) {
     // pausing
     this.isPaused = false;
     this.pauseStartTime = null;
-    this.pausableObjects = [this.gameTime];
+    this.pausableObjects = [];
     /** The timer managing the timeout when unpausing. */
     this.unPauseCountdownTimer = null;
     this.unPauseCountdownDigits = [];
@@ -240,6 +246,10 @@ DeerHuhn.prototype = {
             this.scrollingDirection = 1;
         } else if (PIXI.Keys.isKeyPressed(PIXI.Keys.keyCodes.right)) {
             this.scrollingDirection = -1;
+        } else if (PIXI.Keys.isKeyPressed(PIXI.Keys.keyCodes.esc)) {
+            this.changeStage('menu'); // TODO dev code
+        } else if (PIXI.Keys.isKeyPressed(48)) { // 0/é key on cs keyboard
+            this.gameTime.increaseDate(); // TODO dev code
         } else {
             // if not scrolling by keyboard, try to scroll by mouse
             this.scrollingDirection = this.scrollingDirectionByMouse;
@@ -331,21 +341,23 @@ DeerHuhn.prototype = {
             }
         }
 
-        this.initMenu();
+        this.initStages();
 
         this.initHUD();
 
         this.initSounds();
 
-        this.initAnimals();
-
         this.resize();
 
-        // needed for the scale to propagate to the text size
-        this.updateDate();
-        this.updatePoints();
+        for (var stage in this.stages) {
+            var hiddenListeners = this.stageHiddenListeners[stage];
+            for (var i=0; i<hiddenListeners.length; i++)
+                hiddenListeners[i].call(this);
+        }
+        var shownListeners = this.stageShownListeners[this.stageName];
+        for (var i=0; i<shownListeners.length; i++)
+            shownListeners[i].call(this);
 
-        this.gameTime.start();
         requestAnimFrame(this.animate.bind(this));
     },
 
@@ -364,15 +376,84 @@ DeerHuhn.prototype = {
             this.pausableObjects.remove(sprite);
     },
 
-    initMenu: function() {
-        // the background image
+    initStages: function() {
+        this.initGameStage();
+        this.initMenuStage();
+        this.initRulesStage();
+        this.initScoreStage();
+        this.initGameOverStage();
+
+        // let the menu music not stop when switching between menu stages
+        var hiddenCallback = function(newStageName) {
+            if (this.menuStageNames.indexOf(newStageName) === -1)
+                this.sounds.menuTheme.pause();
+        }.bind(this);
+        var shownCallback = function(oldStageName) {
+            if (this.menuStageNames.indexOf(oldStageName) === -1)
+                this.sounds.menuTheme.play();
+        }.bind(this);
+        for (var i=0; i<this.menuStageNames.length; i++) {
+            var stageName = this.menuStageNames[i];
+            this.stageHiddenListeners[stageName].push(hiddenCallback);
+            this.stageShownListeners[stageName].push(shownCallback);
+        }
+    },
+
+    initGameStage: function() {
+        this.stageHiddenListeners.game.push(function() {
+            this.sounds.mainTheme.pause();
+            this.pausableObjects.remove(this.gameTime);
+
+            this.spawnTimer.stop();
+        }.bind(this));
+
+        this.stageShownListeners.game.push(function() {
+            this.sounds.mainTheme.play();
+            this.points = 0;
+            this.ammo = this.MAX_AMMO;
+            var dateChangeCallback = function () {
+                this.updateDate();
+                this.updateDontShootSigns();
+            }.bind(this);
+
+            var gameOverCallback = function () {
+                console.log('Game over!'); //TODO development code
+                this.changeStage('gameOver');
+            }.bind(this);
+            this.gameTime = new DeerHuhn.GameTime(dateChangeCallback, gameOverCallback);
+            this.pausableObjects.push(this.gameTime);
+            this.gameTime.start();
+
+            this.initAnimals();
+            this.spawnTimer.start();
+            this.updateDate();
+            this.updatePoints();
+            this.updateAmmo();
+            this.updateDontShootSigns();
+
+            this.pause();
+            this.unPause();
+        }.bind(this));
+
+        // spawn every day
+        this.spawnTimer = new DeerHuhn.PausableInterval(this.spawnRandomAnimals.bind(this), 600);
+        this.pausableObjects.push(this.spawnTimer);
+    },
+
+    createMenuBackgroundSprite: function () {
         var background = PIXI.Sprite.fromImage('images/menu-pozadi.png');
         background.anchor.x = 0.5;
         background.position.y = 0;
         background.onresize = function () {
             background.position.x = 0.5*this.rendererWidth/this.renderingScale;
         }.bind(this);
+        
+        return background;
+    },
 
+    initMenuStage: function() {
+        // the background image
+        var background = this.createMenuBackgroundSprite();
         this.stages.menu.addChild(background);
         this.addSprite(background);
 
@@ -445,8 +526,8 @@ DeerHuhn.prototype = {
         playBtn.scale.x = playBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
 
         playBtn.click = function (mouse) {
-            // TODO start the game
-        };
+            this.changeStage('game');
+        }.bind(this);
         playBtn.mouseover = function (mouse) {
             playBtn.setTexture(playLightTexture);
         };
@@ -467,8 +548,8 @@ DeerHuhn.prototype = {
         rulesBtn.scale.x = rulesBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
 
         rulesBtn.click = function (mouse) {
-            // TODO show the rules
-        };
+            this.changeStage('rules');
+        }.bind(this);
         rulesBtn.mouseover = function (mouse) {
             rulesBtn.setTexture(rulesLightTexture);
         };
@@ -489,8 +570,8 @@ DeerHuhn.prototype = {
         scoreBtn.scale.x = scoreBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
 
         scoreBtn.click = function (mouse) {
-            // TODO show the score
-        };
+            this.changeStage('score');
+        }.bind(this);
         scoreBtn.mouseover = function (mouse) {
             scoreBtn.setTexture(scoreLightTexture);
         };
@@ -500,6 +581,245 @@ DeerHuhn.prototype = {
 
         foreground.addChild(scoreBtn);
         this.addSprite(scoreBtn);
+    },
+
+    initRulesStage: function() {
+
+        // the background image
+        var background = this.createMenuBackgroundSprite();
+        this.stages.rules.addChild(background);
+        this.addSprite(background);
+
+        // the caption
+        var caption = new PIXI.Text('PRAVIDLA', {font: '100px HelveticaBlack', fill: '#E9FBC2', stroke: '#808888', strokeThickness: 3});
+        caption.anchor.x = 0.5;
+        caption.position = new PIXI.Point(0, 120);
+
+        background.addChild(caption);
+        this.addSprite(caption);
+
+        // the rules text
+        var rulesText = "Pravidla hry Na posedu jsou následující:<br/>\n<br/>\n"+
+            "Střílej jen to, co se střílet má v danou dobu<br/>\n"+
+            "Nestřílej lesáckou techniku ani auta<br/>\n"+
+            "Ovečky se nestřílí<br/>\n"+
+            "Hledej bonusy";
+
+        var rulesRect = new PIXI.Graphics();
+        rulesRect.beginFill(0xFFFFFF, 0.5);
+        var rulesRectSize = new PIXI.Point(800, 480);
+        rulesRect.drawRect(0, 0, rulesRectSize.x, rulesRectSize.y);
+        rulesRect.endFill();
+        rulesRect.position = new PIXI.Point(-0.5*rulesRectSize.x, 270);
+
+        background.addChild(rulesRect);
+        this.addSprite(rulesRect); // not a sprite
+
+        var container = this.renderer.view.parentNode;
+        var rulesHTML = document.createElement('p');
+        rulesHTML.innerHTML = rulesText;
+        rulesHTML.style.position = 'absolute';
+        rulesHTML.style.textAlign = 'left';
+        rulesHTML.style.overflow = 'auto';
+        rulesHTML.style.margin = '0px';
+        rulesHTML.style.padding = '0px';
+        container.appendChild(rulesHTML);
+        rulesRect.onresize = function () {
+            var padding = 3; //px
+            rulesHTML.style.left = (rulesRect.worldTransform[2] + this.renderer.view.offsetLeft + padding) + 'px';
+            rulesHTML.style.top = (rulesRect.worldTransform[5] + this.renderer.view.offsetTop + padding) + 'px';
+            rulesHTML.style.width = (rulesRectSize.x * this.renderingScale - 2*padding) + 'px';
+            rulesHTML.style.height = (rulesRectSize.y * this.renderingScale - 2*padding) + 'px';
+            var fontSize = Math.round(50* this.renderingScale);
+            rulesHTML.style.font = fontSize+'px/1.5 HelveticaLight';
+        }.bind(this);
+        this.stageShownListeners.rules.push(function () {
+            rulesHTML.style.display = 'block';
+        });
+        this.stageHiddenListeners.rules.push(function () {
+            rulesHTML.style.display = 'none';
+        });
+
+        // the BACK button
+        var backBtn = new PIXI.Text('← MENU  ', {font: '80px HelveticaBlack', fill: '#336666'});
+        backBtn.interactive = true;
+        backBtn.buttonMode = true;
+        backBtn.anchor.x = 0.5;
+        backBtn.position = new PIXI.Point(0, 800);
+
+        backBtn.click = function (mouse) {
+            this.changeStage('menu');
+        }.bind(this);
+
+        background.addChild(backBtn);
+        this.addSprite(backBtn);
+    },
+
+    initScoreStage: function() {
+        // the background image
+        var background = this.createMenuBackgroundSprite();
+        this.stages.score.addChild(background);
+        this.addSprite(background);
+
+        // the caption
+        var caption = new PIXI.Text('SKÓRE', {font: '100px HelveticaBlack', fill: '#E9FBC2', stroke: '#808888', strokeThickness: 3});
+        caption.anchor.x = 0.5;
+        caption.position = new PIXI.Point(0, 120);
+
+        background.addChild(caption);
+        this.addSprite(caption);
+
+        // the rules text
+        var scoreText = "<table width=\"100%\" cellspacing=0><tr><th colspan=2 width=\"50%\">MYSLIVECKÁ ELITA</th><th colspan=2>MYSLIVECKÁ JELITA</th></tr>\n"+
+            "<tr><td>Honza Macků</td><td>300</td><td>Onřej Fudaly</td><td>-450</td></tr>\n"+
+            "<tr><td>Karel Boublík</td><td>298</td><td>Jaroslav Petruželka</td><td>-430</td></tr></table>";
+
+        var scoreRect = new PIXI.Graphics();
+        scoreRect.beginFill(0xFFFFFF, 0.5);
+        var scoreRectSize = new PIXI.Point(1400, 480);
+        scoreRect.drawRect(0, 0, scoreRectSize.x, scoreRectSize.y);
+        scoreRect.endFill();
+        scoreRect.position = new PIXI.Point(-0.5*scoreRectSize.x, 270);
+
+        background.addChild(scoreRect);
+        this.addSprite(scoreRect); // not a sprite
+
+        var container = this.renderer.view.parentNode;
+        var scoreHTML = document.createElement('p');
+        scoreHTML.innerHTML = scoreText;
+        scoreHTML.style.position = 'absolute';
+        scoreHTML.style.textAlign = 'left';
+        scoreHTML.style.overflow = 'auto';
+        scoreHTML.style.margin = '0px';
+        scoreHTML.style.padding = '0px';
+        container.appendChild(scoreHTML);
+        scoreRect.onresize = function () {
+            var padding = 3; //px
+            scoreHTML.style.left = (scoreRect.worldTransform[2] + this.renderer.view.offsetLeft + padding) + 'px';
+            scoreHTML.style.top = (scoreRect.worldTransform[5] + this.renderer.view.offsetTop + padding) + 'px';
+            scoreHTML.style.width = (scoreRectSize.x * this.renderingScale - 2*padding) + 'px';
+            scoreHTML.style.height = (scoreRectSize.y * this.renderingScale - 2*padding) + 'px';
+            var fontSize = Math.round(50* this.renderingScale);
+            scoreHTML.style.font = fontSize+'px/1.5 HelveticaLight';
+        }.bind(this);
+        this.stageShownListeners.score.push(function () {
+            scoreHTML.style.display = 'block';
+        });
+        this.stageHiddenListeners.score.push(function () {
+            scoreHTML.style.display = 'none';
+        });
+
+        // the BACK button
+        var backBtn = new PIXI.Text('← MENU  ', {font: '80px HelveticaBlack', fill: '#336666'});
+        backBtn.interactive = true;
+        backBtn.buttonMode = true;
+        backBtn.anchor.x = 0.5;
+        backBtn.position = new PIXI.Point(0, 800);
+
+        backBtn.click = function (mouse) {
+            this.changeStage('menu');
+        }.bind(this);
+
+        background.addChild(backBtn);
+        this.addSprite(backBtn);
+    },
+
+    initGameOverStage: function() {
+        // the background image
+        var background = this.createMenuBackgroundSprite();
+        this.stages.gameOver.addChild(background);
+        this.addSprite(background);
+
+        // the caption
+        var caption = new PIXI.Text('TVOJE SKÓRE', {font: '100px HelveticaBlack', fill: '#E9FBC2', stroke: '#808888', strokeThickness: 3, align: 'center'});
+        caption.anchor.x = 0.5;
+        caption.position = new PIXI.Point(0, 120);
+        this.stageShownListeners.gameOver.push(function() {
+            caption.setText('TVOJE SKÓRE\n' + this.points + " bodů");
+        }.bind(this));
+
+        background.addChild(caption);
+        this.addSprite(caption);
+
+        // the rules text
+        var formText = '<table width="100%"><tr><td><label for="name">Jméno: </label></td><td width="100%"><input name="name" style="background-color: transparent; width: 95%" maxlength="255"/></td></tr>'+"\n"+
+            '<tr><td><label for="email">Email: </label></td><td><input name="email" style="background-color: transparent; width: 95%" maxlength="255"/></td></tr></table>';
+
+        var formRect = new PIXI.Graphics();
+        formRect.beginFill(0xFFFFFF, 0.5);
+        var formRectSize = new PIXI.Point(800, 200);
+        formRect.drawRect(0, 0, formRectSize.x, formRectSize.y);
+        formRect.endFill();
+        formRect.position = new PIXI.Point(-0.5*formRectSize.x, 470);
+
+        background.addChild(formRect);
+        this.addSprite(formRect); // not a sprite
+
+        var container = this.renderer.view.parentNode;
+        var formHTML = document.createElement('form');
+        formHTML.innerHTML = formText;
+        formHTML.style.position = 'absolute';
+        formHTML.style.textAlign = 'left';
+        formHTML.style.overflow = 'auto';
+        formHTML.style.margin = '0px';
+        formHTML.style.padding = '0px';
+        container.appendChild(formHTML);
+        formRect.onresize = function () {
+            var padding = 3; //px
+            formHTML.style.left = (formRect.worldTransform[2] + this.renderer.view.offsetLeft + padding) + 'px';
+            formHTML.style.top = (formRect.worldTransform[5] + this.renderer.view.offsetTop + padding) + 'px';
+            formHTML.style.width = (formRectSize.x * this.renderingScale - 2*padding) + 'px';
+            formHTML.style.height = (formRectSize.y * this.renderingScale - 2*padding) + 'px';
+            var fontSize = Math.round(50* this.renderingScale);
+            formHTML.style.font = fontSize+'px/1.5 HelveticaLight';
+        }.bind(this);
+        this.stageShownListeners.gameOver.push(function () {
+            formHTML.style.display = 'block';
+        });
+        this.stageHiddenListeners.gameOver.push(function () {
+            formHTML.style.display = 'none';
+        });
+
+        // the SAVE button
+        var saveBtn = new PIXI.Text('ULOŽIT VÝSLEDEK', {font: '80px HelveticaBlack', fill: '#336666'});
+        saveBtn.interactive = true;
+        saveBtn.buttonMode = true;
+        saveBtn.anchor.x = 0.5;
+        saveBtn.position = new PIXI.Point(0, 800);
+
+        saveBtn.click = function (mouse) {
+            console.log('score submitted'); // TODO dev code
+            saveBtn.setText('UKLÁDÁM');
+            setTimeout(this.changeStage.bind(this, 'score'), 2000); // TODO call this from callback when the score gets saved
+        }.bind(this);
+
+        this.stageShownListeners.gameOver.push(function () {
+            saveBtn.setText('ULOŽIT VÝSLEDEK');
+        });
+
+        background.addChild(saveBtn);
+        this.addSprite(saveBtn);
+    },
+
+    changeStage: function(newStageName) {
+        if (this.stageName === newStageName)
+            return;
+
+        var oldStageName = this.stageName;
+        var oldStage = this.stage;
+
+        var hiddenListeners = this.stageHiddenListeners[oldStageName];
+        for (var i=0; i<hiddenListeners.length; i++)
+            hiddenListeners[i].call(this, newStageName);
+
+        this.stageName = newStageName;
+        this.stage = this.stages[newStageName];
+
+        var shownListeners = this.stageShownListeners[newStageName];
+        for (var i=0; i<shownListeners.length; i++)
+            shownListeners[i].call(this, oldStageName);
+
+        this.resize();
     },
 
     initHUD: function() {
@@ -522,8 +842,6 @@ DeerHuhn.prototype = {
         // date
         
         this.dateText = new PIXI.Text(' 1. 3.', {font: '120px HelveticaLight', fill: '#8E8D5B'});
-        // set the position
-        this.updateDate();
 
         this.addSprite(this.dateText);
         pointsDate.addChild(this.dateText);
@@ -531,8 +849,6 @@ DeerHuhn.prototype = {
         // points
         
         this.pointsText = new PIXI.Text('0', {font: 'bold 120px HelveticaBlack'});
-        // set the position
-        this.updatePoints();
 
         this.addSprite(this.pointsText);
         pointsDate.addChild(this.pointsText);
@@ -564,8 +880,6 @@ DeerHuhn.prototype = {
         this.addSprite(noAmmo);
         this.stages.game.addChild(noAmmo);
         this.noAmmoSprite = noAmmo;
-
-        this.updateAmmo();
 
         // "situations" - what is allowed to shoot at
         
@@ -673,7 +987,14 @@ DeerHuhn.prototype = {
     initSounds: function() {
         this.sounds.mainTheme = new DeerHuhn.SingletonSoundSample({
             urls: this.getSoundFiles('sound/les_opt'),
-            autoplay: true,
+            autoplay: false,
+            loop: true,
+            volume: 1
+        });
+
+        this.sounds.menuTheme = new DeerHuhn.SingletonSoundSample({
+            urls: this.getSoundFiles('sound/hudba_menu'),
+            autoplay: false,
             loop: true,
             volume: 1
         });
@@ -789,11 +1110,6 @@ DeerHuhn.prototype = {
         for (var i=0; i < numMushrooms; i++) {
             this.addAnimal(this.animalFactory.createChoros(this.staticObjectOnShotCallback));
         }
-
-        // spawn every day
-        var spawnTimer = new DeerHuhn.PausableInterval(this.spawnRandomAnimals.bind(this), 600);
-        this.pausableObjects.push(spawnTimer);
-        spawnTimer.start();
     },
 
     spawnRandomAnimals: function () {
@@ -1277,6 +1593,7 @@ DeerHuhn.PausableInterval = function (callback, interval) {
  */
 DeerHuhn.PausableInterval.prototype.start = function () {
     this.lastRepetitionTime = new Date();
+    this.stopped = false;
     this.unPause(0);
 };
 
