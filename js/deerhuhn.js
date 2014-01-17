@@ -400,6 +400,14 @@ DeerHuhn.prototype = {
     },
 
     initGameStage: function() {
+
+        //HACK: the interaction manager sets cursor to "pointer" in every update call, so we revert this change afterwards
+        var oldUpdate = this.stages.game.interactionManager.update;
+        this.stages.game.interactionManager.update = function() {
+            oldUpdate.call(this.stages.game.interactionManager);
+            this.renderer.view.style.cursor = "url('images/crosshair-small.cur'), crosshair";
+        }.bind(this);
+
         this.stageHiddenListeners.game.push(function() {
             this.sounds.mainTheme.pause();
             this.pausableObjects.remove(this.gameTime);
