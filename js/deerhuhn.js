@@ -885,9 +885,10 @@ DeerHuhn.prototype = {
         
         var allowedShooting = new PIXI.Sprite(PIXI.TextureCache['situace.png']);
         allowedShooting.interactive = false;
+        allowedShooting.scale.x = allowedShooting.scale.y = 0.8;
         allowedShooting.onresize = function () {
             allowedShooting.position.x = 0.99*this.rendererWidth/this.renderingScale - allowedShooting.width;
-            allowedShooting.position.y = 0.01*this.rendererHeight/this.renderingScale;
+            allowedShooting.position.y = 0.05*this.rendererHeight/this.renderingScale;
         }.bind(this);
 
         this.addSprite(allowedShooting);
