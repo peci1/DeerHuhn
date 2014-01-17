@@ -418,12 +418,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 14 - ((13 * winheight(0) + 15) / 31)
+let s:l = 413 - ((8 * winheight(0) + 15) / 31)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-14
-normal! 019|
+413
+normal! 039|
 wincmd w
 argglobal
 edit js\deerhuhn.animals.js
@@ -492,7 +492,7 @@ setlocal formatexpr=
 setlocal formatoptions=croql
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
-setlocal iminsert=2
+setlocal iminsert=0
 setlocal imsearch=2
 setlocal include=
 setlocal includeexpr=
@@ -547,12 +547,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 85 - ((0 * winheight(0) + 0) / 1)
+let s:l = 525 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-85
-normal! 035|
+525
+normal! 016|
 wincmd w
 argglobal
 edit index.htm
@@ -678,12 +678,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 46 - ((0 * winheight(0) + 0) / 1)
+let s:l = 47 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-46
-normal! 021|
+47
+normal! 028|
 wincmd w
 argglobal
 edit css\main.css
@@ -807,14 +807,14 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 10 - ((0 * winheight(0) + 0) / 1)
+let s:l = 37 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-10
-normal! 0
+37
+normal! 040|
 wincmd w
-3wincmd w
+2wincmd w
 exe '1resize ' . ((&lines * 2 + 21) / 42)
 exe '2resize ' . ((&lines * 31 + 21) / 42)
 exe '3resize ' . ((&lines * 1 + 21) / 42)
