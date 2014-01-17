@@ -7,21 +7,21 @@ var DeerHuhn = function (canvasContainerId) {
     this.renderingScale = this.rendererHeight/this.MAX_HEIGHT;
     this.MAX_AMMO = 5;
     this.animalKindFrequency = {
-        Liska: 10,
+        Liska: 8,
         AutoCervene: 20,
         AutoModre: 30,
-        KachnaPlove: 50,
-        Kachna: 20,
+        KachnaPlove: 45,
+        Kachna: 17,
         LKT: 100,
         LKTWithKlady: 100,
-        Odvozka: 150,
+        Odvozka: 130,
         Ovce: 30,
-        Prase: 30,
-        Vlacek: 100,
-        Sele: 20,
-        Srna: 40,
-        Kvitko: 40,
-        VykukujiciSrnec: 90
+        Prase: 25,
+        Vlacek: 70,
+        Sele: 18,
+        Srna: 35,
+        Kvitko: 20,
+        VykukujiciSrnec: 75
     };
 
     // scrolling
