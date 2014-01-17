@@ -36,15 +36,15 @@ var DeerHuhn = function (canvasContainerId) {
     // stages setup
     var interactive = true;
     this.stages = {};
-    this.stages.menu = new PIXI.ScalableStage(0xAAFFFF, interactive);
+    this.stages.menu = new PIXI.ScalableStage(0x000000, interactive);
     this.stages.menu.name = "Menu stage";
-    this.stages.game = new PIXI.ScalableStage(0xAAFFFF, interactive);
+    this.stages.game = new PIXI.ScalableStage(0x000000, interactive);
     this.stages.game.name = "Game stage";
-    this.stages.gameOver = new PIXI.ScalableStage(0xAAFFFF, interactive);
+    this.stages.gameOver = new PIXI.ScalableStage(0x000000, interactive);
     this.stages.gameOver.name = "Game over stage";
-    this.stages.rules = new PIXI.ScalableStage(0xAAFFFF, interactive);
+    this.stages.rules = new PIXI.ScalableStage(0x000000, interactive);
     this.stages.rules.name = "Rules stage";
-    this.stages.score = new PIXI.ScalableStage(0xAAFFFF, interactive);
+    this.stages.score = new PIXI.ScalableStage(0x000000, interactive);
     this.stages.score.name = "Score stage";
 
     this.stageName = 'menu';
@@ -820,14 +820,24 @@ DeerHuhn.prototype = {
         for (var i=0; i<hiddenListeners.length; i++)
             hiddenListeners[i].call(this, newStageName);
 
-        this.stageName = newStageName;
-        this.stage = this.stages[newStageName];
+        // create a fade-out transition
+        var interval = setInterval(function () {
+            if (oldStage.alpha < 0.05) {
+                clearInterval(interval);
 
-        var shownListeners = this.stageShownListeners[newStageName];
-        for (var i=0; i<shownListeners.length; i++)
-            shownListeners[i].call(this, oldStageName);
+                this.stageName = newStageName;
+                this.stage = this.stages[newStageName];
+                this.stage.alpha = 1;
 
-        this.resize();
+                var shownListeners = this.stageShownListeners[newStageName];
+                for (var i=0; i<shownListeners.length; i++)
+                    shownListeners[i].call(this, oldStageName);
+
+                this.resize();
+            } else {
+                oldStage.alpha -= 0.05;
+            }
+        }.bind(this), 30);
     },
 
     initHUD: function() {
