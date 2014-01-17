@@ -2501,7 +2501,14 @@ DeerHuhn.FadingPoints = function (points, duration, position, fadingFinishedCall
 
     this.numFadingSteps = 10.0;
 
-    this.sprite.position = this.position;
+    // don't allow the points to be shown too low
+    var correctedPosition = new PIXI.Point(this.position.x, this.position.y);
+    if (correctedPosition.y < 10) {
+        correctedPosition.y = 10;
+    } else if (correctedPosition.y + this.sprite.height > deerHuhn.backgroundLayers[this.position.layer].height - 10) {
+        correctedPosition.y = deerHuhn.backgroundLayers[this.position.layer].height - this.sprite.height - 10;
+    }
+    this.sprite.position = correctedPosition;
 
     var fadingTimer = new DeerHuhn.PausableInterval(function () {
         this.sprite.alpha -= 1/this.numFadingSteps;
