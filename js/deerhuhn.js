@@ -922,7 +922,7 @@ DeerHuhn.prototype = {
         }.bind(this);
 
         for (var i=0; i<numCountDownDigits; i++) {
-            var digit = new PIXI.Text((numCountDownDigits-i)+'', {font: '240px HelveticaLight', fill: '#8E8D5B'});
+            var digit = new PIXI.Text((numCountDownDigits-i)+'', {font: '240px HelveticaBlack', fill: 'black'});
             digit.visible = false;
             
             digit.onresize = countDownDigitOnResize.bind(this, i);
