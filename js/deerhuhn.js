@@ -419,6 +419,15 @@ DeerHuhn.prototype = {
             this.sounds.mainTheme.play();
             this.points = 0;
             this.ammo = this.MAX_AMMO;
+            this.scrollPercentage = 0.0;
+
+            // remove legal animals
+            for (var i=this.animals.length-1; i>=0; i--) {
+                this.removeAnimal(this.animals[i]);
+            }
+            this.animalFactory.occupiedPositions = [];
+            this.animalFactory.occupiedPaths = [];
+
             var dateChangeCallback = function () {
                 this.updateDate();
                 this.updateDontShootSigns();
