@@ -960,7 +960,7 @@ DeerHuhn.Animals.Choros.prototype.constructor = DeerHuhn.Animals.Choros;
  * @inheritDoc
  */
 DeerHuhn.Animals.Choros.prototype.getScore = function (gameTime) {
-    return 15;
+    return 10;
 };
 
 /**
