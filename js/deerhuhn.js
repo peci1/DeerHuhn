@@ -1105,6 +1105,7 @@ DeerHuhn.prototype = {
         }
 
         this.addAnimal(this.animalFactory.createVetev(this.staticObjectOnShotCallback));
+        this.addAnimal(this.animalFactory.createKura(this.staticObjectOnShotCallback));
 
         var numMushrooms = randInt(0, 3);
         for (var i=0; i < numMushrooms; i++) {

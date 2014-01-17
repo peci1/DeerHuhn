@@ -120,6 +120,10 @@ DeerHuhn.Animals.AnimalFactory.prototype.vykukujiciSrnecPositions = [
     new DeerHuhn.ScenePositionWithScale(3, 2611, 550, new PIXI.Point(-DeerHuhn.BASIC_ANIMAL_SCALE, DeerHuhn.BASIC_ANIMAL_SCALE))
 ];
 
+DeerHuhn.Animals.AnimalFactory.prototype.kuraPositions = [
+    new DeerHuhn.ScenePositionWithScale(0, 2170, 690, DeerHuhn.BASIC_ANIMAL_SCALE)
+];
+
 /**
  * A fox.
  *
@@ -1082,3 +1086,50 @@ DeerHuhn.Animals.AnimalFactory.prototype.createVykukujiciSrnec = function (onSho
     return animal;
 };
 DeerHuhn.Animals.AnimalFactory.staticFactories.VykukujiciSrnec = DeerHuhn.Animals.AnimalFactory.prototype.createVykukujiciSrnec;
+
+
+
+/**
+ * A bark piece.
+ *
+ * @constructor
+ * @param {DeerHuhn.ScenePosition} scenePosition Position in the scene.
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ */
+DeerHuhn.Animals.Kura = function (scenePosition, onShotCallback) {
+    DeerHuhn.StaticShootableObject.call(this,  
+            'Kůra',
+            new PIXI.Sprite(PIXI.TextureCache['kura.png']),
+            scenePosition,
+            onShotCallback);
+};
+DeerHuhn.Animals.Kura.prototype = Object.create(DeerHuhn.StaticShootableObject.prototype);
+DeerHuhn.Animals.Kura.prototype.constructor = DeerHuhn.Animals.Kura;
+
+/**
+ * @inheritDoc
+ */
+DeerHuhn.Animals.Kura.prototype.getScore = function (gameTime) {
+    return 15;
+};
+
+/**
+ * Create a tree mushroom on a random position.
+ *
+ * @constructs {DeerHuhn.Animals.Kura}
+ * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
+ * @return {DeerHuhn.Animals.Kura} A dead tree branch
+ */
+DeerHuhn.Animals.AnimalFactory.prototype.createKura = function (onShotCallback) {
+    var position = this.getRandomPosition(this.kuraPositions);
+    if (position === null) return null;
+    this.occupyPosition(position);
+
+    var animal = new DeerHuhn.Animals.Kura(position, this.wrapOnShotCallback(onShotCallback));
+
+    animal.onHidden = function () {
+        this.freePosition(position);
+    }.bind(this);
+
+    return animal;
+};
