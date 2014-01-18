@@ -1,4 +1,6 @@
-var DeerHuhn = function (canvasContainerId) {    
+var DeerHuhn = function (canvasContainerId) {
+    this.loadingElem = document.getElementById('loading');
+
     // canvas & dimensions
     this.MAX_HEIGHT=DeerHuhn.SCENE_HEIGHT;
     this.GAME_CONTAINER = document.getElementById(canvasContainerId);
@@ -69,7 +71,7 @@ var DeerHuhn = function (canvasContainerId) {
     this.muteMusicCross = null;
 
     // renderer setup
-    this.renderer = PIXI.autoDetectRenderer(this.rendererWidth, this.rendererHeight);
+    this.renderer = PIXI.autoDetectRenderer(this.rendererWidth, this.rendererHeight, null, true);
     this.GAME_CONTAINER.appendChild(this.renderer.view);
 
     this.useWebGl = (this.renderer instanceof PIXI.WebGLRenderer);
@@ -275,6 +277,8 @@ DeerHuhn.prototype = {
     },
 
     onLoad: function() {
+        this.loadingElem.style.display = "none";
+
         this.loadPersistentState();
 
         var layerClick = function (mouse) {
@@ -1423,9 +1427,15 @@ DeerHuhn.prototype = {
             'images/sprites-passive.json'
         ];
         var loader = new PIXI.FontAwareAssetLoader(assets);
-        //loader.onProgress = onAssetLoaderProgress //TODO
+        loader.onProgress = this.onAssetLoaderProgress.bind(this, loader);
         loader.onComplete = this.onLoad.bind(this);
         loader.load();
+    },
+
+    onAssetLoaderProgress: function (loader) {
+        var total = loader.assetURLs.length;
+        var numLoaded = total - loader.loadCount;
+        this.loadingElem.innerHTML = 'Načítání ' + numLoaded + "/" + total;
     },
 
     resize: function() {
