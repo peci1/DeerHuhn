@@ -405,7 +405,10 @@ DeerHuhn.prototype = {
         var oldUpdate = this.stages.game.interactionManager.update;
         this.stages.game.interactionManager.update = function() {
             oldUpdate.call(this.stages.game.interactionManager);
-            this.renderer.view.style.cursor = "url('images/crosshair-small.cur'), crosshair";
+
+            // only change the default cursor to crosshair
+            if (this.renderer.view.style.cursor === 'default')
+                this.renderer.view.style.cursor = "url('images/crosshair-small.cur'), crosshair";
         }.bind(this);
 
         this.stageHiddenListeners.game.push(function() {
