@@ -60,6 +60,14 @@ var DeerHuhn = function (canvasContainerId) {
         this.stageHiddenListeners[stage] = [];
     }
 
+    // sound & music muting
+    this.soundMuted = false;
+    this.muteSoundSprite = null;
+    this.muteSoundCross = null;
+    this.musicMuted = false;
+    this.muteMusicSprite = null;
+    this.muteMusicCross = null;
+
     // renderer setup
     this.renderer = PIXI.autoDetectRenderer(this.rendererWidth, this.rendererHeight);
     this.GAME_CONTAINER.appendChild(this.renderer.view);
@@ -341,9 +349,11 @@ DeerHuhn.prototype = {
             }
         }
 
+        this.initMuteButtons();
+
         this.initStages();
 
-        this.initHUD();
+        this.initHUD(1.15 * this.muteMusicSprite.width);
 
         this.initSounds();
 
@@ -376,7 +386,59 @@ DeerHuhn.prototype = {
             this.pausableObjects.remove(sprite);
     },
 
+    initMuteButtons: function() {
+        // all sounds muting
+        this.muteSoundSprite = new PIXI.Sprite(PIXI.TextureCache['sound.png']);
+        this.muteSoundSprite.interactive = true;
+        this.muteSoundSprite.buttonMode = true;
+        this.muteSoundSprite.scale.x = this.muteSoundSprite.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
+        this.muteSoundSprite.onresize = function () {
+            this.muteSoundSprite.position.x = 0.99*this.rendererWidth/this.renderingScale - this.muteSoundSprite.width;
+            this.muteSoundSprite.position.y = 0.99*this.rendererHeight/this.renderingScale - this.muteSoundSprite.height;
+        }.bind(this);
+        this.addSprite(this.muteSoundSprite);
+
+        this.muteSoundCross = new PIXI.Sprite(PIXI.TextureCache['naboje-zadne.png']);
+        this.muteSoundCross.visible = true;
+        this.muteSoundCross.scale.x = this.muteSoundCross.scale.y = 0.85;
+        this.muteSoundCross.anchor.x = this.muteSoundCross.anchor.y = 0.5;
+        this.muteSoundCross.position = new PIXI.Point(this.muteSoundSprite.width, this.muteSoundSprite.height);
+        this.muteSoundSprite.addChild(this.muteSoundCross);
+
+        this.muteSoundSprite.click = function () {
+            this.setSoundMuted(!this.soundMuted);
+            return false;
+        }.bind(this);
+
+        // background music muting
+        this.muteMusicSprite = new PIXI.Sprite(PIXI.TextureCache['music.png']);
+        this.muteMusicSprite.interactive = true;
+        this.muteMusicSprite.buttonMode = true;
+        this.muteMusicSprite.scale.x = this.muteMusicSprite.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
+        this.muteMusicSprite.onresize = function () {
+            this.muteMusicSprite.position.x = 0.99*this.rendererWidth/this.renderingScale - this.muteMusicSprite.width;
+            this.muteMusicSprite.position.y = 0.98*DeerHuhn.SCENE_HEIGHT - this.muteMusicSprite.height - this.muteSoundSprite.height;
+        }.bind(this);
+        this.addSprite(this.muteMusicSprite);
+
+        this.muteMusicCross = new PIXI.Sprite(PIXI.TextureCache['naboje-zadne.png']);
+        this.muteMusicCross.visible = true;
+        this.muteMusicCross.scale.x = this.muteMusicCross.scale.y = 0.85;
+        this.muteMusicCross.anchor.x = this.muteMusicCross.anchor.y = 0.5;
+        this.muteMusicCross.position = new PIXI.Point(this.muteMusicSprite.width, this.muteMusicSprite.height);
+        this.muteMusicSprite.addChild(this.muteMusicCross);
+
+        this.muteMusicSprite.click = function () {
+            this.setMusicMuted(!this.musicMuted);
+            return false;
+        }.bind(this);
+
+        this.setSoundMuted(this.soundMuted);
+        this.setMusicMuted(this.musicMuted);
+    },
+
     initStages: function() {
+        // init the stages
         this.initGameStage();
         this.initMenuStage();
         this.initRulesStage();
@@ -392,10 +454,21 @@ DeerHuhn.prototype = {
             if (this.menuStageNames.indexOf(oldStageName) === -1)
                 this.sounds.menuTheme.play();
         }.bind(this);
+
         for (var i=0; i<this.menuStageNames.length; i++) {
             var stageName = this.menuStageNames[i];
             this.stageHiddenListeners[stageName].push(hiddenCallback);
             this.stageShownListeners[stageName].push(shownCallback);
+        }
+
+        var muteButtonsCallback = function () {
+            this.stage.addChild(this.muteSoundSprite);
+            this.stage.addChild(this.muteMusicSprite);
+        };
+        // we don't have to remove sound and music muting sprites, since adding a sprite under a new parent automatically disconnects it from the old one
+
+        for (var stageName in this.stages) {
+            this.stageShownListeners[stageName].push(muteButtonsCallback);
         }
     },
 
@@ -853,7 +926,7 @@ DeerHuhn.prototype = {
         }.bind(this, interval, newStageName, oldStageName), 600);
     },
 
-    initHUD: function() {
+    initHUD: function(occupiedWidthLowerRight) {
         var ignoreClicksCallback = function () {
             return false;
         };
@@ -863,7 +936,7 @@ DeerHuhn.prototype = {
         pointsDate.interactive = true;
         pointsDate.click = ignoreClicksCallback;
         pointsDate.onresize = function () {
-            pointsDate.position.x = 0.99*this.rendererWidth/this.renderingScale - pointsDate.width;
+            pointsDate.position.x = 0.99*this.rendererWidth/this.renderingScale - pointsDate.width - occupiedWidthLowerRight;
             pointsDate.position.y = 0.99*this.rendererHeight/this.renderingScale - pointsDate.height;
         }.bind(this);
 
@@ -887,7 +960,7 @@ DeerHuhn.prototype = {
         // ammo
 
         var ammoResize = function (bullet, i) {
-            bullet.position.x = 0.99*this.rendererWidth/this.renderingScale - 1.1*pointsDate.width - (i+1)*(1.1*bullet.width);
+            bullet.position.x = 0.99*this.rendererWidth/this.renderingScale - 1.1*pointsDate.width - occupiedWidthLowerRight - (i+1)*(1.1*bullet.width);
             bullet.position.y = 0.99*this.rendererHeight/this.renderingScale - bullet.height;
         }.bind(this);
 
@@ -969,7 +1042,6 @@ DeerHuhn.prototype = {
         mask.endFill();
 
         this.pauseMask = mask;
-        //TODO add music and sound muting
     },
 
     updateDate: function () {
@@ -1286,6 +1358,38 @@ DeerHuhn.prototype = {
         this.reloadingAmmo = true;
 
         this.sounds.reload.play();
+    },
+
+    setSoundMuted: function (shouldMute) {
+        var changedMuting = (shouldMute !== this.soundMuted);
+        this.soundMuted = shouldMute;
+        this.muteSoundCross.visible = this.soundMuted;
+        this.muteMusicCross.visible = this.musicMuted || this.soundMuted;
+
+        if (!changedMuting)
+            return;
+
+        if (this.soundMuted)
+            Howler.mute();
+        else
+            Howler.unmute();
+    },
+
+    setMusicMuted: function (shouldMute) {
+        var changedMuting = (shouldMute !== this.musicMuted);
+        this.musicMuted = shouldMute;
+        this.muteMusicCross.visible = this.musicMuted || this.soundMuted;
+
+        if (!changedMuting)
+            return;
+
+        if (this.musicMuted) {
+            this.sounds.mainTheme.mute();
+            this.sounds.menuTheme.mute();
+        } else {
+            this.sounds.mainTheme.unmute();
+            this.sounds.menuTheme.unmute();
+        }
     },
 
     initializeImages: function() {
@@ -2657,6 +2761,20 @@ DeerHuhn.SingletonSoundSample.prototype.isPlaying = function () {
 
     // hack
     return !this.howl._nodeById(this.howlId).paused;
+};
+
+/**
+ * Mute the sound.
+ */
+DeerHuhn.SingletonSoundSample.prototype.mute = function () {
+    this.howl.mute();
+};
+
+/**
+ * Mute the sound.
+ */
+DeerHuhn.SingletonSoundSample.prototype.unmute = function () {
+    this.howl.unmute();
 };
 
 // CLASS DeerHuhn.SoundSample
