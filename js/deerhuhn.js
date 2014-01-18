@@ -61,10 +61,10 @@ var DeerHuhn = function (canvasContainerId) {
     }
 
     // sound & music muting
-    this.soundMuted = false;
+    this.soundMuted = null;
     this.muteSoundSprite = null;
     this.muteSoundCross = null;
-    this.musicMuted = false;
+    this.musicMuted = null;
     this.muteMusicSprite = null;
     this.muteMusicCross = null;
 
@@ -275,6 +275,8 @@ DeerHuhn.prototype = {
     },
 
     onLoad: function() {
+        this.loadPersistentState();
+
         var layerClick = function (mouse) {
             if (this.isPaused)
                 return;
@@ -371,6 +373,14 @@ DeerHuhn.prototype = {
         requestAnimFrame(this.animate.bind(this));
     },
 
+    /**
+     * Load all data saved to cookies or other type of storage.
+     */
+    loadPersistentState: function () {
+        this.soundMuted = cookie.get('soundMuted', '0') !== '0';
+        this.musicMuted = cookie.get('musicMuted', '0') !== '0';
+    },
+
     addSprite: function(sprite) {
         this.sprites.push(sprite);
 
@@ -432,9 +442,6 @@ DeerHuhn.prototype = {
             this.setMusicMuted(!this.musicMuted);
             return false;
         }.bind(this);
-
-        this.setSoundMuted(this.soundMuted);
-        this.setMusicMuted(this.musicMuted);
     },
 
     initStages: function() {
@@ -1120,6 +1127,9 @@ DeerHuhn.prototype = {
         
         for (var sound in this.sounds)
             this.pausableObjects.push(this.sounds[sound]);
+
+        this.setSoundMuted(this.soundMuted, true);
+        this.setMusicMuted(this.musicMuted, true);
     },
 
     getSoundFiles: function (baseName) {
@@ -1360,14 +1370,16 @@ DeerHuhn.prototype = {
         this.sounds.reload.play();
     },
 
-    setSoundMuted: function (shouldMute) {
+    setSoundMuted: function (shouldMute, forceEvenIfSame) {
         var changedMuting = (shouldMute !== this.soundMuted);
         this.soundMuted = shouldMute;
         this.muteSoundCross.visible = this.soundMuted;
         this.muteMusicCross.visible = this.musicMuted || this.soundMuted;
 
-        if (!changedMuting)
+        if (!changedMuting && (forceEvenIfSame === undefined || !forceEvenIfSame))
             return;
+
+        cookie.set('soundMuted', shouldMute ? 1 : 0);
 
         if (this.soundMuted)
             Howler.mute();
@@ -1375,13 +1387,15 @@ DeerHuhn.prototype = {
             Howler.unmute();
     },
 
-    setMusicMuted: function (shouldMute) {
+    setMusicMuted: function (shouldMute, forceEvenIfSame) {
         var changedMuting = (shouldMute !== this.musicMuted);
         this.musicMuted = shouldMute;
         this.muteMusicCross.visible = this.musicMuted || this.soundMuted;
 
-        if (!changedMuting)
+        if (!changedMuting && (forceEvenIfSame === undefined || !forceEvenIfSame))
             return;
+
+        cookie.set('musicMuted', shouldMute ? 1 : 0);
 
         if (this.musicMuted) {
             this.sounds.mainTheme.mute();
