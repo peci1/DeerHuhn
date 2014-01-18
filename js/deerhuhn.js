@@ -703,11 +703,20 @@ DeerHuhn.prototype = {
         this.addSprite(caption);
 
         // the rules text
-        var rulesText = "Pravidla hry Na posedu jsou následující:<br/>\n<br/>\n"+
-            "Střílej jen to, co se střílet má v danou dobu<br/>\n"+
-            "Nestřílej lesáckou techniku ani auta<br/>\n"+
-            "Ovečky se nestřílí<br/>\n"+
-            "Hledej bonusy";
+        var rulesText = "Pravidla hry Na posedu jsou následující:<ol id=\"rules\">"+
+            "<li>hra trvá od 1. března do 30. listopadu</li>"+
+            "<li>zvířata střílej podle doby lovu:<table border=0 cellspacing=10>"+
+            "<tr><td>liška</td><td>celoročně</td></tr>"+
+            "<tr><td>sele</td><td>celoročně</td></tr>"+
+            "<tr><td>kachna</td><td>01.09. - 30.11.</td></tr>"+
+            "<tr><td>srnec</td><td>16.05. - 30.09.</td></tr>"+
+            "<tr><td>prase</td><td>01.08. - 31.12.</td></tr>"+
+            "</table></li>"+
+            "<li>nestřílej hospodářská zvířata</li>"+
+            "<li>nepáchej škody na majetku</li>"+
+            "<li>hledej bonusy</li>"+
+            "</ol>"+
+            "Lovu zdar!";
 
         var rulesRect = new PIXI.Graphics();
         rulesRect.beginFill(0xFFFFFF, 0.5);

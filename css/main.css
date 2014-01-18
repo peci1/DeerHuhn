@@ -39,3 +39,5 @@ body.jsEnabled #jsDisabledText {display: none;}
 #loading {color: #E8FBC1; font: 30pt HelveticaBlack, sans-serif; position: absolute; left: 0%; top: 350px; width: 100%; text-align: center} /* top: should be at least the height of loading.gif */
 
 #wwwLink, #fbLink {display: none};
+
+#rules {margin-left: 1em;}
