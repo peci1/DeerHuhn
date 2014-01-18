@@ -1336,6 +1336,10 @@ DeerHuhn.prototype = {
     },
 
     pause: function() {
+        // can be null at startup in IE, but that doesn't matter
+        if (this.pauseMask === undefined || this.pauseMask === null)
+            return;
+
         if (this.unPauseCountdownTimer !== null) {
             this.unPauseCountdownTimer.stop();
             this.pausableObjects.remove(this.unPauseCountdownTimer);
@@ -1369,6 +1373,10 @@ DeerHuhn.prototype = {
 
         // sometimes the unpause callback is called twice, this should handle that case
         if (this.unPauseCountdownTimer !== null)
+            return;
+
+        // can be null at startup in IE, but that doesn't matter
+        if (this.pauseMask === undefined || this.pauseMask === null)
             return;
 
         for (var i=0; i< this.unPauseCountdownDigits.length; i++)
