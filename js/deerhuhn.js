@@ -833,23 +833,24 @@ DeerHuhn.prototype = {
             hiddenListeners[i].call(this, newStageName);
 
         // create a fade-out transition
-        var interval = setInterval(function () {
-            if (oldStage.alpha < 0.05) {
-                clearInterval(interval);
+        var interval = setInterval(function (oldStage) {
+            oldStage.alpha -= 0.05;
+        }.bind(this, oldStage), 30);
 
-                this.stageName = newStageName;
-                this.stage = this.stages[newStageName];
-                this.stage.alpha = 1;
+        // stop the transition interval when transition is done
+        setTimeout(function (interval, newStageName, oldStageName) {
+            clearInterval(interval);
 
-                var shownListeners = this.stageShownListeners[newStageName];
-                for (var i=0; i<shownListeners.length; i++)
-                    shownListeners[i].call(this, oldStageName);
+            this.stageName = newStageName;
+            this.stage = this.stages[newStageName];
+            this.stage.alpha = 1;
 
-                this.resize();
-            } else {
-                oldStage.alpha -= 0.05;
-            }
-        }.bind(this), 30);
+            var shownListeners = this.stageShownListeners[newStageName];
+            for (var i=0; i<shownListeners.length; i++)
+                shownListeners[i].call(this, oldStageName);
+
+            this.resize();
+        }.bind(this, interval, newStageName, oldStageName), 600);
     },
 
     initHUD: function() {
