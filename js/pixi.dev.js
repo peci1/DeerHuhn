@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-15
+ * Compiled: 2014-01-17
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3461,8 +3461,9 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 	// TEMP FIX
 	if(webgl)
 	{
-		var ie =  (navigator.userAgent.toLowerCase().indexOf('msie') != -1);
-		 webgl = !ie;
+		var agent = navigator.userAgent.toLowerCase();
+		var ie =  (agent.indexOf('msie') != -1 || agent.indexOf('trident') != -1);
+		webgl = !ie;
 	}
 	//console.log(webgl);
 	if( webgl )
