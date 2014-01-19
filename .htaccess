@@ -1,0 +1,4 @@
+RewriteEngine on
+
+RewriteRule ^([^/]+).php$ php/$1.php [L]
+

@@ -784,11 +784,6 @@ DeerHuhn.prototype = {
         background.addChild(caption);
         this.addSprite(caption);
 
-        // the rules text
-        var scoreText = "<table width=\"100%\" cellspacing=0><tr><th colspan=2 width=\"50%\">MYSLIVECKÁ ELITA</th><th colspan=2>MYSLIVECKÁ JELITA</th></tr>\n"+
-            "<tr><td>Honza Macků</td><td>300</td><td>Onřej Fudaly</td><td>-450</td></tr>\n"+
-            "<tr><td>Karel Boublík</td><td>298</td><td>Jaroslav Petruželka</td><td>-430</td></tr></table>";
-
         var scoreRect = new PIXI.Graphics();
         scoreRect.beginFill(0xFFFFFF, 0.5);
         var scoreRectSize = new PIXI.Point(1400, 480);
@@ -801,7 +796,7 @@ DeerHuhn.prototype = {
 
         var container = this.renderer.view.parentNode;
         var scoreHTML = document.createElement('p');
-        scoreHTML.innerHTML = scoreText;
+        scoreHTML.innerHTML = 'Načítání...';
         scoreHTML.style.position = 'absolute';
         scoreHTML.style.textAlign = 'left';
         scoreHTML.style.overflow = 'auto';
@@ -818,6 +813,28 @@ DeerHuhn.prototype = {
             scoreHTML.style.font = fontSize+'px/1.5 HelveticaLight';
         }.bind(this);
         this.stageShownListeners.score.push(function () {
+            // load the best score data
+            var ajax = new PIXI.AjaxRequest();
+            ajax.open("GET", 'get_best_score.php?format=json&limit=3', false);
+            ajax.send(null);
+
+            var scoreText;
+            if (ajax.readyState === 4 && ajax.status === 200) {
+                // the rules text
+                scoreText = "<table width=\"100%\" cellspacing=0><tr><th colspan=2 width=\"50%\">MYSLIVECKÁ ELITA</th><th colspan=2>MYSLIVECKÁ JELITA</th></tr>\n";
+                var data = JSON.parse(ajax.responseText);
+                for (var i=0; i<3; i++) {
+                    scoreText += "<tr>";
+                    scoreText += "<td>" + ((data.best[i] !== undefined) ? (data.best[i].name.escapeHTML() + "</td><td>" + data.best[i].score.escapeHTML()) : "&nbsp;</td><td>&nbsp;") + "</td>";
+                    scoreText += "<td>" + ((data.worst[i] !== undefined) ? (data.worst[i].name.escapeHTML() + "</td><td>" + data.worst[i].score.escapeHTML()) : "&nbsp;</td><td>&nbsp;") + "</td>";
+                    scoreText += "</tr>";
+                }
+                scoreText += "</table>";
+            } else {
+                scoreText = '<font style="color: red;">Nepovedlo se načíst skóre</font>';
+            }
+
+            scoreHTML.innerHTML = scoreText;
             scoreHTML.style.display = 'block';
         });
         this.stageHiddenListeners.score.push(function () {
@@ -857,8 +874,8 @@ DeerHuhn.prototype = {
         this.addSprite(caption);
 
         // the rules text
-        var formText = '<table width="100%"><tr><td><label for="name">Jméno: </label></td><td width="100%"><input name="name" style="background-color: transparent; width: 95%" maxlength="255"/></td></tr>'+"\n"+
-            '<tr><td><label for="email">Email: </label></td><td><input name="email" style="background-color: transparent; width: 95%" maxlength="255"/></td></tr></table>';
+        var formText = '<table width="100%"><tr><td><label for="name">Jméno: </label></td><td width="100%"><input name="name" style="background-color: transparent; width: 95%" maxlength="255" id="scoreName" /></td></tr>'+"\n"+
+            '<tr><td><label for="email">Email: </label></td><td><input name="email" style="background-color: transparent; width: 95%" maxlength="255" id="scoreEmail" /></td></tr></table>';
 
         var formRect = new PIXI.Graphics();
         formRect.beginFill(0xFFFFFF, 0.5);
@@ -886,7 +903,11 @@ DeerHuhn.prototype = {
             formHTML.style.width = (formRectSize.x * this.renderingScale - 2*padding) + 'px';
             formHTML.style.height = (formRectSize.y * this.renderingScale - 2*padding) + 'px';
             var fontSize = Math.round(50* this.renderingScale);
-            formHTML.style.font = fontSize+'px/1.5 HelveticaLight';
+            var font = fontSize+'px/1.5 HelveticaLight';
+            formHTML.style.font = font;
+            var inputs = formHTML.getElementsByTagName('input');
+            for (var i=0; i<inputs.length; i++)
+            inputs[i].style.font = font;
         }.bind(this);
         this.stageShownListeners.gameOver.push(function () {
             formHTML.style.display = 'block';
@@ -905,7 +926,42 @@ DeerHuhn.prototype = {
         saveBtn.click = function (mouse) {
             console.log('score submitted'); // TODO dev code
             saveBtn.setText('UKLÁDÁM');
-            setTimeout(this.changeStage.bind(this, 'score'), 2000); // TODO call this from callback when the score gets saved
+            
+            var ajax = new PIXI.AjaxRequest();
+            ajax.open("POST", 'insert_score.php', false);
+            ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            var postData = 'name=' + document.getElementById('scoreName').value.escapeURI();
+            postData += '&email=' + document.getElementById('scoreEmail').value.escapeURI();
+            postData += '&score=' + this.points;
+            ajax.send(postData);
+
+            var resultText;
+            if (ajax.readyState === 4 && ajax.status === 200) {
+                resultText = 'Vaše skóre bylo uloženo.';
+            } else {
+                resultText = 'Při ukládání skóre došlo k chybě.';
+                console.log(ajax.statusText);
+            }
+
+            var resultSplash = document.createElement('div');
+            resultSplash.innerHTML = resultText;
+            resultSplash.style.position = 'absolute';
+            resultSplash.style.left = '0px';
+            resultSplash.style.top = '25%';
+            resultSplash.style.width = '50%';
+            resultSplash.style.padding = '10% 0%';
+            resultSplash.style.margin = '0% 25%';
+            resultSplash.style.textAlign = 'center';
+            resultSplash.style.font = '30px HelveticaLight';
+            resultSplash.style.backgroundColor = '#E8FBC1';
+            resultSplash.style.color = 'black';
+            this.GAME_CONTAINER.parentNode.appendChild(resultSplash);
+
+            setTimeout(function () {
+                this.GAME_CONTAINER.parentNode.removeChild(resultSplash);
+                this.changeStage('score');
+            }.bind(this), 2000);
         }.bind(this);
 
         this.stageShownListeners.gameOver.push(function () {
@@ -2924,6 +2980,20 @@ Array.prototype.removeUsingEquals = function(val) {
     return this;
 };
 
+String.prototype.escapeHTML = function() {
+    var tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+    };
+    return this.replace(/[&<>]/g, function(tag) {
+        return tagsToReplace[tag] || tag;
+    });
+};
+
+String.prototype.escapeURI = function() {
+    return encodeURIComponent(this).replace(/%20/g, '+');
+};
 
 function randInt(min, max) {
     var result = Math.floor((Math.random() * ((max*1.0 + 1) - min)) + min);
