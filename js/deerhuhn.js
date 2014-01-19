@@ -828,8 +828,8 @@ DeerHuhn.prototype = {
                 var data = JSON.parse(ajax.responseText);
                 for (var i=0; i<3; i++) {
                     scoreText += "<tr>";
-                    scoreText += "<td>" + ((data.best[i] !== undefined) ? (data.best[i].name.escapeHTML() + "</td><td>" + data.best[i].score.escapeHTML()) : "&nbsp;</td><td>&nbsp;") + "</td>";
-                    scoreText += "<td>" + ((data.worst[i] !== undefined) ? (data.worst[i].name.escapeHTML() + "</td><td>" + data.worst[i].score.escapeHTML()) : "&nbsp;</td><td>&nbsp;") + "</td>";
+                    scoreText += "<td>" + ((data.best[i] !== undefined) ? (data.best[i].name.escapeHTML() + "</td><td>" + data.best[i].score.escapeHTML()) : "&lt;neobsazeno&gt;</td><td>&nbsp;") + "</td>";
+                    scoreText += "<td>" + ((data.worst[i] !== undefined) ? (data.worst[i].name.escapeHTML() + "</td><td>" + data.worst[i].score.escapeHTML()) : "&lt;neobsazeno&gt;</td><td>&nbsp;") + "</td>";
                     scoreText += "</tr>";
                 }
                 scoreText += "</table>";
