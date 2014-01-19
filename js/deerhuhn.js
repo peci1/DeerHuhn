@@ -507,7 +507,6 @@ DeerHuhn.prototype = {
         }.bind(this));
 
         this.stageShownListeners.game.push(function() {
-            this.sounds.mainTheme.play();
             this.points = 0;
             this.ammo = this.MAX_AMMO;
             this.scrollPercentage = 0.0;
@@ -526,6 +525,7 @@ DeerHuhn.prototype = {
 
             var gameOverCallback = function () {
                 console.log('Game over!'); //TODO development code
+                this.gameTime.stop();
                 this.changeStage('gameOver');
             }.bind(this);
             this.gameTime = new DeerHuhn.GameTime(dateChangeCallback, gameOverCallback);
@@ -541,6 +541,7 @@ DeerHuhn.prototype = {
 
             this.pause();
             this.unPause();
+            this.sounds.mainTheme.play();
         }.bind(this));
 
         // spawn every day
@@ -1968,6 +1969,8 @@ DeerHuhn.GameTime = function (dateChangeCallback, gameOverCallback) {
      * @type {DeerHuhn.PausableInterval}
      */
     this.intervalTimer = new DeerHuhn.PausableInterval(this.increaseDate.bind(this), 600);
+    
+    this.stopped = false;
 };
 
 /**
@@ -1985,11 +1988,21 @@ DeerHuhn.GameTime.prototype.pause = function () {
 };
 
 /**
+ * Stop the timer.
+ */
+DeerHuhn.GameTime.prototype.stop = function () {
+    this.stopped = true;
+    this.intervalTimer.pause();
+};
+
+/**
  * Unpause the timer.
  *
  * @param {Number} timeDelta The time between pause and unPause calls (in ms).
  */
 DeerHuhn.GameTime.prototype.unPause = function (timeDelta) {
+    if (this.stopped)
+        return;
     this.intervalTimer.unPause(timeDelta);
 };
 
@@ -1999,6 +2012,9 @@ DeerHuhn.GameTime.prototype.unPause = function (timeDelta) {
  * @private
  */
 DeerHuhn.GameTime.prototype.increaseDate = function () {
+    if (this.stopped)
+        return;
+
     // if the day overflows, the month gets increased and day is reset to 1
     this.date.setDate(this.date.getDate() + 1);
 
