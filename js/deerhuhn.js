@@ -718,7 +718,8 @@ DeerHuhn.prototype = {
             "<li>nepáchej škody na majetku</li>"+
             "<li>hledej bonusy</li>"+
             "</ol>"+
-            "Lovu zdar!";
+            "Lovu zdar!<br/><br/>"+
+            "Programování: Martin Pecka, produkce a grafika: Jaroslav Tománek";
 
         var rulesRect = new PIXI.Graphics();
         rulesRect.beginFill(0xFFFFFF, 0.5);
