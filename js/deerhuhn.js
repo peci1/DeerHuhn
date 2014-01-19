@@ -1,6 +1,8 @@
 var DeerHuhn = function (canvasContainerId) {
     this.loadingElem = document.getElementById('loading');
 
+    cookie.defaults.expires = 365; // in days
+
     // canvas & dimensions
     this.MAX_HEIGHT=DeerHuhn.SCENE_HEIGHT;
     this.GAME_CONTAINER = document.getElementById(canvasContainerId);
