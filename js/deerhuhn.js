@@ -6,8 +6,8 @@ var DeerHuhn = function (canvasContainerId) {
     // canvas & dimensions
     this.MAX_HEIGHT=DeerHuhn.SCENE_HEIGHT;
     this.GAME_CONTAINER = document.getElementById(canvasContainerId);
-    this.rendererWidth = this.GAME_CONTAINER.offsetWidth - 8;
-    this.rendererHeight = Math.min(this.GAME_CONTAINER.offsetHeight - 8, this.MAX_HEIGHT);
+    this.rendererWidth = this.GAME_CONTAINER.offsetWidth;
+    this.rendererHeight = Math.min(this.GAME_CONTAINER.offsetHeight, this.MAX_HEIGHT);
     this.renderingScale = this.rendererHeight/this.MAX_HEIGHT;
     this.MAX_AMMO = 5;
     this.animalKindFrequency = {
@@ -365,8 +365,6 @@ DeerHuhn.prototype = {
 
         this.initSounds();
 
-        this.resize();
-
         for (var stage in this.stages) {
             var hiddenListeners = this.stageHiddenListeners[stage];
             for (var i=0; i<hiddenListeners.length; i++)
@@ -375,6 +373,10 @@ DeerHuhn.prototype = {
         var shownListeners = this.stageShownListeners[this.stageName];
         for (var i=0; i<shownListeners.length; i++)
             shownListeners[i].call(this);
+
+        // once more needed for some reason
+        this.resize();
+        this.resize();
 
         requestAnimFrame(this.animate.bind(this));
     },
