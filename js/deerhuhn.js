@@ -412,7 +412,7 @@ DeerHuhn.prototype = {
         this.muteSoundSprite.scale.x = this.muteSoundSprite.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
         this.muteSoundSprite.onresize = function () {
             this.muteSoundSprite.position.x = 0.99*this.rendererWidth/this.renderingScale - this.muteSoundSprite.width;
-            this.muteSoundSprite.position.y = 0.99*this.rendererHeight/this.renderingScale - this.muteSoundSprite.height;
+            this.muteSoundSprite.position.y = 0.95*this.rendererHeight/this.renderingScale - this.muteSoundSprite.height;
         }.bind(this);
         this.addSprite(this.muteSoundSprite);
 
@@ -435,7 +435,7 @@ DeerHuhn.prototype = {
         this.muteMusicSprite.scale.x = this.muteMusicSprite.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
         this.muteMusicSprite.onresize = function () {
             this.muteMusicSprite.position.x = 0.99*this.rendererWidth/this.renderingScale - this.muteMusicSprite.width;
-            this.muteMusicSprite.position.y = 0.98*DeerHuhn.SCENE_HEIGHT - this.muteMusicSprite.height - this.muteSoundSprite.height;
+            this.muteMusicSprite.position.y = 0.94*DeerHuhn.SCENE_HEIGHT - this.muteMusicSprite.height - this.muteSoundSprite.height;
         }.bind(this);
         this.addSprite(this.muteMusicSprite);
 
