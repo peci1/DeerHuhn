@@ -147,13 +147,13 @@ var DeerHuhn = function (canvasContainerId) {
     // http://stackoverflow.com/questions/1060008/is-there-a-way-to-detect-if-a-browser-window-is-not-currently-active
     var hidden = "hidden";
     if (hidden in document)
-        document.addEventListener("visibilitychange", visibilityChangedCallback.bind(hidden));
+        document.addEventListener("visibilitychange", visibilityChangedCallback.bind(this, hidden));
     else if ((hidden = "mozHidden") in document)
-        document.addEventListener("mozvisibilitychange", visibilityChangedCallback.bind(hidden));
+        document.addEventListener("mozvisibilitychange", visibilityChangedCallback.bind(this, hidden));
     else if ((hidden = "webkitHidden") in document)
-        document.addEventListener("webkitvisibilitychange", visibilityChangedCallback.bind(hidden));
+        document.addEventListener("webkitvisibilitychange", visibilityChangedCallback.bind(this, hidden));
     else if ((hidden = "msHidden") in document)
-        document.addEventListener("msvisibilitychange", visibilityChangedCallback.bind(hidden));
+        document.addEventListener("msvisibilitychange", visibilityChangedCallback.bind(this, hidden));
     else
         hidden = null;
 
