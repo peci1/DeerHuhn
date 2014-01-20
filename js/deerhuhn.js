@@ -1322,6 +1322,7 @@ DeerHuhn.prototype = {
             var smokeSprite = new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.vystrel);
             var smoke = new DeerHuhn.AnimatedObject(smokeSprite, function () {}, 2);
             smokeSprite.setInteractive(false);
+            smokeSprite.scale.x = smokeSprite.scale.y = 0.7;
 
             var layer = this.backgroundLayers[animal.scenePosition.layer];
             layer.addChild(smoke.sprite);
