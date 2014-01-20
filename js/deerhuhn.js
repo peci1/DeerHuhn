@@ -1179,7 +1179,7 @@ DeerHuhn.prototype = {
         var countDownDigitOnResize = function (i) {
             var digit = this.unPauseCountdownDigits[i];
             digit.position.x = 0.5*this.rendererWidth/this.renderingScale - digit.width/2;
-            digit.position.y = 0.5*this.rendererHeight/this.renderingScale - digit.height/2;
+            digit.position.y = 0.35*this.rendererHeight/this.renderingScale - digit.height/2;
         }.bind(this);
 
         for (var i=0; i<numCountDownDigits; i++) {
@@ -1194,13 +1194,13 @@ DeerHuhn.prototype = {
         }
 
         var mask = new PIXI.Graphics();
-        mask.beginFill(0x000000, 0.5);
+        mask.beginFill(0x000000, 0.8);
         mask.drawRect(0, 0, 5000, 5000);
         mask.endFill();
 
-        var reloadingHelpText = new PIXI.Text("Pro přebití stiskněte pravé tlačítko nebo ťukněte \nprstem na kalendář, náboje či velký křížek.", {font: '60px HelveticaLight', fill: '#E8FBC1', align: 'center'});
+        var reloadingHelpText = new PIXI.Text("Pro přebití stiskněte pravé tlačítko nebo ťukněte \nprstem na kalendář, náboje či velký křížek.\nJe-li hra příliš pomalá, zkuste zmenšit okno\nprohlížeče nebo ji pustit v jiném prohlížeči.\nInternet Explorer podporován od verze 9.", {font: '60px HelveticaLight', fill: '#E8FBC1', align: 'center'});
         mask.addChild(reloadingHelpText);
-        reloadingHelpText.position.y = 700;
+        reloadingHelpText.position.y = 550;
         reloadingHelpText.anchor.x = 0.5;
         reloadingHelpText.onresize = function () {
             reloadingHelpText.position.x = 0.5 * this.rendererWidth / this.renderingScale;
