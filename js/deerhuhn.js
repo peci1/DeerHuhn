@@ -1013,11 +1013,11 @@ DeerHuhn.prototype = {
             ajax.send(postData);
 
             var resultText;
-            if (ajax.readyState === 4 && ajax.status === 200) {
+            if (ajax.readyState === 4 && ajax.status === 200 && ajax.responseText === '1') {
                 resultText = 'Vaše skóre bylo uloženo.';
             } else {
                 resultText = 'Při ukládání skóre došlo k chybě.';
-                console.log(ajax.statusText);
+                console.log(ajax.responseText + ajax.statusText);
             }
 
             var resultSplash = document.createElement('div');

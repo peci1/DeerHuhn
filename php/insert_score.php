@@ -1,5 +1,8 @@
 <?php
 
+if ($_POST['score'] < -5000 || $_POST['score'] > 5000)
+    die('fuck off');
+
 require_once('db.php');
 
 $db = new db();
