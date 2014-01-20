@@ -2,7 +2,7 @@
 
 if (isset($_POST['confirm']) && isset($_POST['password'])):
 
-    if ($_POST['password'] !== '2014srnek') {
+    if ($_POST['password'] !== NEW_ROUND_PASSWORD) {
         header('Location: start_new_round.php?message=Špatné+heslo');
         die();
     }
