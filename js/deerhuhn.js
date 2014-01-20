@@ -885,7 +885,8 @@ DeerHuhn.prototype = {
         this.stageShownListeners.score.push(function () {
             // load the best score data
             var ajax = new PIXI.AjaxRequest();
-            ajax.open("GET", 'get_best_score.php?format=json&limit=3', false);
+            var numPlayers = 5;
+            ajax.open("GET", 'get_best_score.php?format=json&limit='+numPlayers, false);
             ajax.send(null);
 
             var scoreText;
@@ -893,7 +894,7 @@ DeerHuhn.prototype = {
                 // the rules text
                 scoreText = "<table width=\"100%\" cellspacing=0><tr><th colspan=2 width=\"50%\">MYSLIVECKÁ ELITA</th><th colspan=2>MYSLIVECKÁ JELITA</th></tr>\n";
                 var data = JSON.parse(ajax.responseText);
-                for (var i=0; i<3; i++) {
+                for (var i=0; i<numPlayers; i++) {
                     scoreText += "<tr>";
                     scoreText += "<td>" + ((data.best[i] !== undefined) ? (data.best[i].name.escapeHTML() + "</td><td>" + data.best[i].score.escapeHTML()) : "&lt;neobsazeno&gt;</td><td>&nbsp;") + "</td>";
                     scoreText += "<td>" + ((data.worst[i] !== undefined) ? (data.worst[i].name.escapeHTML() + "</td><td>" + data.worst[i].score.escapeHTML()) : "&lt;neobsazeno&gt;</td><td>&nbsp;") + "</td>";
