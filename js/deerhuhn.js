@@ -77,6 +77,10 @@ var DeerHuhn = function (canvasContainerId) {
     this.GAME_CONTAINER.appendChild(this.renderer.view);
 
     this.useWebGl = (this.renderer instanceof PIXI.WebGLRenderer);
+    
+    // these flags say if the user uses mouse/touch events (can be both)
+    this.userHasMouse = false;
+    this.userHasTouch = false;
 
     /**
      * The time of the game.
@@ -162,30 +166,15 @@ var DeerHuhn = function (canvasContainerId) {
         this.blur();
 
     addEvent(this.renderer.view, 'mousemove', this.mousemove.bind(this), true);
+    addEvent(this.renderer.view.parentNode, 'touchstart', this.touchstart.bind(this), true);
+    addEvent(this.renderer.view.parentNode, 'touchmove', this.touchmove.bind(this), true);
+    addEvent(this.renderer.view.parentNode, 'touchend', this.touchend.bind(this), true);
 
     // disable right-click menu
     addEvent(this.renderer.view, 'contextmenu', function (evt) {
         evt.preventDefault();
         return false;
     });
-
-    // right-click for reloading
-    this.stages.game.click = function (mouse) {
-        if (this.isPaused)
-            return;
-
-        var evt = mouse.originalEvent;
-        if ("which" in evt)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-            isRight = evt.which == 3; 
-        else if ("button" in evt)  // IE, Opera 
-            isRight = evt.button == 2;
-
-        if (!isRight)
-            return true;
-
-        this.reloadAmmo();
-        return false; // stop event bubbling
-    }.bind(this);
 
     // other init
     PIXI.Keys.init();
@@ -269,6 +258,7 @@ DeerHuhn.prototype = {
     },
 
     mousemove: function(e) {
+        this.userHasMouse = true;
         if (e.clientX / this.rendererWidth < 0.1) {
             this.scrollingDirectionByMouse = 1 + (1 - (e.clientX / this.rendererWidth / 0.1));
         } else if (e.clientX / this.rendererWidth > 0.9) {
@@ -278,23 +268,53 @@ DeerHuhn.prototype = {
         }
     },
 
+    touchstart: function(event) {
+        this.userHasTouch = true;
+        this.lastTouchHasBeenScrolling = false;
+        this.scrollingStartPositionX = event.changedTouches[0].screenX;
+    },
+
+    touchmove: function(event) {
+        var touchData = event.changedTouches[0];
+        var onScreenLocation = new PIXI.Point(touchData.screenX, touchData.screenY);
+
+        if (this.lastTouchPosition === undefined) {
+            this.lastTouchPosition = onScreenLocation;
+            return;
+        }
+
+        var xDiff = this.lastTouchPosition.x - onScreenLocation.x;
+        this.lastTouchPosition = onScreenLocation;
+
+        // some level of benevolency to allow slight dragging while tapping
+        if (Math.abs(this.scrollingStartPositionX - onScreenLocation.x) > 30)
+            this.lastTouchHasBeenScrolling = 1;
+
+        this.scrollingDirectionByMouse = -1.0*xDiff * this.renderingScale;
+    },
+
+    touchend: function(event) {
+        this.lastTouchPosition = undefined;
+        this.scrollingDirectionByMouse = 0;
+
+        if (this.lastTouchHasBeenScrolling) {
+            if (event.stopPropagation !== undefined)
+                event.stopPropagation();
+            event.cancelBubble = true;
+            event.preventDefault();
+
+            return false;
+        }
+    },
+
     onLoad: function() {
         this.loadingElem.style.display = "none";
 
         this.loadPersistentState();
 
-        var layerClick = function (mouse) {
+        var layerClickShared = function (mouse) {
             if (this.isPaused)
-                return;
-
-            var evt = mouse.originalEvent;
-            if ("which" in evt)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-                isLeft = evt.which == 1; 
-            else if ("button" in evt)  // IE, Opera 
-                isLeft = evt.button == 1;
-
-            if (!isLeft)
-                return true;
+                return false;
 
             if (this.canShoot()) {
                 this.shoot();
@@ -304,7 +324,20 @@ DeerHuhn.prototype = {
 
             console.log('Clicked layer ' + mouse.target.name);
             return false; // stop event bubbling
-        };
+        }.bind(this);
+
+        var layerClick = function (mouse) {
+            var evt = mouse.originalEvent;
+            if ("which" in evt)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+                isLeft = evt.which == 1; 
+            else if ("button" in evt)  // IE, Opera 
+                isLeft = evt.button == 1;
+
+            if (!isLeft)
+                return true;
+
+            return layerClickShared(mouse);
+        }.bind(this);
 
         // init background tiles
         for (var i = 5; i >= 0; i--) {
@@ -321,7 +354,8 @@ DeerHuhn.prototype = {
 
             // TODO development code
             var layer = this;
-            this.backgroundLayers[i].click = layerClick.bind(this);
+            this.backgroundLayers[i].click = layerClick;
+            this.backgroundLayers[i].tap = layerClickShared;
 
             this.addSprite(this.backgroundLayers[i]);
             this.stages.game.addChild(this.backgroundLayers[i]);
@@ -423,7 +457,7 @@ DeerHuhn.prototype = {
         this.muteSoundCross.position = new PIXI.Point(this.muteSoundSprite.width, this.muteSoundSprite.height);
         this.muteSoundSprite.addChild(this.muteSoundCross);
 
-        this.muteSoundSprite.click = function () {
+        this.muteSoundSprite.click = this.muteSoundSprite.tap = function () {
             this.setSoundMuted(!this.soundMuted);
             return false;
         }.bind(this);
@@ -446,7 +480,7 @@ DeerHuhn.prototype = {
         this.muteMusicCross.position = new PIXI.Point(this.muteMusicSprite.width, this.muteMusicSprite.height);
         this.muteMusicSprite.addChild(this.muteMusicCross);
 
-        this.muteMusicSprite.click = function () {
+        this.muteMusicSprite.click = this.muteMusicSprite.tap = function () {
             this.setMusicMuted(!this.musicMuted);
             return false;
         }.bind(this);
@@ -485,6 +519,16 @@ DeerHuhn.prototype = {
         for (var stageName in this.stages) {
             this.stageShownListeners[stageName].push(muteButtonsCallback);
         }
+
+        // disable scrolling, zooming, etc. on touch devices
+        var preventDefaultTouchBehavior = function (event) {
+            event.originalEvent.preventDefault();
+        };
+        for (var stageName in this.stages) {
+            var stage = this.stages[stageName];
+            stage.tap = stage.touchstart = stage.touchend = stage.touchmove = stage.touchendoutside = 
+                preventDefaultTouchBehavior;
+        }
     },
 
     initGameStage: function() {
@@ -497,6 +541,24 @@ DeerHuhn.prototype = {
             // only change the default cursor to crosshair
             if (this.renderer.view.style.cursor === 'default')
                 this.renderer.view.style.cursor = "url('images/crosshair-small.cur'), crosshair";
+        }.bind(this);
+
+        // right-click for reloading
+        this.stages.game.click = function (mouse) {
+            if (this.isPaused)
+                return;
+
+            var evt = mouse.originalEvent;
+            if ("which" in evt)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+                isRight = evt.which == 3; 
+            else if ("button" in evt)  // IE, Opera 
+                isRight = evt.button == 2;
+
+            if (!isRight)
+                return true;
+
+            this.reloadAmmo();
+            return false; // stop event bubbling
         }.bind(this);
 
         this.stageHiddenListeners.game.push(function() {
@@ -517,6 +579,10 @@ DeerHuhn.prototype = {
             }
             this.animalFactory.occupiedPositions = [];
             this.animalFactory.occupiedPaths = [];
+
+            // move the background layers back to the left
+            for (var i=0; i<this.backgroundLayers.length; i++)
+                this.backgroundLayers[i].position.x = 0;
 
             var dateChangeCallback = function () {
                 this.updateDate();
@@ -595,7 +661,7 @@ DeerHuhn.prototype = {
         linkWWW.position = new PIXI.Point(105 - 0.5*foreground.width, 795);
         linkWWW.rotation = -3*Math.PI/180;
 
-        linkWWW.click = function (mouse) {
+        linkWWW.click = linkWWW.tap = function (mouse) {
             document.getElementById('wwwLink').click(mouse.originalEvent);
         };
 
@@ -618,7 +684,7 @@ DeerHuhn.prototype = {
         linkFB.position = new PIXI.Point(105 - 0.5*foreground.width, 865);
         linkFB.rotation = -3*Math.PI/180;
 
-        linkFB.click = function (mouse) {
+        linkFB.click = linkFB.tap = function (mouse) {
             document.getElementById('fbLink').click(mouse.originalEvent);
         };
 
@@ -634,7 +700,7 @@ DeerHuhn.prototype = {
         playBtn.position = new PIXI.Point(60 - 0.5*foreground.width, 630);
         playBtn.scale.x = playBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
 
-        playBtn.click = function (mouse) {
+        playBtn.click = playBtn.tap = function (mouse) {
             this.changeStage('game');
         }.bind(this);
         playBtn.mouseover = function (mouse) {
@@ -656,7 +722,7 @@ DeerHuhn.prototype = {
         rulesBtn.position = new PIXI.Point(240 - 0.5*foreground.width, 630);
         rulesBtn.scale.x = rulesBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
 
-        rulesBtn.click = function (mouse) {
+        rulesBtn.click = rulesBtn.tap = function (mouse) {
             this.changeStage('rules');
         }.bind(this);
         rulesBtn.mouseover = function (mouse) {
@@ -678,7 +744,7 @@ DeerHuhn.prototype = {
         scoreBtn.position = new PIXI.Point(540 - 0.5*foreground.width, 632);
         scoreBtn.scale.x = scoreBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
 
-        scoreBtn.click = function (mouse) {
+        scoreBtn.click = scoreBtn.tap = function (mouse) {
             this.changeStage('score');
         }.bind(this);
         scoreBtn.mouseover = function (mouse) {
@@ -766,7 +832,7 @@ DeerHuhn.prototype = {
         backBtn.anchor.x = 0.5;
         backBtn.position = new PIXI.Point(0, 800);
 
-        backBtn.click = function (mouse) {
+        backBtn.click = backBtn.tap = function (mouse) {
             this.changeStage('menu');
         }.bind(this);
 
@@ -852,7 +918,7 @@ DeerHuhn.prototype = {
         backBtn.anchor.x = 0.5;
         backBtn.position = new PIXI.Point(0, 800);
 
-        backBtn.click = function (mouse) {
+        backBtn.click = backBtn.tap = function (mouse) {
             this.changeStage('menu');
         }.bind(this);
 
@@ -926,8 +992,13 @@ DeerHuhn.prototype = {
         saveBtn.buttonMode = true;
         saveBtn.anchor.x = 0.5;
         saveBtn.position = new PIXI.Point(0, 800);
+        saveBtn.fired = false;
 
-        saveBtn.click = function (mouse) {
+        saveBtn.click = saveBtn.tap = function (mouse) {
+            if (saveBtn.fired)
+                return;
+            saveBtn.fired = true;
+
             console.log('score submitted'); // TODO dev code
             saveBtn.setText('UKLÁDÁM');
             
@@ -963,6 +1034,7 @@ DeerHuhn.prototype = {
             this.GAME_CONTAINER.parentNode.appendChild(resultSplash);
 
             setTimeout(function () {
+                saveBtn.fired = false;
                 this.GAME_CONTAINER.parentNode.removeChild(resultSplash);
                 this.changeStage('score');
             }.bind(this), 2000);
@@ -1017,6 +1089,7 @@ DeerHuhn.prototype = {
         pointsDate.scale.x = pointsDate.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
         pointsDate.interactive = true;
         pointsDate.click = ignoreClicksCallback;
+        pointsDate.tap = this.reloadAmmo.bind(this);
         pointsDate.onresize = function () {
             pointsDate.position.x = 0.99*this.rendererWidth/this.renderingScale - pointsDate.width - occupiedWidthLowerRight;
             pointsDate.position.y = 0.99*this.rendererHeight/this.renderingScale - pointsDate.height;
@@ -1051,6 +1124,7 @@ DeerHuhn.prototype = {
             bullet.scale.x = bullet.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
             bullet.interactive = true;
             bullet.click = ignoreClicksCallback;
+            bullet.tap = this.reloadAmmo.bind(this);
             bullet.onresize = ammoResize.bind(null, bullet, i);
 
             this.addSprite(bullet);
@@ -1061,6 +1135,7 @@ DeerHuhn.prototype = {
         var noAmmo = new PIXI.Sprite(PIXI.TextureCache['naboje-zadne.png']);
         noAmmo.interactive = true;
         noAmmo.click = ignoreClicksCallback;
+        noAmmo.tap = this.reloadAmmo.bind(this);
         noAmmo.onresize = ammoResize.bind(null, noAmmo, 0);
 
         this.addSprite(noAmmo);
@@ -1122,6 +1197,15 @@ DeerHuhn.prototype = {
         mask.beginFill(0x000000, 0.5);
         mask.drawRect(0, 0, 5000, 5000);
         mask.endFill();
+
+        var reloadingHelpText = new PIXI.Text("Pro přebití stiskněte pravé tlačítko nebo ťukněte \nprstem na kalendář, náboje či velký křížek.", {font: '60px HelveticaLight', fill: '#E8FBC1', align: 'center'});
+        mask.addChild(reloadingHelpText);
+        reloadingHelpText.position.y = 700;
+        reloadingHelpText.anchor.x = 0.5;
+        reloadingHelpText.onresize = function () {
+            reloadingHelpText.position.x = 0.5 * this.rendererWidth / this.renderingScale;
+        }.bind(this);
+        this.addSprite(reloadingHelpText);
 
         this.pauseMask = mask;
     },
@@ -2178,9 +2262,12 @@ DeerHuhn.ShootableObject = function (sprite, onShotCallback) {
      */
     this.shot = false;
 
-    // we can click through transparent areas of objects
-    var useWebGL = (this.renderer instanceof PIXI.WebGLRenderer);
-    this.sprite.hitArea = PIXI.TransparencyHitArea.create(this.sprite, useWebGL);
+    // if the user has a precise pointer (mouse), we use the more precise hit area; with only touch events available, that would be worthless overhead
+    if (this.userHasMouse) {
+        // we can click through transparent areas of objects
+        var useWebGL = (this.renderer instanceof PIXI.WebGLRenderer);
+        this.sprite.hitArea = PIXI.TransparencyHitArea.create(this.sprite, useWebGL);
+    }
 
     this.sprite.setInteractive(true);
 
@@ -2199,6 +2286,12 @@ DeerHuhn.ShootableObject = function (sprite, onShotCallback) {
         return false; // stop event bubbling
     };
     this.sprite.click = onClick.bind(this);
+
+    this.sprite.tap = function (event) {
+        event.originalEvent.preventDefault();
+        this.onShot();
+        return false;
+    }.bind(this);
 };
 DeerHuhn.ShootableObject.prototype = Object.create(DeerHuhn.SceneObject.prototype);
 DeerHuhn.ShootableObject.prototype.constructor = DeerHuhn.ShootableObject;
