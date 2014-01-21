@@ -791,7 +791,7 @@ DeerHuhn.prototype = {
             "Programování: Martin Pecka, produkce a grafika: Jaroslav Tománek";
 
         var rulesRect = new PIXI.Graphics();
-        rulesRect.beginFill(0xFFFFFF, 0.5);
+        rulesRect.beginFill(0xFFFFFF, 0.8);
         var rulesRectSize = new PIXI.Point(800, 480);
         rulesRect.drawRect(0, 0, rulesRectSize.x, rulesRectSize.y);
         rulesRect.endFill();
@@ -855,7 +855,7 @@ DeerHuhn.prototype = {
         this.addSprite(caption);
 
         var scoreRect = new PIXI.Graphics();
-        scoreRect.beginFill(0xFFFFFF, 0.5);
+        scoreRect.beginFill(0xFFFFFF, 0.8);
         var scoreRectSize = new PIXI.Point(1400, 480);
         scoreRect.drawRect(0, 0, scoreRectSize.x, scoreRectSize.y);
         scoreRect.endFill();
