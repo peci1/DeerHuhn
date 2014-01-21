@@ -785,6 +785,7 @@ DeerHuhn.prototype = {
             "</table></li>"+
             "<li>nestřílej hospodářská zvířata</li>"+
             "<li>nepáchej škody na majetku</li>"+
+            "<li>nestřílej vodící bachyně</li>"+
             "<li>hledej bonusy</li>"+
             "</ol>"+
             "Lovu zdar!<br/><br/>"+
@@ -810,11 +811,11 @@ DeerHuhn.prototype = {
         rulesHTML.style.padding = '0px';
         container.appendChild(rulesHTML);
         rulesRect.onresize = function () {
-            var padding = 3; //px
-            rulesHTML.style.left = (rulesRect.worldTransform[2] + this.renderer.view.offsetLeft + padding) + 'px';
-            rulesHTML.style.top = (rulesRect.worldTransform[5] + this.renderer.view.offsetTop + padding) + 'px';
-            rulesHTML.style.width = (rulesRectSize.x * this.renderingScale - 2*padding) + 'px';
-            rulesHTML.style.height = (rulesRectSize.y * this.renderingScale - 2*padding) + 'px';
+            var paddingLeft = 15 * this.renderingScale; //px
+            rulesHTML.style.left = (rulesRect.worldTransform[2] + this.renderer.view.offsetLeft + paddingLeft) + 'px';
+            rulesHTML.style.top = (rulesRect.worldTransform[5] + this.renderer.view.offsetTop) + 'px';
+            rulesHTML.style.width = (rulesRectSize.x * this.renderingScale - paddingLeft) + 'px';
+            rulesHTML.style.height = (rulesRectSize.y * this.renderingScale) + 'px';
             var fontSize = Math.round(50* this.renderingScale);
             rulesHTML.style.font = fontSize+'px/1.5 HelveticaLight';
         }.bind(this);
@@ -874,11 +875,12 @@ DeerHuhn.prototype = {
         scoreHTML.style.padding = '0px';
         container.appendChild(scoreHTML);
         scoreRect.onresize = function () {
-            var padding = 3; //px
-            scoreHTML.style.left = (scoreRect.worldTransform[2] + this.renderer.view.offsetLeft + padding) + 'px';
-            scoreHTML.style.top = (scoreRect.worldTransform[5] + this.renderer.view.offsetTop + padding) + 'px';
-            scoreHTML.style.width = (scoreRectSize.x * this.renderingScale - 2*padding) + 'px';
-            scoreHTML.style.height = (scoreRectSize.y * this.renderingScale - 2*padding) + 'px';
+            var paddingLeft = 15 * this.renderingScale; //px
+            var paddingTop = 5*this.renderingScale;
+            scoreHTML.style.left = (scoreRect.worldTransform[2] + this.renderer.view.offsetLeft + paddingLeft) + 'px';
+            scoreHTML.style.top = (scoreRect.worldTransform[5] + this.renderer.view.offsetTop + paddingTop) + 'px';
+            scoreHTML.style.width = (scoreRectSize.x * this.renderingScale - paddingLeft) + 'px';
+            scoreHTML.style.height = (scoreRectSize.y * this.renderingScale - paddingTop) + 'px';
             var fontSize = Math.round(50* this.renderingScale);
             scoreHTML.style.font = fontSize+'px/1.5 HelveticaLight';
         }.bind(this);
