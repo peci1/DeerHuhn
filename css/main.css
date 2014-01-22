@@ -40,4 +40,5 @@ body.jsEnabled #jsDisabledText {display: none;}
 
 #wwwLink, #fbLink {display: none};
 
-#rules {margin-left: 1em;}
+#rules {margin-left: 1em; }
+#rules li {margin-left: .5em;}
