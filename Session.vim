@@ -2,18 +2,18 @@ let SessionLoad = 1
 if &cp | set nocp | endif
 let s:cpo_save=&cpo
 set cpo&vim
-inoremap <expr> <Down> pumvisible() ? "\" : "\<Down>"
-inoremap <expr> <S-Tab> pumvisible() ? "\" : "\<S-Tab>"
-inoremap <expr> <Up> pumvisible() ? "\" : "\<Up>"
+inoremap <C-Left> :call camelcasemotion#Motion('b', 1, 'n')i
+inoremap <C-Right> :call camelcasemotion#Motion('e', 1, 'n')a
+inoremap <silent> <Plug>delimitMateBS =delimitMate#BS()
+inoremap <silent> <expr> <Plug>delimitMateS-BS delimitMate#WithinEmptyPair() ? "\<Del>" : "\<S-BS>"
 inoremap <C-Space> 
+inoremap <expr> <Up> pumvisible() ? "\" : "\<Up>"
+inoremap <expr> <S-Tab> pumvisible() ? "\" : "\<S-Tab>"
+inoremap <expr> <Down> pumvisible() ? "\" : "\<Down>"
 imap <silent> <Plug>IMAP_JumpBack =IMAP_Jumpfunc('b', 0)
 imap <silent> <Plug>IMAP_JumpForward =IMAP_Jumpfunc('', 0)
 inoremap <C-F5> :CheckSyntax!
 inoremap <F5> :CheckSyntax
-inoremap <silent> <expr> <Plug>delimitMateS-BS delimitMate#WithinEmptyPair() ? "\<Del>" : "\<S-BS>"
-inoremap <silent> <Plug>delimitMateBS =delimitMate#BS()
-inoremap <C-Right> :call camelcasemotion#Motion('e', 1, 'n')a
-inoremap <C-Left> :call camelcasemotion#Motion('b', 1, 'n')i
 cnoremap <C-F4> c
 inoremap <C-F4> c
 cnoremap <C-Tab> w
@@ -41,22 +41,39 @@ noremap  
 noremap  u
 cnoremap   :simalt ~
 inoremap   :simalt ~
-xmap <silent> ,w <Plug>CamelCaseMotion_w
-omap <silent> ,w <Plug>CamelCaseMotion_w
 nmap <silent> ,w <Plug>CamelCaseMotion_w
+omap <silent> ,w <Plug>CamelCaseMotion_w
+xmap <silent> ,w <Plug>CamelCaseMotion_w
 map Q gq
-nnoremap \d :YcmShowDetailedDiagnostic
 nmap <silent> \ig <Plug>IndentGuidesToggle
+nnoremap \d :YcmShowDetailedDiagnostic
 nmap gx <Plug>NetrwBrowseX
-xmap <silent> i,e <Plug>CamelCaseMotion_ie
-xmap <silent> i,b <Plug>CamelCaseMotion_ib
-xmap <silent> i,w <Plug>CamelCaseMotion_iw
-omap <silent> i,e <Plug>CamelCaseMotion_ie
-omap <silent> i,b <Plug>CamelCaseMotion_ib
 omap <silent> i,w <Plug>CamelCaseMotion_iw
-nnoremap <C-F4> c
-nnoremap <C-Tab> w
+omap <silent> i,b <Plug>CamelCaseMotion_ib
+omap <silent> i,e <Plug>CamelCaseMotion_ie
+xmap <silent> i,w <Plug>CamelCaseMotion_iw
+xmap <silent> i,b <Plug>CamelCaseMotion_ib
+xmap <silent> i,e <Plug>CamelCaseMotion_ie
+map <C-Left> <Plug>CamelCaseMotion_b
+map <C-Right> <Plug>CamelCaseMotion_e
+nnoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'n')
+nnoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'n')
+nnoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'n')
+onoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'o')
+onoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'o')
+onoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'o')
+vnoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'v')
+vnoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'v')
+vnoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'v')
+onoremap <Plug>CamelCaseMotion_iw :call camelcasemotion#InnerMotion('w',v:count1)
+onoremap <Plug>CamelCaseMotion_ib :call camelcasemotion#InnerMotion('b',v:count1)
+onoremap <Plug>CamelCaseMotion_ie :call camelcasemotion#InnerMotion('e',v:count1)
+vnoremap <Plug>CamelCaseMotion_iw :call camelcasemotion#InnerMotion('w',v:count1)
+vnoremap <Plug>CamelCaseMotion_ib :call camelcasemotion#InnerMotion('b',v:count1)
+vnoremap <Plug>CamelCaseMotion_ie :call camelcasemotion#InnerMotion('e',v:count1)
 nmap <S-Insert> "+gP
+nnoremap <C-Tab> w
+nnoremap <C-F4> c
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
 vmap <silent> <Plug>IMAP_JumpBack `<i=IMAP_Jumpfunc('b', 0)
 vmap <silent> <Plug>IMAP_JumpForward i=IMAP_Jumpfunc('', 0)
@@ -66,23 +83,6 @@ nmap <silent> <Plug>IMAP_JumpBack i=IMAP_Jumpfunc('b', 0)
 nmap <silent> <Plug>IMAP_JumpForward i=IMAP_Jumpfunc('', 0)
 noremap <C-F5> :CheckSyntax!
 noremap <F5> :CheckSyntax
-vnoremap <Plug>CamelCaseMotion_ie :call camelcasemotion#InnerMotion('e',v:count1)
-vnoremap <Plug>CamelCaseMotion_ib :call camelcasemotion#InnerMotion('b',v:count1)
-vnoremap <Plug>CamelCaseMotion_iw :call camelcasemotion#InnerMotion('w',v:count1)
-onoremap <Plug>CamelCaseMotion_ie :call camelcasemotion#InnerMotion('e',v:count1)
-onoremap <Plug>CamelCaseMotion_ib :call camelcasemotion#InnerMotion('b',v:count1)
-onoremap <Plug>CamelCaseMotion_iw :call camelcasemotion#InnerMotion('w',v:count1)
-vnoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'v')
-vnoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'v')
-vnoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'v')
-onoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'o')
-onoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'o')
-onoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'o')
-nnoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'n')
-nnoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'n')
-nnoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'n')
-map <C-Right> <Plug>CamelCaseMotion_e
-map <C-Left> <Plug>CamelCaseMotion_b
 onoremap <C-F4> c
 vnoremap <C-F4> c
 onoremap <C-Tab> w
@@ -132,10 +132,11 @@ set selectmode=mouse,key
 set shiftwidth=4
 set softtabstop=4
 set tabstop=4
+set undolevels=-123456
 set updatetime=2000
 set whichwrap=b,s,<,>,[,]
 set winaltkeys=yes
-set window=40
+set window=57
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
@@ -144,20 +145,21 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +11 index.htm
+badd +64 index.htm
 badd +1 Â¨
-badd +708 js\deerhuhn.js
+badd +544 js\deerhuhn.js
 badd +4 css\main.css
 badd +73 js\pixi.transparencyhitarea.js
 badd +129 js\deerhuhn.animals.js
 badd +13 js\pixi.scalablestage.js
 badd +16 php\insert_score.php
-badd +54 php\db.php
+badd +43 php\db.php
 badd +5 php\insert_score_test.php
-badd +0 .htaccess
+badd +3 .htaccess
 badd +13 php\start_new_round.php
 badd +50 php\get_best_score.php
-badd +0 php\delete_score.php
+badd +1 php\delete_score.php
+badd +0 php\config.php
 args index.htm
 edit js\deerhuhn.js
 set splitbelow splitright
@@ -178,17 +180,17 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 1 + 20) / 41)
-exe '2resize ' . ((&lines * 31 + 20) / 41)
-exe '3resize ' . ((&lines * 1 + 20) / 41)
-exe '4resize ' . ((&lines * 1 + 20) / 41)
-exe '5resize ' . ((&lines * 1 + 20) / 41)
+exe '1resize ' . ((&lines * 1 + 29) / 58)
+exe '2resize ' . ((&lines * 15 + 29) / 58)
+exe '3resize ' . ((&lines * 1 + 29) / 58)
+exe '4resize ' . ((&lines * 1 + 29) / 58)
+exe '5resize ' . ((&lines * 34 + 29) / 58)
 argglobal
 enew
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <silent> g <Plug>delimitMateJumpMany
 imap <buffer>  <Plug>delimitMateBS
 imap <buffer> " <Plug>delimitMate"
@@ -298,7 +300,6 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal winfixheight
 setlocal nowinfixwidth
 setlocal wrap
@@ -307,8 +308,8 @@ wincmd w
 argglobal
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
 nnoremap <buffer> <silent> <Plug>(jsdoc) :call jsdoc#insert()
 imap <buffer> <silent> g <Plug>delimitMateJumpMany
 imap <buffer>  <Plug>delimitMateBS
@@ -419,25 +420,24 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 544 - ((24 * winheight(0) + 15) / 31)
+let s:l = 544 - ((0 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 544
-normal! 042|
+normal! 0
 wincmd w
 argglobal
 edit js\deerhuhn.animals.js
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
 nnoremap <buffer> <silent> <Plug>(jsdoc) :call jsdoc#insert()
 imap <buffer> <silent> g <Plug>delimitMateJumpMany
 imap <buffer>  <Plug>delimitMateBS
@@ -548,7 +548,6 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
@@ -565,9 +564,9 @@ argglobal
 edit index.htm
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-Tab> <Plug>delimitMateS-Tab
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
+imap <buffer> <S-Tab> <Plug>delimitMateS-Tab
 imap <buffer> <silent> g <Plug>delimitMateJumpMany
 imap <buffer>  <Plug>delimitMateBS
 imap <buffer> " <Plug>delimitMate"
@@ -679,7 +678,6 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
@@ -696,9 +694,9 @@ argglobal
 edit css\main.css
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-Tab> <Plug>delimitMateS-Tab
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
+imap <buffer> <S-Tab> <Plug>delimitMateS-Tab
 imap <buffer> <silent> g <Plug>delimitMateJumpMany
 imap <buffer>  <Plug>delimitMateBS
 imap <buffer> " <Plug>delimitMate"
@@ -808,25 +806,23 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
+let s:l = 1 - ((0 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
 normal! 012|
 wincmd w
-2wincmd w
-exe '1resize ' . ((&lines * 1 + 20) / 41)
-exe '2resize ' . ((&lines * 31 + 20) / 41)
-exe '3resize ' . ((&lines * 1 + 20) / 41)
-exe '4resize ' . ((&lines * 1 + 20) / 41)
-exe '5resize ' . ((&lines * 1 + 20) / 41)
+exe '1resize ' . ((&lines * 1 + 29) / 58)
+exe '2resize ' . ((&lines * 15 + 29) / 58)
+exe '3resize ' . ((&lines * 1 + 29) / 58)
+exe '4resize ' . ((&lines * 1 + 29) / 58)
+exe '5resize ' . ((&lines * 34 + 29) / 58)
 tabedit .htaccess
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -839,7 +835,10 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-5wincmd k
+wincmd _ | wincmd |
+split
+6wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -849,17 +848,18 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 1 + 20) / 41)
-exe '2resize ' . ((&lines * 1 + 20) / 41)
-exe '3resize ' . ((&lines * 29 + 20) / 41)
-exe '4resize ' . ((&lines * 1 + 20) / 41)
-exe '5resize ' . ((&lines * 1 + 20) / 41)
-exe '6resize ' . ((&lines * 1 + 20) / 41)
+exe '1resize ' . ((&lines * 1 + 29) / 58)
+exe '2resize ' . ((&lines * 1 + 29) / 58)
+exe '3resize ' . ((&lines * 44 + 29) / 58)
+exe '4resize ' . ((&lines * 1 + 29) / 58)
+exe '5resize ' . ((&lines * 1 + 29) / 58)
+exe '6resize ' . ((&lines * 1 + 29) / 58)
+exe '7resize ' . ((&lines * 1 + 29) / 58)
 argglobal
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <silent> g <Plug>delimitMateJumpMany
 imap <buffer>  <Plug>delimitMateBS
 imap <buffer> " <Plug>delimitMate"
@@ -969,7 +969,6 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
@@ -983,11 +982,125 @@ normal! zt
 normal! 020|
 wincmd w
 argglobal
+edit php\config.php
+onoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
+nnoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
+onoremap <buffer> <silent> ]] /\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)/:nohls
+nnoremap <buffer> <silent> ]] /\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)/:nohls
+setlocal keymap=
+setlocal noarabic
+setlocal noautoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal colorcolumn=
+setlocal comments=s1:/*,mb:*,ex:*/,://,:#
+setlocal commentstring=/*%s*/
+setlocal complete=.,w,b,u,t,i
+setlocal concealcursor=
+setlocal conceallevel=0
+setlocal completefunc=youcompleteme#Complete
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal expandtab
+if &filetype != 'php'
+setlocal filetype=php
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldmarker={{{,}}}
+setlocal foldmethod=manual
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=qrowcb
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=2
+setlocal imsearch=2
+setlocal include=\\(require\\|include\\)\\(_once\\)\\?
+setlocal includeexpr=
+setlocal indentexpr=GetPhpIndent()
+setlocal indentkeys=0{,0},0),:,!^F,o,O,e,*<Return>,=?>,=<?,=*/
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,128-167,224-235
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:],<:>
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+setlocal nonumber
+setlocal numberwidth=4
+setlocal omnifunc=phpcomplete#CompletePHP
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norelativenumber
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=4
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=
+setlocal swapfile
+setlocal synmaxcol=3000
+if &syntax != 'php'
+setlocal syntax=php
+endif
+setlocal tabstop=4
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal noundofile
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+silent! normal! zE
+let s:l = 3 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+3
+normal! 042|
+wincmd w
+argglobal
 edit php\db.php
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
 onoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 nnoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 onoremap <buffer> <silent> ]] /\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)/:nohls
@@ -1103,13 +1216,12 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 43 - ((0 * winheight(0) + 0) / 1)
+let s:l = 43 - ((21 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1120,8 +1232,8 @@ argglobal
 edit php\insert_score.php
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
 onoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 nnoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 onoremap <buffer> <silent> ]] /\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)/:nohls
@@ -1237,25 +1349,24 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 20 - ((19 * winheight(0) + 14) / 29)
+let s:l = 20 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 20
-normal! 088|
+normal! 039|
 wincmd w
 argglobal
 edit php\start_new_round.php
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
 onoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 nnoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 onoremap <buffer> <silent> ]] /\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)/:nohls
@@ -1371,7 +1482,6 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
@@ -1388,8 +1498,8 @@ argglobal
 edit php\get_best_score.php
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
 onoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 nnoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 onoremap <buffer> <silent> ]] /\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)/:nohls
@@ -1505,7 +1615,6 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
@@ -1522,8 +1631,8 @@ argglobal
 edit php\delete_score.php
 let s:cpo_save=&cpo
 set cpo&vim
-imap <buffer> <S-BS> <Plug>delimitMateS-BS
 imap <buffer> <BS> <Plug>delimitMateBS
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
 onoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 nnoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
 onoremap <buffer> <silent> ]] /\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)/:nohls
@@ -1639,7 +1748,6 @@ setlocal tags=
 setlocal textwidth=0
 setlocal thesaurus=
 setlocal noundofile
-setlocal undolevels=-123456
 setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
@@ -1652,14 +1760,15 @@ normal! zt
 12
 normal! 066|
 wincmd w
-2wincmd w
-exe '1resize ' . ((&lines * 1 + 20) / 41)
-exe '2resize ' . ((&lines * 1 + 20) / 41)
-exe '3resize ' . ((&lines * 29 + 20) / 41)
-exe '4resize ' . ((&lines * 1 + 20) / 41)
-exe '5resize ' . ((&lines * 1 + 20) / 41)
-exe '6resize ' . ((&lines * 1 + 20) / 41)
-tabnext 1
+3wincmd w
+exe '1resize ' . ((&lines * 1 + 29) / 58)
+exe '2resize ' . ((&lines * 1 + 29) / 58)
+exe '3resize ' . ((&lines * 44 + 29) / 58)
+exe '4resize ' . ((&lines * 1 + 29) / 58)
+exe '5resize ' . ((&lines * 1 + 29) / 58)
+exe '6resize ' . ((&lines * 1 + 29) / 58)
+exe '7resize ' . ((&lines * 1 + 29) / 58)
+tabnext 2
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif
