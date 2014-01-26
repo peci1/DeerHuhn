@@ -3,6 +3,20 @@
 if ($_POST['score'] < -5000 || $_POST['score'] > 5000)
     die('fuck off');
 
+session_start();
+
+if (!isset($_SESSION['game_start_time']))
+    die('fuck off');
+
+$timeDiff = time() - $_SESSION['game_start_time'];
+$gameDurationSeconds = 275 * 0.6; // 275 days, 0.6 s each
+
+if ($timeDiff < $gameDurationSeconds)
+    die('fuck off');
+
+// disallow multiple insertion
+unset($_SESSION['game_start_time']);
+
 require_once('db.php');
 
 $db = new db();

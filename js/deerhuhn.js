@@ -609,6 +609,8 @@ DeerHuhn.prototype = {
             this.updateAmmo();
             this.updateDontShootSigns();
 
+            this.startNewSession();
+
             this.pause();
             this.unPause();
             this.sounds.mainTheme.play();
@@ -617,6 +619,12 @@ DeerHuhn.prototype = {
         // spawn every day
         this.spawnTimer = new DeerHuhn.PausableInterval(this.spawnRandomAnimals.bind(this), 600);
         this.pausableObjects.push(this.spawnTimer);
+    },
+
+    startNewSession: function () {
+        var ajax = new PIXI.AjaxRequest();
+        ajax.open("POST", 'start_session.php', false);
+        ajax.send(null);
     },
 
     createMenuBackgroundSprite: function () {
@@ -2010,6 +2018,8 @@ DeerHuhn.PausableInterval.prototype.stop = function () {
 /**
  * The time of the game.
  *
+ * Game duration is 275 days.
+ *
  * @constructor
  * @param {dateChangeCallback} dateChangeCallback The callback to call when the date is changed.
  * @param {gameOverCallback} gameOverCallback The callback to call when the time is up.
@@ -2041,6 +2051,8 @@ DeerHuhn.GameTime = function (dateChangeCallback, gameOverCallback) {
     /**
      * The current date representation.
      *
+     * If you change game duration, change it also in php/insert_score.php.
+     *
      * It has to be initialized with a non-leap year and time at midnight.
      *
      * @property
@@ -2053,6 +2065,8 @@ DeerHuhn.GameTime = function (dateChangeCallback, gameOverCallback) {
 
     /**
      * Id of the repetition timer used to wait for #delayAfterUnPause ms before triggering the timer after pausing.
+     *
+     * If you change the delay, change it also in php/insert_score.php.
      *
      * @property
      *
@@ -2112,6 +2126,7 @@ DeerHuhn.GameTime.prototype.increaseDate = function () {
 
     this.dateChangeCallback();
 
+    // if you change game duration, change it also in php/insert_score.php.
     // months are indexed from 0 and we stop in December
     if (this.date.getMonth() === 11) {
         this.intervalTimer.stop();
