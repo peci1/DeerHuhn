@@ -56,6 +56,8 @@ var DeerHuhn = function (canvasContainerId) {
     this.stages.score.name = "Score stage";
 
     this.stageName = 'menu';
+    if (window.location.hash !== undefined && window.location.hash.length > 1)
+        this.stageName = window.location.hash.substring(1);
     this.stage = this.stages[this.stageName];
 
     /** Names of all the stages that form the menu. */
