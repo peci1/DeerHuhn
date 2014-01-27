@@ -3,11 +3,11 @@
  */
 
 DeerHuhn.Animals.AnimalFactory.prototype.roadPaths = [
-    new DeerHuhn.ScenePath(4, 2650, 383, 3705, 393),
+    new DeerHuhn.ScenePath(4, 2650, 383, 3705, 393)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.forrestRoadPaths = [
-    new DeerHuhn.ScenePath(3, 93, 367, 644, 439),
+    new DeerHuhn.ScenePath(3, 93, 367, 644, 439)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.cropsPaths = [
@@ -16,30 +16,30 @@ DeerHuhn.Animals.AnimalFactory.prototype.cropsPaths = [
     new DeerHuhn.ScenePath(3, 1140, 822, 1480, 570),
     new DeerHuhn.ScenePath(3, 1400, 481, 1580, 363),
     new DeerHuhn.ScenePath(3, 1475, 534, 2600, 603),
-    new DeerHuhn.ScenePath(3, 1500, 544, 1928, 680),
+    new DeerHuhn.ScenePath(3, 1500, 544, 1928, 680)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.fieldPaths = [
     new DeerHuhn.ScenePath(4, 631, 420, 1080, 271),
     new DeerHuhn.ScenePath(4, 827, 285, 1385, 442),
     new DeerHuhn.ScenePath(4, 2734, 418, 3420, 423),
-    new DeerHuhn.ScenePath(4, 2750, 453, 3421, 558),
+    new DeerHuhn.ScenePath(4, 2750, 453, 3421, 558)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.housePaths = [
-    new DeerHuhn.ScenePath(3, 100, 290, 600, 433),
+    new DeerHuhn.ScenePath(3, 100, 290, 600, 433)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.barnPaths = [
     new DeerHuhn.ScenePath(3, 2281, 712, 2602, 608),
     new DeerHuhn.ScenePath(3, 2281, 712, 3188, 658),
-    new DeerHuhn.ScenePath(3, 2281, 712, 2672, 739),
+    new DeerHuhn.ScenePath(3, 2281, 712, 2672, 739)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.waterPaths = [
     new DeerHuhn.ScenePath(3, 254, 738, 560, 720),
     new DeerHuhn.ScenePath(3, 495, 835, 560, 720),
-    new DeerHuhn.ScenePath(3, 353, 832, 495, 835),
+    new DeerHuhn.ScenePath(3, 353, 832, 495, 835)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.forrestPaths = [
@@ -73,7 +73,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.forrestPaths = [
     new DeerHuhn.ScenePath(3, 2660, 620, 3187, 657),
     new DeerHuhn.ScenePath(4, 2900, 531, 3369, 480),
     new DeerHuhn.ScenePath(4, 3263, 300, 3575, 252),
-    new DeerHuhn.ScenePath(4, 3263, 300, 3647, 391),
+    new DeerHuhn.ScenePath(4, 3263, 300, 3647, 391)
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.budkaPositions = [
