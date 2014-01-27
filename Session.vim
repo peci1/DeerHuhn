@@ -2,12 +2,12 @@ let SessionLoad = 1
 if &cp | set nocp | endif
 let s:cpo_save=&cpo
 set cpo&vim
-inoremap <expr> <Down> pumvisible() ? "\" : "\<Down>"
-inoremap <expr> <S-Tab> pumvisible() ? "\" : "\<S-Tab>"
-inoremap <expr> <Up> pumvisible() ? "\" : "\<Up>"
-inoremap <C-Space> 
-inoremap <C-Right> :call camelcasemotion#Motion('e', 1, 'n')a
 inoremap <C-Left> :call camelcasemotion#Motion('b', 1, 'n')i
+inoremap <C-Right> :call camelcasemotion#Motion('e', 1, 'n')a
+inoremap <C-Space> 
+inoremap <expr> <Up> pumvisible() ? "\" : "\<Up>"
+inoremap <expr> <S-Tab> pumvisible() ? "\" : "\<S-Tab>"
+inoremap <expr> <Down> pumvisible() ? "\" : "\<Down>"
 imap <silent> <Plug>IMAP_JumpBack =IMAP_Jumpfunc('b', 0)
 imap <silent> <Plug>IMAP_JumpForward =IMAP_Jumpfunc('', 0)
 inoremap <C-F5> :CheckSyntax!
@@ -41,42 +41,42 @@ noremap  
 noremap  u
 cnoremap   :simalt ~
 inoremap   :simalt ~
-xmap <silent> ,w <Plug>CamelCaseMotion_w
-omap <silent> ,w <Plug>CamelCaseMotion_w
 nmap <silent> ,w <Plug>CamelCaseMotion_w
+omap <silent> ,w <Plug>CamelCaseMotion_w
+xmap <silent> ,w <Plug>CamelCaseMotion_w
 map Q gq
 vmap [% [%m'gv``
-nnoremap \d :YcmShowDetailedDiagnostic
 nmap <silent> \ig <Plug>IndentGuidesToggle
+nnoremap \d :YcmShowDetailedDiagnostic
 vmap ]% ]%m'gv``
 vmap a% [%v]%
 nmap gx <Plug>NetrwBrowseX
-xmap <silent> i,e <Plug>CamelCaseMotion_ie
-xmap <silent> i,b <Plug>CamelCaseMotion_ib
-xmap <silent> i,w <Plug>CamelCaseMotion_iw
-omap <silent> i,e <Plug>CamelCaseMotion_ie
-omap <silent> i,b <Plug>CamelCaseMotion_ib
 omap <silent> i,w <Plug>CamelCaseMotion_iw
-nnoremap <C-F4> c
-nnoremap <C-Tab> w
-nmap <S-Insert> "+gP
-vnoremap <Plug>CamelCaseMotion_ie :call camelcasemotion#InnerMotion('e',v:count1)
-vnoremap <Plug>CamelCaseMotion_ib :call camelcasemotion#InnerMotion('b',v:count1)
-vnoremap <Plug>CamelCaseMotion_iw :call camelcasemotion#InnerMotion('w',v:count1)
-onoremap <Plug>CamelCaseMotion_ie :call camelcasemotion#InnerMotion('e',v:count1)
-onoremap <Plug>CamelCaseMotion_ib :call camelcasemotion#InnerMotion('b',v:count1)
-onoremap <Plug>CamelCaseMotion_iw :call camelcasemotion#InnerMotion('w',v:count1)
-vnoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'v')
-vnoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'v')
-vnoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'v')
-onoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'o')
-onoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'o')
-onoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'o')
-nnoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'n')
-nnoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'n')
-nnoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'n')
-map <C-Right> <Plug>CamelCaseMotion_e
+omap <silent> i,b <Plug>CamelCaseMotion_ib
+omap <silent> i,e <Plug>CamelCaseMotion_ie
+xmap <silent> i,w <Plug>CamelCaseMotion_iw
+xmap <silent> i,b <Plug>CamelCaseMotion_ib
+xmap <silent> i,e <Plug>CamelCaseMotion_ie
 map <C-Left> <Plug>CamelCaseMotion_b
+map <C-Right> <Plug>CamelCaseMotion_e
+nnoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'n')
+nnoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'n')
+nnoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'n')
+onoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'o')
+onoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'o')
+onoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'o')
+vnoremap <Plug>CamelCaseMotion_w :call camelcasemotion#Motion('w',v:count1,'v')
+vnoremap <Plug>CamelCaseMotion_b :call camelcasemotion#Motion('b',v:count1,'v')
+vnoremap <Plug>CamelCaseMotion_e :call camelcasemotion#Motion('e',v:count1,'v')
+onoremap <Plug>CamelCaseMotion_iw :call camelcasemotion#InnerMotion('w',v:count1)
+onoremap <Plug>CamelCaseMotion_ib :call camelcasemotion#InnerMotion('b',v:count1)
+onoremap <Plug>CamelCaseMotion_ie :call camelcasemotion#InnerMotion('e',v:count1)
+vnoremap <Plug>CamelCaseMotion_iw :call camelcasemotion#InnerMotion('w',v:count1)
+vnoremap <Plug>CamelCaseMotion_ib :call camelcasemotion#InnerMotion('b',v:count1)
+vnoremap <Plug>CamelCaseMotion_ie :call camelcasemotion#InnerMotion('e',v:count1)
+nmap <S-Insert> "+gP
+nnoremap <C-Tab> w
+nnoremap <C-F4> c
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
 vmap <silent> <Plug>IMAP_JumpBack `<i=IMAP_Jumpfunc('b', 0)
 vmap <silent> <Plug>IMAP_JumpForward i=IMAP_Jumpfunc('', 0)
@@ -126,6 +126,7 @@ set fileencodings=ucs-bom,utf-8,default,latin1
 set helplang=cs
 set history=50
 set hlsearch
+set iminsert=0
 set incsearch
 set keymodel=startsel,stopsel
 set ruler
@@ -158,13 +159,14 @@ badd +73 js\pixi.transparencyhitarea.js
 badd +129 js\deerhuhn.animals.js
 badd +13 js\pixi.scalablestage.js
 badd +16 php\insert_score.php
-badd +43 php\db.php
+badd +44 php\db.php
 badd +5 php\insert_score_test.php
 badd +3 .htaccess
 badd +13 php\start_new_round.php
 badd +50 php\get_best_score.php
 badd +1 php\delete_score.php
 badd +1 php\config.php
+badd +0 php\start_session.php
 args index.htm
 edit js\deerhuhn.js
 set splitbelow splitright
@@ -186,15 +188,10 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe '1resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 1resize ' . ((&columns * 80 + 118) / 237)
 exe '2resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 2resize ' . ((&columns * 80 + 118) / 237)
-exe '3resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 3resize ' . ((&columns * 80 + 118) / 237)
+exe '3resize ' . ((&lines * 48 + 29) / 58)
 exe '4resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 4resize ' . ((&columns * 80 + 118) / 237)
-exe '5resize ' . ((&lines * 15 + 29) / 58)
-exe 'vert 5resize ' . ((&columns * 80 + 118) / 237)
+exe '5resize ' . ((&lines * 1 + 29) / 58)
 argglobal
 enew
 let s:cpo_save=&cpo
@@ -381,7 +378,7 @@ setlocal formatexpr=
 setlocal formatoptions=croql
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
-setlocal iminsert=2
+setlocal iminsert=0
 setlocal imsearch=2
 setlocal include=
 setlocal includeexpr=
@@ -435,12 +432,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 544 - ((0 * winheight(0) + 0) / 1)
+let s:l = 1218 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-544
-normal! 0
+1218
+normal! 0278|
 wincmd w
 argglobal
 edit js\deerhuhn.animals.js
@@ -528,7 +525,7 @@ setlocal modifiable
 setlocal nrformats=octal,hex
 setlocal nonumber
 setlocal numberwidth=4
-setlocal omnifunc=tern#Complete
+setlocal omnifunc=javascriptcomplete#CompleteJS
 setlocal path=
 setlocal nopreserveindent
 setlocal nopreviewwindow
@@ -563,11 +560,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 525 - ((0 * winheight(0) + 0) / 1)
+let s:l = 125 - ((28 * winheight(0) + 24) / 48)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-525
+125
 normal! 03|
 wincmd w
 argglobal
@@ -693,12 +690,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 64 - ((0 * winheight(0) + 0) / 1)
+let s:l = 65 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-64
-normal! 0
+65
+normal! 07|
 wincmd w
 argglobal
 edit css\main.css
@@ -821,23 +818,19 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 7) / 15)
+let s:l = 1 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
 normal! 012|
 wincmd w
+3wincmd w
 exe '1resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 1resize ' . ((&columns * 80 + 118) / 237)
 exe '2resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 2resize ' . ((&columns * 80 + 118) / 237)
-exe '3resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 3resize ' . ((&columns * 80 + 118) / 237)
+exe '3resize ' . ((&lines * 48 + 29) / 58)
 exe '4resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 4resize ' . ((&columns * 80 + 118) / 237)
-exe '5resize ' . ((&lines * 15 + 29) / 58)
-exe 'vert 5resize ' . ((&columns * 80 + 118) / 237)
+exe '5resize ' . ((&lines * 1 + 29) / 58)
 tabedit .htaccess
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -852,7 +845,10 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-6wincmd k
+wincmd _ | wincmd |
+split
+7wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -865,11 +861,12 @@ wincmd t
 set winheight=1 winwidth=1
 exe '1resize ' . ((&lines * 1 + 29) / 58)
 exe '2resize ' . ((&lines * 1 + 29) / 58)
-exe '3resize ' . ((&lines * 44 + 29) / 58)
+exe '3resize ' . ((&lines * 1 + 29) / 58)
 exe '4resize ' . ((&lines * 1 + 29) / 58)
-exe '5resize ' . ((&lines * 1 + 29) / 58)
+exe '5resize ' . ((&lines * 42 + 29) / 58)
 exe '6resize ' . ((&lines * 1 + 29) / 58)
 exe '7resize ' . ((&lines * 1 + 29) / 58)
+exe '8resize ' . ((&lines * 1 + 29) / 58)
 argglobal
 let s:cpo_save=&cpo
 set cpo&vim
@@ -1255,12 +1252,145 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 44 - ((4 * winheight(0) + 22) / 44)
+let s:l = 44 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 44
-normal! 052|
+normal! 051|
+wincmd w
+argglobal
+edit php\start_session.php
+let s:cpo_save=&cpo
+set cpo&vim
+imap <buffer> <S-BS> <Plug>delimitMateS-BS
+imap <buffer> <BS> <Plug>delimitMateBS
+onoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
+nnoremap <buffer> <silent> [[ ?\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)?:nohls
+onoremap <buffer> <silent> ]] /\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)/:nohls
+nnoremap <buffer> <silent> ]] /\(.*\%#\)\@!\_^\s*\zs\(\(abstract\s\+\|final\s\+\|private\s\+\|protected\s\+\|public\s\+\|static\s\+\)*function\|\(abstract\s\+\|final\s\+\)*class\|interface\)/:nohls
+imap <buffer> <silent> g <Plug>delimitMateJumpMany
+imap <buffer>  <Plug>delimitMateBS
+imap <buffer> " <Plug>delimitMate"
+imap <buffer> ' <Plug>delimitMate'
+imap <buffer> ( <Plug>delimitMate(
+imap <buffer> ) <Plug>delimitMate)
+imap <buffer> < <Plug>delimitMate<
+imap <buffer> > <Plug>delimitMate>
+imap <buffer> [ <Plug>delimitMate[
+imap <buffer> ] <Plug>delimitMate]
+imap <buffer> ` <Plug>delimitMate`
+imap <buffer> { <Plug>delimitMate{
+imap <buffer> } <Plug>delimitMate}
+let &cpo=s:cpo_save
+unlet s:cpo_save
+setlocal keymap=
+setlocal noarabic
+setlocal noautoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal colorcolumn=
+setlocal comments=s1:/*,mb:*,ex:*/,://,:#
+setlocal commentstring=/*%s*/
+setlocal complete=.,w,b,u,t,i
+setlocal concealcursor=
+setlocal conceallevel=0
+setlocal completefunc=youcompleteme#Complete
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal expandtab
+if &filetype != 'php'
+setlocal filetype=php
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldmarker={{{,}}}
+setlocal foldmethod=manual
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=qrowcb
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=2
+setlocal imsearch=2
+setlocal include=\\(require\\|include\\)\\(_once\\)\\?
+setlocal includeexpr=
+setlocal indentexpr=GetPhpIndent()
+setlocal indentkeys=0{,0},0),:,!^F,o,O,e,*<Return>,=?>,=<?,=*/
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,128-167,224-235,$
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:],<:>
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+setlocal nonumber
+setlocal numberwidth=4
+setlocal omnifunc=phpcomplete#CompletePHP
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norelativenumber
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=4
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=
+setlocal swapfile
+setlocal synmaxcol=3000
+if &syntax != 'php'
+setlocal syntax=php
+endif
+setlocal tabstop=4
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal undofile
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+silent! normal! zE
+let s:l = 5 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+5
+normal! 039|
 wincmd w
 argglobal
 edit php\insert_score.php
@@ -1388,12 +1518,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 20 - ((0 * winheight(0) + 0) / 1)
+let s:l = 17 - ((16 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-20
-normal! 039|
+17
+normal! 030|
 wincmd w
 argglobal
 edit php\start_new_round.php
@@ -1797,12 +1927,13 @@ wincmd w
 3wincmd w
 exe '1resize ' . ((&lines * 1 + 29) / 58)
 exe '2resize ' . ((&lines * 1 + 29) / 58)
-exe '3resize ' . ((&lines * 44 + 29) / 58)
+exe '3resize ' . ((&lines * 1 + 29) / 58)
 exe '4resize ' . ((&lines * 1 + 29) / 58)
-exe '5resize ' . ((&lines * 1 + 29) / 58)
+exe '5resize ' . ((&lines * 42 + 29) / 58)
 exe '6resize ' . ((&lines * 1 + 29) / 58)
 exe '7resize ' . ((&lines * 1 + 29) / 58)
-tabnext 2
+exe '8resize ' . ((&lines * 1 + 29) / 58)
+tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif

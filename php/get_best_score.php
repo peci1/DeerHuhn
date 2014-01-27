@@ -39,14 +39,14 @@ function build_and_query($order, $round, $db) {
 if (isset($_GET['format']) && $_GET['format'] === 'json') {
     echo json_encode($result);
 } else {
-    echo '<html><head><meta charset="utf-8" /></head><body>';
+    echo '<html><head><meta charset="utf-8" /><link rel="stylesheet" href="css/main.css" /></head><body>';
     if (isset($_GET['message'])) echo '<div><b>'.htmlspecialchars($_GET['message']).'</b></div>';
-    echo '<table border=1>';
+    echo '<table border=1 id="best_results">';
     echo '<tr><th>Jméno</th><th>Email</th><th>Skóre</th><th>Smazat?</th></tr>';
     foreach ($result->best as $row) {
         echo '<tr>';
-        echo '<td>'.htmlspecialchars($row['name']).'</td>';
-        echo '<td>'.htmlspecialchars($row['email']).'</td>';
+        echo '<td>'.htmlspecialchars($row['name']).'&nbsp;</td>';
+        echo '<td>'.htmlspecialchars($row['email']).'&nbsp;</td>';
         echo '<td>'.(int)$row['score'].'</td>';
         echo '<td><form action="delete_score.php" method="post" onsubmit="return confirm(\'Opravdu smazat skóre uživatele '.htmlspecialchars($row['name']).'?\')">';
             echo '<input type="hidden" name="name" value="'.htmlspecialchars($row['name']).'" />';
