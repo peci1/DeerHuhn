@@ -1,75 +1,75 @@
 DeerHuhn.Animals.AnimalFactory.prototype.roadPaths = [
-    new DeerHuhn.ScenePath(4, 2650, 333, 3705, 333),
+    new DeerHuhn.ScenePath(4, 2650, 383, 3705, 393),
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.forrestRoadPaths = [
-    new DeerHuhn.ScenePath(3, 93, 327, 644, 399),
+    new DeerHuhn.ScenePath(3, 93, 367, 644, 439),
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.cropsPaths = [
-    new DeerHuhn.ScenePath(3, 656, 433, 1336, 550),
-    new DeerHuhn.ScenePath(3, 914, 639, 1394, 574),
-    new DeerHuhn.ScenePath(3, 1106, 822, 1480, 570),
-    new DeerHuhn.ScenePath(3, 1450, 441, 1651, 343),
-    new DeerHuhn.ScenePath(3, 1525, 534, 2695, 603),
-    new DeerHuhn.ScenePath(3, 1579, 544, 1958, 649),
+    new DeerHuhn.ScenePath(3, 656, 433, 1336, 600),
+    new DeerHuhn.ScenePath(3, 890, 639, 1394, 574),
+    new DeerHuhn.ScenePath(3, 1140, 822, 1480, 570),
+    new DeerHuhn.ScenePath(3, 1400, 481, 1580, 363),
+    new DeerHuhn.ScenePath(3, 1475, 534, 2600, 603),
+    new DeerHuhn.ScenePath(3, 1500, 544, 1928, 680),
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.fieldPaths = [
-    new DeerHuhn.ScenePath(4, 671, 384, 1184, 258),
-    new DeerHuhn.ScenePath(4, 844, 282, 1385, 442),
-    new DeerHuhn.ScenePath(4, 2734, 418, 3560, 423),
-    new DeerHuhn.ScenePath(4, 2833, 463, 3421, 558),
+    new DeerHuhn.ScenePath(4, 631, 420, 1080, 271),
+    new DeerHuhn.ScenePath(4, 827, 285, 1385, 442),
+    new DeerHuhn.ScenePath(4, 2734, 418, 3420, 423),
+    new DeerHuhn.ScenePath(4, 2750, 453, 3421, 558),
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.housePaths = [
-    new DeerHuhn.ScenePath(3, 167, 273, 638, 413),
+    new DeerHuhn.ScenePath(3, 100, 290, 600, 433),
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.barnPaths = [
-    new DeerHuhn.ScenePath(3, 2281, 712, 2699, 577),
+    new DeerHuhn.ScenePath(3, 2281, 712, 2602, 608),
     new DeerHuhn.ScenePath(3, 2281, 712, 3188, 658),
-    new DeerHuhn.ScenePath(3, 2281, 712, 2741, 744),
+    new DeerHuhn.ScenePath(3, 2281, 712, 2672, 739),
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.waterPaths = [
-    new DeerHuhn.ScenePath(3, 394, 738, 702, 710),
-    new DeerHuhn.ScenePath(3, 702, 710, 607, 855),
-    new DeerHuhn.ScenePath(3, 607, 855, 313, 832),
+    new DeerHuhn.ScenePath(3, 254, 738, 560, 720),
+    new DeerHuhn.ScenePath(3, 495, 835, 560, 720),
+    new DeerHuhn.ScenePath(3, 353, 832, 495, 835),
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.forrestPaths = [
-    new DeerHuhn.ScenePath(3, 91, 304, 895, 637),
-    new DeerHuhn.ScenePath(3, -28, 483, 622, 378),
-    new DeerHuhn.ScenePath(3, -14, 459, 896, 618),
-    new DeerHuhn.ScenePath(3, -40, 514, 484, 622),
+    new DeerHuhn.ScenePath(3, 91, 304, 835, 655),
+    new DeerHuhn.ScenePath(3, -28, 483, 528, 394),
+    new DeerHuhn.ScenePath(3, -14, 459, 835, 655),
+    new DeerHuhn.ScenePath(3, -40, 514, 458, 617),
     new DeerHuhn.ScenePath(3, -23, 667, 458, 643),
     new DeerHuhn.ScenePath(3, 415, 951, 1366, 576), 
-    new DeerHuhn.ScenePath(3, 394, 907, 880, 921),
-    new DeerHuhn.ScenePath(3, 533, 633, 875, 657),
+    new DeerHuhn.ScenePath(3, 394, 907, 977, 924),
+    new DeerHuhn.ScenePath(3, 533, 633, 835, 655),
     new DeerHuhn.ScenePath(3, 556, 639, 1138, 808), //near lake
     new DeerHuhn.ScenePath(3, 637, 444, 1766, 772),
-    new DeerHuhn.ScenePath(3, 935, 655, 1931, 667),
-    new DeerHuhn.ScenePath(4, 656, 370, 1519, 421),
-    new DeerHuhn.ScenePath(4, 827, 277, 1154, 264),
-    new DeerHuhn.ScenePath(4, 788, 439, 1328, 489),
-    new DeerHuhn.ScenePath(4, 1189, 271, 1559, 417),
-    new DeerHuhn.ScenePath(3, 1141, 795, 1894, 691),
-    new DeerHuhn.ScenePath(3, 1657, 339, 1969, 375),
-    new DeerHuhn.ScenePath(3, 1982, 649, 2686, 592),
-    new DeerHuhn.ScenePath(3, 1894, 208, 2305, 240),
-    new DeerHuhn.ScenePath(3, 1907, 226, 2471, 363),
-    new DeerHuhn.ScenePath(3, 2003, 370, 2312, 253),
-    new DeerHuhn.ScenePath(3, 2339, 262, 2458, 306), //too short
-    new DeerHuhn.ScenePath(3, 2006, 390, 2494, 354),
-    new DeerHuhn.ScenePath(3, 2075, 388, 3248, 643),
-    new DeerHuhn.ScenePath(3, 2011, 406, 2684, 598),
-    new DeerHuhn.ScenePath(3, 2498, 354, 3251, 645),
-    new DeerHuhn.ScenePath(3, 2699, 577, 3419, 576),
-    new DeerHuhn.ScenePath(3, 2699, 595, 3187, 657),
-    new DeerHuhn.ScenePath(4, 3013, 531, 3469, 480),
-    new DeerHuhn.ScenePath(4, 3283, 264, 3575, 252),
-    new DeerHuhn.ScenePath(4, 3295, 286, 3647, 391),
+    new DeerHuhn.ScenePath(3, 835, 655, 1876, 667),
+    new DeerHuhn.ScenePath(4, 578, 394, 1519, 421),
+    new DeerHuhn.ScenePath(4, 827, 285, 1091, 265),
+    new DeerHuhn.ScenePath(4, 700, 439, 1328, 489),
+    new DeerHuhn.ScenePath(4, 1140, 275, 1559, 440),
+    new DeerHuhn.ScenePath(3, 1141, 820, 1894, 691),
+    new DeerHuhn.ScenePath(3, 1650, 339, 1873, 364),
+    new DeerHuhn.ScenePath(3, 1982, 670, 2605, 600),
+    new DeerHuhn.ScenePath(3, 1894, 208, 2246, 257),
+    new DeerHuhn.ScenePath(3, 1894, 208, 2443, 356),
+    new DeerHuhn.ScenePath(3, 2003, 370, 2246, 257),
+    new DeerHuhn.ScenePath(3, 2300, 275, 2428, 390), //too short
+    new DeerHuhn.ScenePath(3, 2006, 390, 2443, 356),
+    new DeerHuhn.ScenePath(3, 2025, 388, 3200, 670),
+    new DeerHuhn.ScenePath(3, 2025, 388, 2624, 610),
+    new DeerHuhn.ScenePath(3, 2428, 374, 3221, 645),
+    new DeerHuhn.ScenePath(3, 2660, 620, 3350, 576),
+    new DeerHuhn.ScenePath(3, 2660, 620, 3187, 657),
+    new DeerHuhn.ScenePath(4, 2900, 531, 3369, 480),
+    new DeerHuhn.ScenePath(4, 3263, 300, 3575, 252),
+    new DeerHuhn.ScenePath(4, 3263, 300, 3647, 391),
 ];
 
 DeerHuhn.Animals.AnimalFactory.prototype.budkaPositions = [
@@ -383,6 +383,7 @@ DeerHuhn.Animals.Klady = function (scenePath, onShotCallback, movementFinishedCa
             30.0/1000, 
             scenePath, 
             movementFinishedCallback);
+    this.sprite.anchor.x = 1;
 };
 DeerHuhn.Animals.Klady.prototype = Object.create(DeerHuhn.Animal.prototype);
 DeerHuhn.Animals.Klady.prototype.constructor = DeerHuhn.Animals.Klady;
@@ -407,13 +408,27 @@ DeerHuhn.Animals.Klady.prototype.updatePosition = function (timeDelta) {
  *
  * @constructs {DeerHuhn.Animals.Klady}
  * @param {DeerHuhn.Animals.LKT} parentLKT The tractor handling this block of woods.
+ * @param {int} creationDelay The delay before the block of logs is created and attached to a tractor (in ms).
  * @param {onShotCallback} onShotCallback The callback to call when this object is shot.
  * @param {movementFinishedCallback} movementFinishedCallback The callback to call when the object arrives at its target.
  * @return {DeerHuhn.Animals.Klady} A block of logs.
  */
-DeerHuhn.Animals.AnimalFactory.prototype.createKlady = function (parentLKT, onShotCallback, movementFinishedCallback) {
+DeerHuhn.Animals.AnimalFactory.prototype.createKlady = function (parentLKT, creationDelay, onShotCallback, movementFinishedCallback) {
     var path = parentLKT.scenePath;
-    var klady = new DeerHuhn.Animals.Klady(path, onShotCallback, movementFinishedCallback);
+
+    // let the block of logs appear at the same position the trator has at the time the block got spawned
+    var percentPathDoneWhenSpawningKlady = creationDelay * parentLKT.sceneSpeed / path.length;
+    var kladyStart = path.interpolatePosition(percentPathDoneWhenSpawningKlady);
+    var kladyEnd = path.interpolatePosition(1.0+percentPathDoneWhenSpawningKlady);
+
+    var kladyPath = new DeerHuhn.ScenePath(path.layer, kladyStart.x, kladyStart.y, kladyEnd.x, kladyEnd.y);
+
+    // do the positioning relative to the body of the tractor
+    var isReversed = path.startPosition.x > path.endPosition.x;
+    kladyPath.addVector(new PIXI.Point(30 * (isReversed ? -1 : 1), -10));
+
+    var klady = new DeerHuhn.Animals.Klady(kladyPath, onShotCallback, movementFinishedCallback);
+
     klady.parentAnimal = parentLKT;
     return klady;
 };
@@ -477,8 +492,9 @@ DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (onShotCa
     if (path === null) return null;
     this.occupyPath(path);
 
+    var kladySpawnDelay = 2000;
     var lkt = new DeerHuhn.Animals.LKT(path, onShotCallback, movementFinishedCallback);
-    var klady = this.createKlady(lkt, onShotCallback, movementFinishedCallback);
+    var klady = this.createKlady(lkt, kladySpawnDelay, onShotCallback, movementFinishedCallback);
 
     var movementFinished = function() {
         var cb = this.wrapMovementFinishedCallback(movementFinishedCallback);
@@ -493,7 +509,7 @@ DeerHuhn.Animals.AnimalFactory.prototype.createLKTWithKlady = function (onShotCa
     lkt.movementFinishedCallback = movementFinished;
 
     lkt.childrenAnimals.push(klady);
-    lkt.childrenToSpawn.push(new DeerHuhn.AnimalToSpawn(klady, 2000, true));
+    lkt.childrenToSpawn.push(new DeerHuhn.AnimalToSpawn(klady, kladySpawnDelay, true));
 
     lkt.name = "LKT s náloží";
 
