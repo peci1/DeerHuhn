@@ -42,3 +42,5 @@ body.jsEnabled #jsDisabledText {display: none;}
 
 #rules {margin-left: 1em; }
 #rules li {margin-left: .5em;}
+
+#best_results tr:hover {background-color: #cccccc;}

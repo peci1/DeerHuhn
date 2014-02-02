@@ -1,3 +1,7 @@
+/*! (don't delete the !, it enables code obfuscation)
+ * A hunting web game.
+ */
+
 var DeerHuhn = function (canvasContainerId) {
     this.loadingElem = document.getElementById('loading');
 
@@ -52,6 +56,8 @@ var DeerHuhn = function (canvasContainerId) {
     this.stages.score.name = "Score stage";
 
     this.stageName = 'menu';
+    if (window.location.hash !== undefined && window.location.hash.length > 1)
+        this.stageName = window.location.hash.substring(1);
     this.stage = this.stages[this.stageName];
 
     /** Names of all the stages that form the menu. */
@@ -605,6 +611,8 @@ DeerHuhn.prototype = {
             this.updateAmmo();
             this.updateDontShootSigns();
 
+            this.startNewSession();
+
             this.pause();
             this.unPause();
             this.sounds.mainTheme.play();
@@ -613,6 +621,12 @@ DeerHuhn.prototype = {
         // spawn every day
         this.spawnTimer = new DeerHuhn.PausableInterval(this.spawnRandomAnimals.bind(this), 600);
         this.pausableObjects.push(this.spawnTimer);
+    },
+
+    startNewSession: function () {
+        var ajax = new PIXI.AjaxRequest();
+        ajax.open("POST", 'start_session.php', false);
+        ajax.send(null);
     },
 
     createMenuBackgroundSprite: function () {
@@ -1326,12 +1340,16 @@ DeerHuhn.prototype = {
             var smoke = new DeerHuhn.AnimatedObject(smokeSprite, function () {}, 2);
             smokeSprite.setInteractive(false);
             smokeSprite.scale.x = smokeSprite.scale.y = 0.7;
+            smokeSprite.anchor.x = smokeSprite.anchor.y = 0.5;
+
+            smoke.sprite.position = animal.sprite.position.clone();
+            smoke.sprite.position.x += (0.5-animal.sprite.anchor.x)*animal.sprite.width;
+            smoke.sprite.position.y += (0.5-animal.sprite.anchor.y)*animal.sprite.height;
 
             var layer = this.backgroundLayers[animal.scenePosition.layer];
             layer.addChild(smoke.sprite);
             this.addSprite(smoke.sprite);
             this.pausableObjects.push(smoke);
-            smoke.sprite.position = animal.sprite.position.clone();
 
             var smokeTimer = new DeerHuhn.PausableTimeout(function () {
                 layer.removeChild(smoke.sprite);
@@ -1342,8 +1360,11 @@ DeerHuhn.prototype = {
             smokeTimer.start();
 
             // show the fading score
+            var pointsPosition = animal.scenePosition.clone();
+            pointsPosition.x += (0.5-animal.sprite.anchor.x)*animal.sprite.width;
+            pointsPosition.y += (0.5-animal.sprite.anchor.y)*animal.sprite.height;
             var falseLayer = this.backgroundLayers[animal.scenePosition.layer + 6];
-            var fadingPoints = new DeerHuhn.FadingPoints(points, 1000, animal.scenePosition, function () {
+            var fadingPoints = new DeerHuhn.FadingPoints(points, 1000, pointsPosition, function () {
                 this.removeSprite(fadingPoints.sprite);
                 falseLayer.removeChild(fadingPoints.sprite);
             }.bind(this), this);
@@ -2006,6 +2027,8 @@ DeerHuhn.PausableInterval.prototype.stop = function () {
 /**
  * The time of the game.
  *
+ * Game duration is 275 days.
+ *
  * @constructor
  * @param {dateChangeCallback} dateChangeCallback The callback to call when the date is changed.
  * @param {gameOverCallback} gameOverCallback The callback to call when the time is up.
@@ -2037,6 +2060,8 @@ DeerHuhn.GameTime = function (dateChangeCallback, gameOverCallback) {
     /**
      * The current date representation.
      *
+     * If you change game duration, change it also in php/insert_score.php.
+     *
      * It has to be initialized with a non-leap year and time at midnight.
      *
      * @property
@@ -2049,6 +2074,8 @@ DeerHuhn.GameTime = function (dateChangeCallback, gameOverCallback) {
 
     /**
      * Id of the repetition timer used to wait for #delayAfterUnPause ms before triggering the timer after pausing.
+     *
+     * If you change the delay, change it also in php/insert_score.php.
      *
      * @property
      *
@@ -2108,6 +2135,7 @@ DeerHuhn.GameTime.prototype.increaseDate = function () {
 
     this.dateChangeCallback();
 
+    // if you change game duration, change it also in php/insert_score.php.
     // months are indexed from 0 and we stop in December
     if (this.date.getMonth() === 11) {
         this.intervalTimer.stop();
@@ -2149,6 +2177,20 @@ DeerHuhn.ScenePosition.prototype.equals = function(other) {
     return this.layer === other.layer && this.x === other.x && this.y === other.y;
 };
 
+/**
+ * Add a vector to this position.
+ *
+ * @param {PIXI.Point|DeerHuhn.ScenePosition} vector The vector to add.
+ */
+DeerHuhn.ScenePosition.prototype.addVector = function (vector) {
+    this.x += vector.x;
+    this.y += vector.y;
+};
+
+DeerHuhn.ScenePosition.prototype.clone = function() {
+    return new DeerHuhn.ScenePosition(this.layer, this.x, this.y);
+};
+
 // CLASS DeerHuhn.ScenePositionWithScale
 
 /**
@@ -2178,12 +2220,12 @@ DeerHuhn.ScenePath = function(layer, x1, y1, x2, y2) {
 };
 
 DeerHuhn.ScenePath.prototype = {
-    /*
+    /**
      * Return the interpolated position along the path.
      *
      * The default implementation does just a linear interpolation.
      *
-     * @param float percentComplete The percentage of the movement completed (number 0.0 to 1.0).
+     * @param float percentComplete The percentage of the movement completed (number 0.0 to 1.0, but works even outside that range).
      */
     interpolatePosition: function(percentComplete) {
         var x = this.startPosition.x + percentComplete * (this.endPosition.x - this.startPosition.x);
@@ -2191,7 +2233,7 @@ DeerHuhn.ScenePath.prototype = {
         return new DeerHuhn.ScenePosition(this.layer, x, y);
     },
 
-    /*
+    /**
      * Returns a scenepath with reverted direction (swaps endpoints).
      */
     reverse: function() {
@@ -2202,6 +2244,16 @@ DeerHuhn.ScenePath.prototype = {
 
     equals: function (other) {
         return this.layer === other.layer && this.startPosition.equals(other.startPosition) && this.endPosition.equals(other.endPosition);
+    },
+
+    /**
+     * Add a vector to both the start and end position of this path.
+     *
+     * @param {PIXI.Point|DeerHuhn.ScenePosition} vector The vector to add.
+     */
+    addVector: function (vector) {
+        this.startPosition.addVector(vector);
+        this.endPosition.addVector(vector);
     }
 };
 
@@ -2519,6 +2571,8 @@ DeerHuhn.Animal = function(name, sprite, onShotCallback, animationSpeed, sceneSp
     this.childrenAnimals = [];
 
     this.sprite.scale.x = this.sprite.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
+
+    this.sprite.anchor.y = 1;
 };
 DeerHuhn.Animal.prototype = Object.create(DeerHuhn.MovingAnimatedObject.prototype);
 DeerHuhn.Animal.prototype.constructor = DeerHuhn.Animal;
@@ -2851,12 +2905,17 @@ DeerHuhn.FadingPoints = function (points, duration, position, fadingFinishedCall
 
     this.numFadingSteps = 10.0;
 
+    this.sprite.anchor.x = this.sprite.anchor.y = 0.5;
+    
     // don't allow the points to be shown too low
     var correctedPosition = new PIXI.Point(this.position.x, this.position.y);
-    if (correctedPosition.y < 10) {
-        correctedPosition.y = 10;
-    } else if (correctedPosition.y + this.sprite.height > deerHuhn.backgroundLayers[this.position.layer].height - 10) {
-        correctedPosition.y = deerHuhn.backgroundLayers[this.position.layer].height - this.sprite.height - 10;
+    var yPosBottom = correctedPosition.y + (1-this.sprite.anchor.y)*this.sprite.height;
+    var yPosTop = yPosBottom - this.sprite.height;
+
+    if (yPosTop < 10) {
+        correctedPosition.y = 10 + this.sprite.anchor.y*this.sprite.height; // eqivalent to yPosTop := 10;
+    } else if (yPosBottom > deerHuhn.backgroundLayers[this.position.layer].height - 10) {
+        correctedPosition.y = deerHuhn.backgroundLayers[this.position.layer].height - 10 - (1-this.sprite.anchor.y)*this.sprite.height;
     }
     this.sprite.position = correctedPosition;
 
