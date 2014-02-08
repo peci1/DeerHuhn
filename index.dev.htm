@@ -14,14 +14,19 @@
     
     <!-- link rel="shortcut icon" href="" / TODO--> 
 
+    <!-- Pulled from http://code.google.com/p/html5shiv/ - enable HTML5 usage in IE -->
     <!--[if lt IE 9]>
-    <script src="bin/html5.js"></script>
+    <script src="js/html5.js"></script>
     <![endif]-->
 
+    <link rel="stylesheet" media="screen,projection,tv" href="css/main.css" />
+    <script src="js/debug.js"></script> <!-- TODO remove -->
     <!-- Polyfill for Canvas on IE. -->
-    <!--[if lt IE 9]><script src="bin/excanvas.min.js"></script><![endif]-->
+    <!--[if lt IE 9]><script src="js/excanvas.min.js"></script><![endif]-->
 
-    <link rel="stylesheet" media="screen,projection,tv" href="css/main.min.css" />
+    <!-- Polyfills to upgrade old browsers to EcmaScript 5. -->
+    <script src="js\es5-shim.min.js"></script>
+    <script src="js\es5-sham.min.js"></script>
 </head>
 
 <body>      
@@ -39,7 +44,18 @@
 	Code by <a href="mailto:peci1@seznam.cz">Peci</a>, graphics by Jarda Tománek.
     </footer-->
 
-    <script src="bin/deerhuhn.js"></script>
+    <script src="js/utils.addevent.js"></script>
+    <script src="js/FontLoader/FontLoader.js"></script>
+    <script src="js/cookie.js"></script>
+    <script src="js/pixi.dev.js"></script>
+    <script src="js/pixi.keys.js"></script>
+    <script src="js/pixi.smoothmovieclip.js"></script>
+    <script src="js/pixi.transparencyhitarea.js"></script>
+    <script src="js/pixi.scalablestage.js"></script>
+    <script src="js/pixi.fontloader.js"></script>
+    <script src="js/howler.js"></script>
+    <script src="js/deerhuhn.js"></script>
+    <script src="js/deerhuhn.animals.js"></script>
     <script>
         var deerHuhn = new DeerHuhn('gameContainer');
         deerHuhn.initializeImages();

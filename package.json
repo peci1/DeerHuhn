@@ -1,0 +1,25 @@
+{
+  "name": "Deerhuhn",
+  "version": "1.0.0",
+  "description": "Deerhuhn (Na posedu) is a Moorhuhn-like hunting game.",
+  "author": "Martin Pecka",
+  "logo": "",
+  "homepage": "https://github.com/peci1/DeerHuhn",
+  "bugs": "https://github.com/peci1/DeerHuhn/issues",
+  "license": "New BSD",
+  "licenseUrl": "http://opensource.org/licenses/BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peci1/DeerHuhn.git"
+  },
+  "main": "js/deerhuhn.js",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.x",
+    "grunt-contrib-jshint": "0.6.x",
+    "grunt-contrib-uglify": "0.2.x",
+    "grunt-contrib-concat": "0.3.x",
+    "grunt-contrib-cssmin": "0.7.x",
+    "grunt-contrib-copy": "~0.5.0"
+  }
+}

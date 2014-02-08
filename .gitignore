@@ -1,3 +1,7 @@
 dev
 game-engines
 deployment*
+node_modules
+compile.bat
+bin
+css/main.min.css
