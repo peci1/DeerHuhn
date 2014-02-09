@@ -187,7 +187,7 @@ var DeerHuhn = function (canvasContainerId) {
 };
 
 DeerHuhn.SCENE_HEIGHT = 960;
-DeerHuhn.BASIC_ANIMAL_SCALE = DeerHuhn.SCENE_HEIGHT * 1.0 / 1937;
+DeerHuhn.BASIC_ANIMAL_SCALE = DeerHuhn.SCENE_HEIGHT * 1.0 / 960;
 
 DeerHuhn.prototype = {
 
@@ -460,7 +460,7 @@ DeerHuhn.prototype = {
         this.muteSoundCross.visible = true;
         this.muteSoundCross.scale.x = this.muteSoundCross.scale.y = 0.85;
         this.muteSoundCross.anchor.x = this.muteSoundCross.anchor.y = 0.5;
-        this.muteSoundCross.position = new PIXI.Point(this.muteSoundSprite.width, this.muteSoundSprite.height);
+        this.muteSoundCross.position = new PIXI.Point(this.muteSoundSprite.width/2, this.muteSoundSprite.height/2);
         this.muteSoundSprite.addChild(this.muteSoundCross);
 
         this.muteSoundSprite.click = this.muteSoundSprite.tap = function () {
@@ -483,7 +483,7 @@ DeerHuhn.prototype = {
         this.muteMusicCross.visible = true;
         this.muteMusicCross.scale.x = this.muteMusicCross.scale.y = 0.85;
         this.muteMusicCross.anchor.x = this.muteMusicCross.anchor.y = 0.5;
-        this.muteMusicCross.position = new PIXI.Point(this.muteMusicSprite.width, this.muteMusicSprite.height);
+        this.muteMusicCross.position = new PIXI.Point(this.muteMusicSprite.width/2, this.muteMusicSprite.height/2);
         this.muteMusicSprite.addChild(this.muteMusicCross);
 
         this.muteMusicSprite.click = this.muteMusicSprite.tap = function () {
@@ -1117,14 +1117,16 @@ DeerHuhn.prototype = {
 
         // date
         
-        this.dateText = new PIXI.Text(' 1. 3.', {font: '120px HelveticaLight', fill: '#8E8D5B'});
+        var fontSize = Math.round(DeerHuhn.SCENE_HEIGHT/16);
+        this.dateText = new PIXI.Text(' 1. 3.', {font: fontSize+'px HelveticaLight', fill: '#8E8D5B'});
+        this.dateText.anchor.x = 1;
 
         this.addSprite(this.dateText);
         pointsDate.addChild(this.dateText);
 
         // points
         
-        this.pointsText = new PIXI.Text('0', {font: 'bold 120px HelveticaBlack'});
+        this.pointsText = new PIXI.Text('0', {font: 'bold '+fontSize+'px HelveticaBlack'});
 
         this.addSprite(this.pointsText);
         pointsDate.addChild(this.pointsText);
@@ -1163,9 +1165,9 @@ DeerHuhn.prototype = {
         
         var allowedShooting = new PIXI.Sprite(PIXI.TextureCache['situace.png']);
         allowedShooting.interactive = false;
-        allowedShooting.scale.x = allowedShooting.scale.y = 0.8;
+        allowedShooting.scale.x = allowedShooting.scale.y = 1.4*DeerHuhn.BASIC_ANIMAL_SCALE;
         allowedShooting.onresize = function () {
-            allowedShooting.position.x = 0.99*this.rendererWidth/this.renderingScale - allowedShooting.width;
+            allowedShooting.position.x = 0.95*this.rendererWidth/this.renderingScale - allowedShooting.width;
             allowedShooting.position.y = 0.03*this.rendererHeight/this.renderingScale;
         }.bind(this);
 
@@ -1174,16 +1176,16 @@ DeerHuhn.prototype = {
 
         // sele and liska can always be shot
         var animalKinds = ['Ovce', 'Kachna', 'Prase', 'Srna'/*, 'Sele', 'Liska'*/];
-        var signPositionsX = [28, 165, 305, 469];
+        var signPositionsX = [28/706.4, 165/706.4, 305/706.4, 469/706.4];
 
         this.dontShootSigns = {};
         for (var i=0; i < animalKinds.length; i++) {
             var animalKind = animalKinds[i];
             var sign = new PIXI.Sprite(PIXI.TextureCache['naboje-zadne.png']);
 
-            sign.scale.x = sign.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
-            sign.position.x = signPositionsX[i];
-            sign.position.y = 25;
+            sign.scale.x = sign.scale.y = 0.35*allowedShooting.scale.x;
+            sign.position.x = 0.59*signPositionsX[i] * allowedShooting.width;
+            sign.position.y = 0.20*allowedShooting.height;
 
             this.addSprite(sign);
             allowedShooting.addChild(sign);
@@ -1239,8 +1241,8 @@ DeerHuhn.prototype = {
         this.dateText.setText(day + month);
         this.dateText.updateText();
 
-        this.dateText.position.x = 300 - this.dateText.width;
-        this.dateText.position.y = 250 - this.dateText.height;
+        this.dateText.position.x = this.dateText.parent.width*0.43;
+        this.dateText.position.y = this.dateText.parent.height*0.6 - this.dateText.height;
     },
 
     updatePoints: function () {
@@ -1254,8 +1256,8 @@ DeerHuhn.prototype = {
         this.pointsText.setText(this.points + '');
         this.pointsText.updateText();
 
-        this.pointsText.position.x = 560 - this.pointsText.width/2;
-        this.pointsText.position.y = 260 - this.pointsText.height;
+        this.pointsText.position.x = this.pointsText.parent.width*0.77 - this.pointsText.width/2;
+        this.pointsText.position.y = this.pointsText.parent.height*0.65 - this.pointsText.height;
     },
 
     updateAmmo: function() {
@@ -1339,7 +1341,7 @@ DeerHuhn.prototype = {
             var smokeSprite = new PIXI.SmoothMovieClip(DeerHuhn.Animals.animationTexturesCache.vystrel);
             var smoke = new DeerHuhn.AnimatedObject(smokeSprite, function () {}, 2);
             smokeSprite.setInteractive(false);
-            smokeSprite.scale.x = smokeSprite.scale.y = 0.7;
+            smokeSprite.scale.x = smokeSprite.scale.y = 1.4 * DeerHuhn.BASIC_ANIMAL_SCALE;
             smokeSprite.anchor.x = smokeSprite.anchor.y = 0.5;
 
             smoke.sprite.position = animal.sprite.position.clone();
@@ -2853,6 +2855,7 @@ DeerHuhn.StaticShootableObject.prototype.constructor = DeerHuhn.StaticShootableO
 DeerHuhn.FadingPoints = function (points, duration, position, fadingFinishedCallback, deerHuhn) {
     var color = (points >= 0 ? '#8E8D5B' : '#FF0000');
 
+    var fontSize = Math.round(DeerHuhn.SCENE_HEIGHT/10);
     /**
      * The sprite displaying the text with the points.
      *
@@ -2861,7 +2864,7 @@ DeerHuhn.FadingPoints = function (points, duration, position, fadingFinishedCall
      * @readonly
      * @type {PIXI.Sprite}
      */
-    this.sprite = new PIXI.Text(points+'', {font: 'bold 120px HelveticaBlack', fill: color});
+    this.sprite = new PIXI.Text(points+'', {font: 'bold '+fontSize+'px HelveticaBlack', fill: color});
 
     /**
      * The number of points to represent.
