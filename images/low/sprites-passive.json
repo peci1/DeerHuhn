@@ -1,0 +1,39 @@
+{
+"frames": {
+	"animation-vystrel-0.png": {
+		"frame": {"x":29, "y":65, "w":28, "h":24},
+		"spriteSourceSize": {"x":0,"y":0,"w":28,"h":24},
+		"sourceSize": {"w":28,"h":24}
+	},
+	"animation-vystrel-1.png": {
+		"frame": {"x":0, "y":65, "w":28, "h":24},
+		"spriteSourceSize": {"x":0,"y":0,"w":28,"h":24},
+		"sourceSize": {"w":28,"h":24}
+	},
+	"datum_body.png": {
+		"frame": {"x":0, "y":14, "w":88, "h":50},
+		"spriteSourceSize": {"x":0,"y":0,"w":88,"h":50},
+		"sourceSize": {"w":88,"h":50}
+	},
+	"naboj.png": {
+		"frame": {"x":89, "y":14, "w":10, "h":47},
+		"spriteSourceSize": {"x":0,"y":0,"w":10,"h":47},
+		"sourceSize": {"w":10,"h":47}
+	},
+	"naboje-zadne.png": {
+		"frame": {"x":0, "y":90, "w":16, "h":16},
+		"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
+		"sourceSize": {"w":16,"h":16}
+	},
+	"situace.png": {
+		"frame": {"x":0, "y":0, "w":109, "h":13},
+		"spriteSourceSize": {"x":0,"y":0,"w":109,"h":13},
+		"sourceSize": {"w":109,"h":13}
+	}
+},
+"meta": {
+"image": "sprites-passive.png", 
+	"size": {"w": 110, "h": 107},
+	"scale": "1"
+}
+}

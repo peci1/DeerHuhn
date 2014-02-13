@@ -1,7 +1,3 @@
-/*! (don't delete the !, it enables code obfuscation)
- * Defeinitions of paths and animals types.
- */
-
 DeerHuhn.Animals.AnimalFactory.prototype.roadPaths = [
     new DeerHuhn.ScenePath(4, 2650, 383, 3705, 393)
 ];

@@ -1,18 +1,15 @@
-/*! (don't delete the !, it enables code obfuscation)
- * A hunting web game.
- */
-
-var DeerHuhn = function (canvasContainerId) {
+var DeerHuhn = function (canvasContainerId, resolution) {
     this.loadingElem = document.getElementById('loading');
+    this.resolution = resolution;
+    this.resolutionScale = this.resolution.height * 1.0 / DeerHuhn.RESOLUTION_HIGH.height;
 
     cookie.defaults.expires = 365; // in days
 
     // canvas & dimensions
-    this.MAX_HEIGHT=DeerHuhn.SCENE_HEIGHT;
     this.GAME_CONTAINER = document.getElementById(canvasContainerId);
     this.rendererWidth = this.GAME_CONTAINER.offsetWidth;
-    this.rendererHeight = Math.min(this.GAME_CONTAINER.offsetHeight, this.MAX_HEIGHT);
-    this.renderingScale = this.rendererHeight/this.MAX_HEIGHT;
+    this.rendererHeight = this.GAME_CONTAINER.offsetHeight;
+    this.renderingScale = this.rendererHeight/this.resolution.height;
     this.MAX_AMMO = 5;
     this.animalKindFrequency = {
         Liska: 10,
@@ -187,7 +184,12 @@ var DeerHuhn = function (canvasContainerId) {
 };
 
 DeerHuhn.SCENE_HEIGHT = 960;
-DeerHuhn.BASIC_ANIMAL_SCALE = DeerHuhn.SCENE_HEIGHT * 1.0 / 960;
+DeerHuhn.BASIC_ANIMAL_SCALE = 1.0;
+
+DeerHuhn.RESOLUTION_HIGH = {dirPrefix: 'high', height: 960};
+DeerHuhn.RESOLUTION_MEDIUM = {dirPrefix: 'medium', height: 480};
+DeerHuhn.RESOLUTION_LOW = {dirPrefix: 'low', height: 240};
+DeerHuhn.RESOLUTIONS = {high: DeerHuhn.RESOLUTION_HIGH, medium: DeerHuhn.RESOLUTION_MEDIUM, low: DeerHuhn.RESOLUTION_LOW}
 
 DeerHuhn.prototype = {
 
@@ -315,6 +317,7 @@ DeerHuhn.prototype = {
 
     onLoad: function() {
         this.loadingElem.style.display = "none";
+        document.getElementById('quality').style.display = "none";
 
         this.loadPersistentState();
 
@@ -347,7 +350,7 @@ DeerHuhn.prototype = {
 
         // init background tiles
         for (var i = 5; i >= 0; i--) {
-            this.backgroundLayers[i] = PIXI.Sprite.fromImage('images/vrstva'+i+'.png');
+            this.backgroundLayers[i] = PIXI.Sprite.fromImage('images/'+this.resolution.dirPrefix+'/vrstva'+i+'.png');
             this.backgroundLayers[i].name = 'Background ' + i;
             this.backgroundLayers[i].position.x = 0;
 
@@ -475,7 +478,7 @@ DeerHuhn.prototype = {
         this.muteMusicSprite.scale.x = this.muteMusicSprite.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
         this.muteMusicSprite.onresize = function () {
             this.muteMusicSprite.position.x = 0.99*this.rendererWidth/this.renderingScale - this.muteMusicSprite.width;
-            this.muteMusicSprite.position.y = 0.94*DeerHuhn.SCENE_HEIGHT - this.muteMusicSprite.height - this.muteSoundSprite.height;
+            this.muteMusicSprite.position.y = 0.94*this.resolution.height - this.muteMusicSprite.height - this.muteSoundSprite.height;
         }.bind(this);
         this.addSprite(this.muteMusicSprite);
 
@@ -630,7 +633,7 @@ DeerHuhn.prototype = {
     },
 
     createMenuBackgroundSprite: function () {
-        var background = PIXI.Sprite.fromImage('images/menu-pozadi.png');
+        var background = PIXI.Sprite.fromImage('images/'+this.resolution.dirPrefix+'/menu-pozadi.png');
         background.anchor.x = 0.5;
         background.position.y = 0;
         background.onresize = function () {
@@ -659,7 +662,60 @@ DeerHuhn.prototype = {
         this.stages.menu.addChild(foreground);
         this.addSprite(foreground);
 
-        var linkFontSize = '57px';
+        // quality links
+        var qualityLinks = new PIXI.DisplayObjectContainer();
+        foreground.addChild(qualityLinks);
+        qualityLinks.position = new PIXI.Point(0.5*foreground.width - 0.5*foreground.width, 0.01*foreground.height);
+
+        var linkFontSize = this.getScaledFontSizeString(40);
+        var qualityFontStyle = {font: linkFontSize+' HelveticaBlack', fill: '#000000'};
+
+        var qualityQuality = new PIXI.Text('Kvalita: ', qualityFontStyle); qualityLinks.addChild(qualityQuality);
+        var qualityHigh = new PIXI.Text('Vysoká', qualityFontStyle); qualityLinks.addChild(qualityHigh);
+        var qualitySeparator1 = new PIXI.Text(' | ', qualityFontStyle); qualityLinks.addChild(qualitySeparator1);
+        var qualityMedium = new PIXI.Text('Střední', qualityFontStyle); qualityLinks.addChild(qualityMedium);
+        var qualitySeparator2 = new PIXI.Text(' | ', qualityFontStyle); qualityLinks.addChild(qualitySeparator2);
+        var qualityLow = new PIXI.Text('Nízká', qualityFontStyle); qualityLinks.addChild(qualityLow);
+
+        qualityHigh.res = 'high'; qualityHigh.elemID = 'qualityHigh';
+        qualityMedium.res = 'medium'; qualityMedium.elemID = 'qualityMedium';
+        qualityLow.res = 'low'; qualityLow.elemID = 'qualityLow';
+
+        qualityHigh.interactive = qualityMedium.interactive = qualityLow.interactive = true;
+        qualityHigh.buttonMode = qualityMedium.buttonMode = qualityLow.buttonMode = true;
+
+        if (this.resolution.height === DeerHuhn.RESOLUTION_HIGH.height)
+            qualityHigh.interactive = qualityHigh.buttonMode = false;
+        if (this.resolution.height === DeerHuhn.RESOLUTION_MEDIUM.height)
+            qualityMedium.interactive = qualityMedium.buttonMode = false;
+        if (this.resolution.height === DeerHuhn.RESOLUTION_LOW.height)
+            qualityLow.interactive = qualityLow.buttonMode = false;
+
+        qualityHigh.mouseover = qualityMedium.mouseover = qualityLow.mouseover = function (mouse) {
+            if (this.resolution.height === DeerHuhn.RESOLUTIONS[mouse.target.res].height)
+                return;
+            mouse.target.setStyle({fill: '#339966', font: qualityFontStyle.font});
+        }.bind(this);
+
+        qualityHigh.mouseout = qualityMedium.mouseout = qualityLow.mouseout = function (mouse) {
+            if (this.resolution.height === DeerHuhn.RESOLUTIONS[mouse.target.res].height)
+                return;
+            mouse.target.setStyle(qualityFontStyle);
+        }.bind(this);
+
+        qualityHigh.click = qualityMedium.click = qualityLow.click = function (mouse) {
+            document.getElementById(mouse.target.elemID).click();
+        };
+
+        qualityHigh.position.x = qualityQuality.position.x + qualityQuality.width;
+        qualitySeparator1.position.x = qualityHigh.position.x + qualityHigh.width;
+        qualityMedium.position.x = qualitySeparator1.position.x + qualitySeparator1.width;
+        qualitySeparator2.position.x = qualityMedium.position.x + qualityMedium.width;
+        qualityLow.position.x = qualitySeparator2.position.x + qualitySeparator2.width;
+
+        // propagation links
+
+        linkFontSize = this.getScaledFontSizeString(57);
 
         // link to www.fld.czu.cz
         var linkWWW = new PIXI.DisplayObjectContainer();
@@ -672,7 +728,7 @@ DeerHuhn.prototype = {
         linkWWW.addChild(linkWWW2);
         linkWWW2.position.x = linkWWW1.width;
 
-        linkWWW.position = new PIXI.Point(105 - 0.5*foreground.width, 795);
+        linkWWW.position = new PIXI.Point(0.066*foreground.width - 0.5*foreground.width, 0.828125*foreground.height);
         linkWWW.rotation = -3*Math.PI/180;
 
         linkWWW.click = linkWWW.tap = function (mouse) {
@@ -683,7 +739,7 @@ DeerHuhn.prototype = {
         this.addSprite(linkWWW);
 
         // link to Facebook
-        linkFontSize = '50px';
+        linkFontSize = this.getScaledFontSizeString(50);
 
         var linkFB = new PIXI.DisplayObjectContainer();
         linkFB.interactive = true;
@@ -695,7 +751,7 @@ DeerHuhn.prototype = {
         linkFB.addChild(linkFB2);
         linkFB2.position.x = linkFB1.width;
 
-        linkFB.position = new PIXI.Point(105 - 0.5*foreground.width, 865);
+        linkFB.position = new PIXI.Point(0.066*foreground.width - 0.5*foreground.width, 0.9*foreground.height);
         linkFB.rotation = -3*Math.PI/180;
 
         linkFB.click = linkFB.tap = function (mouse) {
@@ -711,7 +767,7 @@ DeerHuhn.prototype = {
         var playBtn = new PIXI.Sprite(playDarkTexture);
         playBtn.interactive = true;
         playBtn.buttonMode = true;
-        playBtn.position = new PIXI.Point(60 - 0.5*foreground.width, 630);
+        playBtn.position = new PIXI.Point(0.0378*foreground.width - 0.5*foreground.width, 0.656*foreground.height);
         playBtn.scale.x = playBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
 
         playBtn.click = playBtn.tap = function (mouse) {
@@ -733,7 +789,7 @@ DeerHuhn.prototype = {
         var rulesBtn = new PIXI.Sprite(rulesDarkTexture);
         rulesBtn.interactive = true;
         rulesBtn.buttonMode = true;
-        rulesBtn.position = new PIXI.Point(240 - 0.5*foreground.width, 630);
+        rulesBtn.position = new PIXI.Point(0.151*foreground.width - 0.5*foreground.width, 0.656*foreground.height);
         rulesBtn.scale.x = rulesBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
 
         rulesBtn.click = rulesBtn.tap = function (mouse) {
@@ -755,7 +811,7 @@ DeerHuhn.prototype = {
         var scoreBtn = new PIXI.Sprite(scoreDarkTexture);
         scoreBtn.interactive = true;
         scoreBtn.buttonMode = true;
-        scoreBtn.position = new PIXI.Point(540 - 0.5*foreground.width, 632);
+        scoreBtn.position = new PIXI.Point(0.34*foreground.width - 0.5*foreground.width, 0.658*foreground.height);
         scoreBtn.scale.x = scoreBtn.scale.y = DeerHuhn.BASIC_ANIMAL_SCALE;
 
         scoreBtn.click = scoreBtn.tap = function (mouse) {
@@ -772,6 +828,10 @@ DeerHuhn.prototype = {
         this.addSprite(scoreBtn);
     },
 
+    getScaledFontSizeString: function(size) {
+       return Math.round(size*this.resolutionScale)+'px'; 
+    },
+
     initRulesStage: function() {
 
         // the background image
@@ -780,9 +840,9 @@ DeerHuhn.prototype = {
         this.addSprite(background);
 
         // the caption
-        var caption = new PIXI.Text('PRAVIDLA', {font: '100px HelveticaBlack', fill: '#E9FBC2', stroke: '#808888', strokeThickness: 3});
+        var caption = new PIXI.Text('PRAVIDLA', {font: this.getScaledFontSizeString(100)+' HelveticaBlack', fill: '#E9FBC2', stroke: '#808888', strokeThickness: 3});
         caption.anchor.x = 0.5;
-        caption.position = new PIXI.Point(0, 120);
+        caption.position = new PIXI.Point(0, 0.125*background.height);
 
         background.addChild(caption);
         this.addSprite(caption);
@@ -807,10 +867,10 @@ DeerHuhn.prototype = {
 
         var rulesRect = new PIXI.Graphics();
         rulesRect.beginFill(0xFFFFFF, 0.8);
-        var rulesRectSize = new PIXI.Point(800, 480);
+        var rulesRectSize = new PIXI.Point(800*this.resolutionScale, 480*this.resolutionScale);
         rulesRect.drawRect(0, 0, rulesRectSize.x, rulesRectSize.y);
         rulesRect.endFill();
-        rulesRect.position = new PIXI.Point(-0.5*rulesRectSize.x, 270);
+        rulesRect.position = new PIXI.Point(-0.5*rulesRectSize.x, 270*this.resolutionScale);
 
         background.addChild(rulesRect);
         this.addSprite(rulesRect); // not a sprite
@@ -830,8 +890,8 @@ DeerHuhn.prototype = {
             rulesHTML.style.top = (rulesRect.worldTransform[5] + this.renderer.view.offsetTop) + 'px';
             rulesHTML.style.width = (rulesRectSize.x * this.renderingScale - paddingLeft) + 'px';
             rulesHTML.style.height = (rulesRectSize.y * this.renderingScale) + 'px';
-            var fontSize = Math.round(50* this.renderingScale);
-            rulesHTML.style.font = fontSize+'px/1.5 HelveticaLight';
+            var fontSize = this.getScaledFontSizeString(50* this.renderingScale);
+            rulesHTML.style.font = fontSize+'/1.5 HelveticaLight';
         }.bind(this);
         this.stageShownListeners.rules.push(function () {
             rulesHTML.style.display = 'block';
@@ -841,11 +901,11 @@ DeerHuhn.prototype = {
         });
 
         // the BACK button
-        var backBtn = new PIXI.Text('← MENU  ', {font: '80px HelveticaBlack', fill: '#336666'});
+        var backBtn = new PIXI.Text('← MENU  ', {font: this.getScaledFontSizeString(80)+' HelveticaBlack', fill: '#336666'});
         backBtn.interactive = true;
         backBtn.buttonMode = true;
         backBtn.anchor.x = 0.5;
-        backBtn.position = new PIXI.Point(0, 800);
+        backBtn.position = new PIXI.Point(0, 800*this.resolutionScale);
 
         backBtn.click = backBtn.tap = function (mouse) {
             this.changeStage('menu');
@@ -862,19 +922,19 @@ DeerHuhn.prototype = {
         this.addSprite(background);
 
         // the caption
-        var caption = new PIXI.Text('SKÓRE', {font: '100px HelveticaBlack', fill: '#E9FBC2', stroke: '#808888', strokeThickness: 3});
+        var caption = new PIXI.Text('SKÓRE', {font: this.getScaledFontSizeString(100)+' HelveticaBlack', fill: '#E9FBC2', stroke: '#808888', strokeThickness: 3});
         caption.anchor.x = 0.5;
-        caption.position = new PIXI.Point(0, 120);
+        caption.position = new PIXI.Point(0, 120*this.resolutionScale);
 
         background.addChild(caption);
         this.addSprite(caption);
 
         var scoreRect = new PIXI.Graphics();
         scoreRect.beginFill(0xFFFFFF, 0.8);
-        var scoreRectSize = new PIXI.Point(1400, 480);
+        var scoreRectSize = new PIXI.Point(1400*this.resolutionScale, 480*this.resolutionScale);
         scoreRect.drawRect(0, 0, scoreRectSize.x, scoreRectSize.y);
         scoreRect.endFill();
-        scoreRect.position = new PIXI.Point(-0.5*scoreRectSize.x, 270);
+        scoreRect.position = new PIXI.Point(-0.5*scoreRectSize.x, 270*this.resolutionScale);
 
         background.addChild(scoreRect);
         this.addSprite(scoreRect); // not a sprite
@@ -895,8 +955,8 @@ DeerHuhn.prototype = {
             scoreHTML.style.top = (scoreRect.worldTransform[5] + this.renderer.view.offsetTop + paddingTop) + 'px';
             scoreHTML.style.width = (scoreRectSize.x * this.renderingScale - paddingLeft) + 'px';
             scoreHTML.style.height = (scoreRectSize.y * this.renderingScale - paddingTop) + 'px';
-            var fontSize = Math.round(50* this.renderingScale);
-            scoreHTML.style.font = fontSize+'px/1.5 HelveticaLight';
+            var fontSize = this.getScaledFontSizeString(50* this.renderingScale);
+            scoreHTML.style.font = fontSize+'/1.5 HelveticaLight';
         }.bind(this);
         this.stageShownListeners.score.push(function () {
             // load the best score data
@@ -929,11 +989,11 @@ DeerHuhn.prototype = {
         });
 
         // the BACK button
-        var backBtn = new PIXI.Text('← MENU  ', {font: '80px HelveticaBlack', fill: '#336666'});
+        var backBtn = new PIXI.Text('← MENU  ', {font: this.getScaledFontSizeString(80)+' HelveticaBlack', fill: '#336666'});
         backBtn.interactive = true;
         backBtn.buttonMode = true;
         backBtn.anchor.x = 0.5;
-        backBtn.position = new PIXI.Point(0, 800);
+        backBtn.position = new PIXI.Point(0, 800*this.resolutionScale);
 
         backBtn.click = backBtn.tap = function (mouse) {
             this.changeStage('menu');
@@ -950,9 +1010,9 @@ DeerHuhn.prototype = {
         this.addSprite(background);
 
         // the caption
-        var caption = new PIXI.Text('TVOJE SKÓRE', {font: '100px HelveticaBlack', fill: '#E9FBC2', stroke: '#808888', strokeThickness: 3, align: 'center'});
+        var caption = new PIXI.Text('TVOJE SKÓRE', {font: this.getScaledFontSizeString(100)+' HelveticaBlack', fill: '#E9FBC2', stroke: '#808888', strokeThickness: 3, align: 'center'});
         caption.anchor.x = 0.5;
-        caption.position = new PIXI.Point(0, 120);
+        caption.position = new PIXI.Point(0, 120*this.resolutionScale);
         this.stageShownListeners.gameOver.push(function() {
             caption.setText('TVOJE SKÓRE\n' + this.points + " bodů");
         }.bind(this));
@@ -966,10 +1026,10 @@ DeerHuhn.prototype = {
 
         var formRect = new PIXI.Graphics();
         formRect.beginFill(0xFFFFFF, 0.5);
-        var formRectSize = new PIXI.Point(800, 200);
+        var formRectSize = new PIXI.Point(800*this.resolutionScale, 200*this.resolutionScale);
         formRect.drawRect(0, 0, formRectSize.x, formRectSize.y);
         formRect.endFill();
-        formRect.position = new PIXI.Point(-0.5*formRectSize.x, 470);
+        formRect.position = new PIXI.Point(-0.5*formRectSize.x, 470*this.resolutionScale);
 
         background.addChild(formRect);
         this.addSprite(formRect); // not a sprite
@@ -989,8 +1049,8 @@ DeerHuhn.prototype = {
             formHTML.style.top = (formRect.worldTransform[5] + this.renderer.view.offsetTop + padding) + 'px';
             formHTML.style.width = (formRectSize.x * this.renderingScale - 2*padding) + 'px';
             formHTML.style.height = (formRectSize.y * this.renderingScale - 2*padding) + 'px';
-            var fontSize = Math.round(50* this.renderingScale);
-            var font = fontSize+'px/1.5 HelveticaLight';
+            var fontSize = this.getScaledFontSizeString(50* this.renderingScale);
+            var font = fontSize+'/1.5 HelveticaLight';
             formHTML.style.font = font;
             var inputs = formHTML.getElementsByTagName('input');
             for (var i=0; i<inputs.length; i++)
@@ -1004,11 +1064,11 @@ DeerHuhn.prototype = {
         });
 
         // the SAVE button
-        var saveBtn = new PIXI.Text('ULOŽIT VÝSLEDEK', {font: '80px HelveticaBlack', fill: '#336666'});
+        var saveBtn = new PIXI.Text('ULOŽIT VÝSLEDEK', {font: this.getScaledFontSizeString(80)+' HelveticaBlack', fill: '#336666'});
         saveBtn.interactive = true;
         saveBtn.buttonMode = true;
         saveBtn.anchor.x = 0.5;
-        saveBtn.position = new PIXI.Point(0, 800);
+        saveBtn.position = new PIXI.Point(0, 800*this.resolutionScale);
         saveBtn.fired = false;
 
         saveBtn.click = saveBtn.tap = function (mouse) {
@@ -1117,7 +1177,7 @@ DeerHuhn.prototype = {
 
         // date
         
-        var fontSize = Math.round(DeerHuhn.SCENE_HEIGHT/16);
+        var fontSize = Math.round(this.resolution.height/16);
         this.dateText = new PIXI.Text(' 1. 3.', {font: fontSize+'px HelveticaLight', fill: '#8E8D5B'});
         this.dateText.anchor.x = 1;
 
@@ -1202,7 +1262,7 @@ DeerHuhn.prototype = {
         }.bind(this);
 
         for (var i=0; i<numCountDownDigits; i++) {
-            var digit = new PIXI.Text((numCountDownDigits-i)+'', {font: '240px HelveticaBlack', fill: 'black'});
+            var digit = new PIXI.Text((numCountDownDigits-i)+'', {font: this.getScaledFontSizeString(240)+' HelveticaBlack', fill: 'black'});
             digit.visible = false;
             
             digit.onresize = countDownDigitOnResize.bind(this, i);
@@ -1217,9 +1277,9 @@ DeerHuhn.prototype = {
         mask.drawRect(0, 0, 5000, 5000);
         mask.endFill();
 
-        var reloadingHelpText = new PIXI.Text("Pro přebití stiskněte pravé tlačítko nebo ťukněte \nprstem na kalendář, náboje či velký křížek.\nJe-li hra příliš pomalá, zkuste zmenšit okno\nprohlížeče nebo ji pustit v jiném prohlížeči.\nInternet Explorer podporován od verze 9.", {font: '60px HelveticaLight', fill: '#E8FBC1', align: 'center'});
+        var reloadingHelpText = new PIXI.Text("Pro přebití stiskněte pravé tlačítko nebo ťukněte \nprstem na kalendář, náboje či velký křížek.\nJe-li hra příliš pomalá, zkuste zmenšit okno\nprohlížeče nebo ji pustit v jiném prohlížeči.\nInternet Explorer podporován od verze 9.", {font: this.getScaledFontSizeString(60)+' HelveticaLight', fill: '#E8FBC1', align: 'center'});
         mask.addChild(reloadingHelpText);
-        reloadingHelpText.position.y = 550;
+        reloadingHelpText.position.y = 550*this.resolutionScale;
         reloadingHelpText.anchor.x = 0.5;
         reloadingHelpText.onresize = function () {
             reloadingHelpText.position.x = 0.5 * this.rendererWidth / this.renderingScale;
@@ -1366,7 +1426,8 @@ DeerHuhn.prototype = {
             pointsPosition.x += (0.5-animal.sprite.anchor.x)*animal.sprite.width;
             pointsPosition.y += (0.5-animal.sprite.anchor.y)*animal.sprite.height;
             var falseLayer = this.backgroundLayers[animal.scenePosition.layer + 6];
-            var fadingPoints = new DeerHuhn.FadingPoints(points, 1000, pointsPosition, function () {
+            var fontSize = this.getScaledFontSizeString(this.renderer.height/5);
+            var fadingPoints = new DeerHuhn.FadingPoints(points, fontSize, 1000, pointsPosition, function () {
                 this.removeSprite(fadingPoints.sprite);
                 falseLayer.removeChild(fadingPoints.sprite);
             }.bind(this), this);
@@ -1452,6 +1513,8 @@ DeerHuhn.prototype = {
                 layer.addChildAt(animal.sprite, parentIndex);
             }
         }
+        animal.sprite.position.x *= this.resolutionScale;
+        animal.sprite.position.y *= this.resolutionScale;
         this.addSprite(animal.sprite);
         this.animals.push(animal);
 
@@ -1460,6 +1523,12 @@ DeerHuhn.prototype = {
 
         if (animal instanceof DeerHuhn.MovingAnimatedObject)
             this.movingObjects.push(animal);
+
+        if (animal instanceof DeerHuhn.StaticShootableObject) {
+            // moving objects have this updated in #updateMovingObjects
+            animal.scenePosition.x = animal.sprite.position.x;
+            animal.scenePosition.y = animal.sprite.position.y;
+        }
 
         for (var i=0; i < animal.childrenToSpawn.length; i++) {
             var childToSpawn = animal.childrenToSpawn[i];
@@ -1522,6 +1591,10 @@ DeerHuhn.prototype = {
         for (var i = 0; i < this.movingObjects.length; i++) {
             var movingObject = this.movingObjects[i];
             movingObject.updatePosition(timeDelta, this.renderingScale);
+            movingObject.sprite.position.x *= this.resolutionScale;
+            movingObject.sprite.position.y *= this.resolutionScale;
+            movingObject.scenePosition.x = movingObject.sprite.position.x;
+            movingObject.scenePosition.y = movingObject.sprite.position.y;
         }
     },
 
@@ -1597,16 +1670,16 @@ DeerHuhn.prototype = {
             'HelveticaLight.webfont',
             'HelveticaLightBold.webfont',
             'HelveticaBlack.webfont',
-            'images/sprites-menu.json',
-            'images/menu-pozadi.png',
-            'images/vrstva0.png', 
-            'images/vrstva1.png', 
-            'images/vrstva2.png', 
-            'images/vrstva3.png', 
-            'images/vrstva4.png', 
-            'images/vrstva5.png', 
-            'images/sprites-interactive.json', 
-            'images/sprites-passive.json'
+            'images/'+this.resolution.dirPrefix+'/sprites-menu.json',
+            'images/'+this.resolution.dirPrefix+'/menu-pozadi.png',
+            'images/'+this.resolution.dirPrefix+'/vrstva0.png', 
+            'images/'+this.resolution.dirPrefix+'/vrstva1.png', 
+            'images/'+this.resolution.dirPrefix+'/vrstva2.png', 
+            'images/'+this.resolution.dirPrefix+'/vrstva3.png', 
+            'images/'+this.resolution.dirPrefix+'/vrstva4.png', 
+            'images/'+this.resolution.dirPrefix+'/vrstva5.png', 
+            'images/'+this.resolution.dirPrefix+'/sprites-interactive.json', 
+            'images/'+this.resolution.dirPrefix+'/sprites-passive.json'
         ];
         var loader = new PIXI.FontAwareAssetLoader(assets);
         loader.onProgress = this.onAssetLoaderProgress.bind(this, loader);
@@ -1621,9 +1694,9 @@ DeerHuhn.prototype = {
     },
 
     resize: function() {
-        this.rendererWidth = this.GAME_CONTAINER.offsetWidth - 8;
-        this.rendererHeight = Math.min(this.GAME_CONTAINER.offsetHeight - 8, this.MAX_HEIGHT);
-        this.renderingScale = this.rendererHeight/this.MAX_HEIGHT;
+        this.rendererWidth = this.GAME_CONTAINER.offsetWidth - 4;
+        this.rendererHeight = this.GAME_CONTAINER.offsetHeight - 4;
+        this.renderingScale = this.rendererHeight/this.resolution.height;
 
         this.renderer.resize(this.rendererWidth, this.rendererHeight);
 
@@ -2847,15 +2920,15 @@ DeerHuhn.StaticShootableObject.prototype.constructor = DeerHuhn.StaticShootableO
  *
  * @constructor
  * @param {int} points The number of points to represent.
+ * @param {string} fontSizeString The size of the font (in px) (format: '50px').
  * @param {number} duration The duration until fully transparent (in ms).
  * @param {DeerHuhn.ScenePosition} position The position to display at (in layer frame).
  * @param {movementFinishedCallback} fadingFinishedCallback The callback to call when the object fades out.
  * @param {DeerHuhn} deerHuhn The game object (to allow registering the timers). //XXX needs refactoring
  */
-DeerHuhn.FadingPoints = function (points, duration, position, fadingFinishedCallback, deerHuhn) {
+DeerHuhn.FadingPoints = function (points, fontSizeString, duration, position, fadingFinishedCallback, deerHuhn) {
     var color = (points >= 0 ? '#8E8D5B' : '#FF0000');
 
-    var fontSize = Math.round(DeerHuhn.SCENE_HEIGHT/10);
     /**
      * The sprite displaying the text with the points.
      *
@@ -2864,7 +2937,7 @@ DeerHuhn.FadingPoints = function (points, duration, position, fadingFinishedCall
      * @readonly
      * @type {PIXI.Sprite}
      */
-    this.sprite = new PIXI.Text(points+'', {font: 'bold '+fontSize+'px HelveticaBlack', fill: color});
+    this.sprite = new PIXI.Text(points+'', {font: 'bold '+fontSizeString+' HelveticaBlack', fill: color});
 
     /**
      * The number of points to represent.

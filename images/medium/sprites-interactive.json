@@ -1,0 +1,264 @@
+{
+"frames": {
+	"animation-auto_cervene-0.png": {
+		"frame": {"x":93, "y":52, "w":44, "h":25},
+		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":25},
+		"sourceSize": {"w":44,"h":25}
+	},
+	"animation-auto_cervene-1.png": {
+		"frame": {"x":138, "y":0, "w":44, "h":25},
+		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":25},
+		"sourceSize": {"w":44,"h":25}
+	},
+	"animation-auto_cervene-2.png": {
+		"frame": {"x":120, "y":227, "w":44, "h":25},
+		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":25},
+		"sourceSize": {"w":44,"h":25}
+	},
+	"animation-auto_modre-0.png": {
+		"frame": {"x":93, "y":0, "w":44, "h":25},
+		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":25},
+		"sourceSize": {"w":44,"h":25}
+	},
+	"animation-auto_modre-1.png": {
+		"frame": {"x":120, "y":201, "w":44, "h":25},
+		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":25},
+		"sourceSize": {"w":44,"h":25}
+	},
+	"animation-auto_modre-2.png": {
+		"frame": {"x":93, "y":26, "w":44, "h":25},
+		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":25},
+		"sourceSize": {"w":44,"h":25}
+	},
+	"animation-kachna-0.png": {
+		"frame": {"x":228, "y":113, "w":26, "h":16},
+		"spriteSourceSize": {"x":0,"y":0,"w":26,"h":16},
+		"sourceSize": {"w":26,"h":16}
+	},
+	"animation-kachna-1.png": {
+		"frame": {"x":93, "y":78, "w":26, "h":16},
+		"spriteSourceSize": {"x":0,"y":0,"w":26,"h":16},
+		"sourceSize": {"w":26,"h":16}
+	},
+	"animation-kachna-2.png": {
+		"frame": {"x":120, "y":253, "w":26, "h":16},
+		"spriteSourceSize": {"x":0,"y":0,"w":26,"h":16},
+		"sourceSize": {"w":26,"h":16}
+	},
+	"animation-kachna-3.png": {
+		"frame": {"x":93, "y":78, "w":26, "h":16},
+		"spriteSourceSize": {"x":0,"y":0,"w":26,"h":16},
+		"sourceSize": {"w":26,"h":16}
+	},
+	"animation-kachna_plove-0.png": {
+		"frame": {"x":238, "y":161, "w":24, "h":11},
+		"spriteSourceSize": {"x":0,"y":0,"w":24,"h":11},
+		"sourceSize": {"w":24,"h":11}
+	},
+	"animation-kachna_plove-1.png": {
+		"frame": {"x":235, "y":184, "w":24, "h":11},
+		"spriteSourceSize": {"x":0,"y":0,"w":24,"h":11},
+		"sourceSize": {"w":24,"h":11}
+	},
+	"animation-kachna_plove-2.png": {
+		"frame": {"x":235, "y":196, "w":24, "h":11},
+		"spriteSourceSize": {"x":0,"y":0,"w":24,"h":11},
+		"sourceSize": {"w":24,"h":11}
+	},
+	"animation-kachna_plove-3.png": {
+		"frame": {"x":235, "y":184, "w":24, "h":11},
+		"spriteSourceSize": {"x":0,"y":0,"w":24,"h":11},
+		"sourceSize": {"w":24,"h":11}
+	},
+	"animation-klady-0.png": {
+		"frame": {"x":91, "y":155, "w":52, "h":22},
+		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":22},
+		"sourceSize": {"w":52,"h":22}
+	},
+	"animation-klady-1.png": {
+		"frame": {"x":91, "y":132, "w":52, "h":22},
+		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":22},
+		"sourceSize": {"w":52,"h":22}
+	},
+	"animation-klady-2.png": {
+		"frame": {"x":91, "y":178, "w":52, "h":22},
+		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":22},
+		"sourceSize": {"w":52,"h":22}
+	},
+	"animation-liska-0.png": {
+		"frame": {"x":180, "y":26, "w":38, "h":20},
+		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":20},
+		"sourceSize": {"w":38,"h":20}
+	},
+	"animation-liska-1.png": {
+		"frame": {"x":165, "y":226, "w":38, "h":20},
+		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":20},
+		"sourceSize": {"w":38,"h":20}
+	},
+	"animation-liska-2.png": {
+		"frame": {"x":165, "y":205, "w":38, "h":20},
+		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":20},
+		"sourceSize": {"w":38,"h":20}
+	},
+	"animation-lkt-0.png": {
+		"frame": {"x":60, "y":225, "w":59, "h":35},
+		"spriteSourceSize": {"x":0,"y":0,"w":59,"h":35},
+		"sourceSize": {"w":59,"h":35}
+	},
+	"animation-lkt-1.png": {
+		"frame": {"x":91, "y":96, "w":59, "h":35},
+		"spriteSourceSize": {"x":0,"y":0,"w":59,"h":35},
+		"sourceSize": {"w":59,"h":35}
+	},
+	"animation-lkt-2.png": {
+		"frame": {"x":0, "y":225, "w":59, "h":35},
+		"spriteSourceSize": {"x":0,"y":0,"w":59,"h":35},
+		"sourceSize": {"w":59,"h":35}
+	},
+	"animation-odvozka-0.png": {
+		"frame": {"x":0, "y":96, "w":90, "h":42},
+		"spriteSourceSize": {"x":0,"y":0,"w":90,"h":42},
+		"sourceSize": {"w":90,"h":42}
+	},
+	"animation-odvozka-1.png": {
+		"frame": {"x":0, "y":139, "w":90, "h":42},
+		"spriteSourceSize": {"x":0,"y":0,"w":90,"h":42},
+		"sourceSize": {"w":90,"h":42}
+	},
+	"animation-odvozka-2.png": {
+		"frame": {"x":0, "y":182, "w":90, "h":42},
+		"spriteSourceSize": {"x":0,"y":0,"w":90,"h":42},
+		"sourceSize": {"w":90,"h":42}
+	},
+	"animation-ovce-0.png": {
+		"frame": {"x":204, "y":161, "w":33, "h":22},
+		"spriteSourceSize": {"x":0,"y":0,"w":33,"h":22},
+		"sourceSize": {"w":33,"h":22}
+	},
+	"animation-ovce-1.png": {
+		"frame": {"x":183, "y":0, "w":33, "h":22},
+		"spriteSourceSize": {"x":0,"y":0,"w":33,"h":22},
+		"sourceSize": {"w":33,"h":22}
+	},
+	"animation-ovce-2.png": {
+		"frame": {"x":186, "y":138, "w":33, "h":22},
+		"spriteSourceSize": {"x":0,"y":0,"w":33,"h":22},
+		"sourceSize": {"w":33,"h":22}
+	},
+	"animation-ovce-3.png": {
+		"frame": {"x":183, "y":0, "w":33, "h":22},
+		"spriteSourceSize": {"x":0,"y":0,"w":33,"h":22},
+		"sourceSize": {"w":33,"h":22}
+	},
+	"animation-prase-0.png": {
+		"frame": {"x":165, "y":183, "w":38, "h":21},
+		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":21},
+		"sourceSize": {"w":38,"h":21}
+	},
+	"animation-prase-1.png": {
+		"frame": {"x":180, "y":47, "w":38, "h":21},
+		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":21},
+		"sourceSize": {"w":38,"h":21}
+	},
+	"animation-prase-2.png": {
+		"frame": {"x":165, "y":247, "w":38, "h":21},
+		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":21},
+		"sourceSize": {"w":38,"h":21}
+	},
+	"animation-sele-0.png": {
+		"frame": {"x":217, "y":0, "w":28, "h":18},
+		"spriteSourceSize": {"x":0,"y":0,"w":28,"h":18},
+		"sourceSize": {"w":28,"h":18}
+	},
+	"animation-sele-1.png": {
+		"frame": {"x":91, "y":201, "w":28, "h":18},
+		"spriteSourceSize": {"x":0,"y":0,"w":28,"h":18},
+		"sourceSize": {"w":28,"h":18}
+	},
+	"animation-sele-2.png": {
+		"frame": {"x":219, "y":19, "w":28, "h":18},
+		"spriteSourceSize": {"x":0,"y":0,"w":28,"h":18},
+		"sourceSize": {"w":28,"h":18}
+	},
+	"animation-srna-0.png": {
+		"frame": {"x":151, "y":90, "w":41, "h":31},
+		"spriteSourceSize": {"x":0,"y":0,"w":41,"h":31},
+		"sourceSize": {"w":41,"h":31}
+	},
+	"animation-srna-1.png": {
+		"frame": {"x":138, "y":26, "w":41, "h":31},
+		"spriteSourceSize": {"x":0,"y":0,"w":41,"h":31},
+		"sourceSize": {"w":41,"h":31}
+	},
+	"animation-srna-2.png": {
+		"frame": {"x":138, "y":58, "w":41, "h":31},
+		"spriteSourceSize": {"x":0,"y":0,"w":41,"h":31},
+		"sourceSize": {"w":41,"h":31}
+	},
+	"budka.png": {
+		"frame": {"x":144, "y":132, "w":41, "h":50},
+		"spriteSourceSize": {"x":0,"y":0,"w":41,"h":50},
+		"sourceSize": {"w":41,"h":50}
+	},
+	"choros.png": {
+		"frame": {"x":204, "y":184, "w":30, "h":23},
+		"spriteSourceSize": {"x":0,"y":0,"w":30,"h":23},
+		"sourceSize": {"w":30,"h":23}
+	},
+	"kura.png": {
+		"frame": {"x":193, "y":69, "w":34, "h":68},
+		"spriteSourceSize": {"x":0,"y":0,"w":34,"h":68},
+		"sourceSize": {"w":34,"h":68}
+	},
+	"kvitko_cervene.png": {
+		"frame": {"x":144, "y":183, "w":19, "h":16},
+		"spriteSourceSize": {"x":0,"y":0,"w":19,"h":16},
+		"sourceSize": {"w":19,"h":16}
+	},
+	"kvitko_oranzove.png": {
+		"frame": {"x":246, "y":0, "w":19, "h":14},
+		"spriteSourceSize": {"x":0,"y":0,"w":19,"h":14},
+		"sourceSize": {"w":19,"h":14}
+	},
+	"music.png": {
+		"frame": {"x":219, "y":38, "w":26, "h":26},
+		"spriteSourceSize": {"x":0,"y":0,"w":26,"h":26},
+		"sourceSize": {"w":26,"h":26}
+	},
+	"sound.png": {
+		"frame": {"x":220, "y":138, "w":26, "h":22},
+		"spriteSourceSize": {"x":0,"y":0,"w":26,"h":22},
+		"sourceSize": {"w":26,"h":22}
+	},
+	"souska_rovna.png": {
+		"frame": {"x":234, "y":208, "w":26, "h":50},
+		"spriteSourceSize": {"x":0,"y":0,"w":26,"h":50},
+		"sourceSize": {"w":26,"h":50}
+	},
+	"souska_v_porostu.png": {
+		"frame": {"x":204, "y":208, "w":29, "h":57},
+		"spriteSourceSize": {"x":0,"y":0,"w":29,"h":57},
+		"sourceSize": {"w":29,"h":57}
+	},
+	"souska_vychylena.png": {
+		"frame": {"x":228, "y":65, "w":26, "h":47},
+		"spriteSourceSize": {"x":0,"y":0,"w":26,"h":47},
+		"sourceSize": {"w":26,"h":47}
+	},
+	"srna_kouka.png": {
+		"frame": {"x":186, "y":161, "w":17, "h":16},
+		"spriteSourceSize": {"x":0,"y":0,"w":17,"h":16},
+		"sourceSize": {"w":17,"h":16}
+	},
+	"vetev.png": {
+		"frame": {"x":0, "y":0, "w":92, "h":95},
+		"spriteSourceSize": {"x":0,"y":0,"w":92,"h":95},
+		"sourceSize": {"w":92,"h":95}
+	}
+},
+"meta": {
+"image": "sprites-interactive.png", 
+	"size": {"w": 266, "h": 270},
+	"scale": "1"
+}
+}

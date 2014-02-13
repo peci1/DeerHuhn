@@ -1,45 +1,44 @@
 {
 "frames": {
 	"hrat_sv.png": {
-		"frame": {"x":190, "y":1388, "w":189, "h":106},
+		"frame": {"x":190, "y":1389, "w":189, "h":106},
 		"spriteSourceSize": {"x":0,"y":0,"w":189,"h":106},
 		"sourceSize": {"w":189,"h":106}
 	},
 	"hrat_tm.png": {
-		"frame": {"x":0, "y":1388, "w":189, "h":106},
+		"frame": {"x":0, "y":1389, "w":189, "h":106},
 		"spriteSourceSize": {"x":0,"y":0,"w":189,"h":106},
 		"sourceSize": {"w":189,"h":106}
 	},
 	"pravidla_sv.png": {
-		"frame": {"x":0, "y":1067, "w":306, "h":106},
+		"frame": {"x":0, "y":1068, "w":306, "h":106},
 		"spriteSourceSize": {"x":0,"y":0,"w":306,"h":106},
 		"sourceSize": {"w":306,"h":106}
 	},
 	"pravidla_tm.png": {
-		"frame": {"x":0, "y":960, "w":306, "h":106},
+		"frame": {"x":0, "y":961, "w":306, "h":106},
 		"spriteSourceSize": {"x":0,"y":0,"w":306,"h":106},
 		"sourceSize": {"w":306,"h":106}
 	},
 	"skore_sv.png": {
-		"frame": {"x":0, "y":1281, "w":217, "h":106},
+		"frame": {"x":0, "y":1282, "w":217, "h":106},
 		"spriteSourceSize": {"x":0,"y":0,"w":217,"h":106},
 		"sourceSize": {"w":217,"h":106}
 	},
 	"skore_tm.png": {
-		"frame": {"x":0, "y":1174, "w":217, "h":106},
+		"frame": {"x":0, "y":1175, "w":217, "h":106},
 		"spriteSourceSize": {"x":0,"y":0,"w":217,"h":106},
 		"sourceSize": {"w":217,"h":106}
 	},
 	"uvodni_obrazek.png": {
-		"frame": {"x":0, "y":0, "w":1590, "h":959},
-		"spriteSourceSize": {"x":0,"y":0,"w":1590,"h":959},
-		"sourceSize": {"w":1590,"h":959}
+		"frame": {"x":0, "y":0, "w":1590, "h":960},
+		"spriteSourceSize": {"x":0,"y":0,"w":1590,"h":960},
+		"sourceSize": {"w":1590,"h":960}
 	}
-
 },
 "meta": {
-	"image": "sprites-menu.png",
-	"size": {"w": 1591, "h": 1495},
+"image": "sprites-menu.png", 
+	"size": {"w": 1591, "h": 1496},
 	"scale": "1"
 }
 }

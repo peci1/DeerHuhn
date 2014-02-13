@@ -31,27 +31,27 @@
 		"sourceSize": {"w":88,"h":50}
 	},
 	"animation-kachna-0.png": {
-		"frame": {"x":433, "y":490, "w":52, "h":33},
+		"frame": {"x":467, "y":366, "w":52, "h":33},
 		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":33},
 		"sourceSize": {"w":52,"h":33}
 	},
 	"animation-kachna-1.png": {
-		"frame": {"x":380, "y":491, "w":52, "h":33},
+		"frame": {"x":453, "y":231, "w":52, "h":33},
 		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":33},
 		"sourceSize": {"w":52,"h":33}
 	},
 	"animation-kachna-2.png": {
-		"frame": {"x":327, "y":491, "w":52, "h":33},
+		"frame": {"x":442, "y":0, "w":52, "h":33},
 		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":33},
 		"sourceSize": {"w":52,"h":33}
 	},
 	"animation-kachna-3.png": {
-		"frame": {"x":380, "y":491, "w":52, "h":33},
+		"frame": {"x":453, "y":231, "w":52, "h":33},
 		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":33},
 		"sourceSize": {"w":52,"h":33}
 	},
 	"animation-kachna_plove-0.png": {
-		"frame": {"x":463, "y":467, "w":49, "h":22},
+		"frame": {"x":472, "y":320, "w":49, "h":22},
 		"spriteSourceSize": {"x":0,"y":0,"w":49,"h":22},
 		"sourceSize": {"w":49,"h":22}
 	},
@@ -166,7 +166,7 @@
 		"sourceSize": {"w":77,"h":43}
 	},
 	"animation-sele-0.png": {
-		"frame": {"x":405, "y":452, "w":57, "h":37},
+		"frame": {"x":327, "y":491, "w":57, "h":37},
 		"spriteSourceSize": {"x":0,"y":0,"w":57,"h":37},
 		"sourceSize": {"w":57,"h":37}
 	},
@@ -176,7 +176,7 @@
 		"sourceSize": {"w":57,"h":37}
 	},
 	"animation-sele-2.png": {
-		"frame": {"x":405, "y":414, "w":57, "h":37},
+		"frame": {"x":436, "y":44, "w":57, "h":37},
 		"spriteSourceSize": {"x":0,"y":0,"w":57,"h":37},
 		"sourceSize": {"w":57,"h":37}
 	},
@@ -216,12 +216,12 @@
 		"sourceSize": {"w":38,"h":32}
 	},
 	"kvitko_oranzove.png": {
-		"frame": {"x":472, "y":320, "w":38, "h":29},
+		"frame": {"x":490, "y":82, "w":38, "h":29},
 		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":29},
 		"sourceSize": {"w":38,"h":29}
 	},
 	"music.png": {
-		"frame": {"x":453, "y":211, "w":53, "h":53},
+		"frame": {"x":436, "y":82, "w":53, "h":53},
 		"spriteSourceSize": {"x":0,"y":0,"w":53,"h":53},
 		"sourceSize": {"w":53,"h":53}
 	},
@@ -231,22 +231,22 @@
 		"sourceSize": {"w":53,"h":44}
 	},
 	"souska_rovna.png": {
-		"frame": {"x":467, "y":366, "w":52, "h":100},
+		"frame": {"x":465, "y":414, "w":52, "h":100},
 		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":100},
 		"sourceSize": {"w":52,"h":100}
 	},
 	"souska_v_porostu.png": {
-		"frame": {"x":442, "y":0, "w":59, "h":115},
+		"frame": {"x":405, "y":414, "w":59, "h":115},
 		"spriteSourceSize": {"x":0,"y":0,"w":59,"h":115},
 		"sourceSize": {"w":59,"h":115}
 	},
 	"souska_vychylena.png": {
-		"frame": {"x":453, "y":116, "w":53, "h":94},
+		"frame": {"x":453, "y":136, "w":53, "h":94},
 		"spriteSourceSize": {"x":0,"y":0,"w":53,"h":94},
 		"sourceSize": {"w":53,"h":94}
 	},
 	"srna_kouka.png": {
-		"frame": {"x":486, "y":490, "w":35, "h":33},
+		"frame": {"x":494, "y":34, "w":35, "h":33},
 		"spriteSourceSize": {"x":0,"y":0,"w":35,"h":33},
 		"sourceSize": {"w":35,"h":33}
 	},
@@ -255,11 +255,10 @@
 		"spriteSourceSize": {"x":0,"y":0,"w":184,"h":191},
 		"sourceSize": {"w":184,"h":191}
 	}
-
 },
 "meta": {
-	"image": "sprites-interactive.png",
-	"size": {"w": 522, "h": 525},
+"image": "sprites-interactive.png", 
+	"size": {"w": 530, "h": 530},
 	"scale": "1"
 }
 }

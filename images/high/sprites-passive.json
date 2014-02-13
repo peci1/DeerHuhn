@@ -1,8 +1,8 @@
 {
 "frames": {
 	"animation-vystrel-0.png": {
-		"frame": {"x":0, "y":355, "w":106, "h":80},
-		"spriteSourceSize": {"x":3,"y":9,"w":115,"h":97},
+		"frame": {"x":116, "y":257, "w":115, "h":97},
+		"spriteSourceSize": {"x":0,"y":0,"w":115,"h":97},
 		"sourceSize": {"w":115,"h":97}
 	},
 	"animation-vystrel-1.png": {
@@ -21,7 +21,7 @@
 		"sourceSize": {"w":43,"h":190}
 	},
 	"naboje-zadne.png": {
-		"frame": {"x":107, "y":355, "w":64, "h":66},
+		"frame": {"x":0, "y":355, "w":64, "h":66},
 		"spriteSourceSize": {"x":0,"y":0,"w":64,"h":66},
 		"sourceSize": {"w":64,"h":66}
 	},
@@ -30,11 +30,10 @@
 		"spriteSourceSize": {"x":0,"y":0,"w":437,"h":53},
 		"sourceSize": {"w":437,"h":53}
 	}
-
 },
 "meta": {
-	"image": "sprites-passive.png",
-	"size": {"w": 438, "h": 436},
+"image": "sprites-passive.png", 
+	"size": {"w": 438, "h": 422},
 	"scale": "1"
 }
 }

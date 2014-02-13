@@ -34,9 +34,11 @@
 body {margin: 0px; padding: 0px; text-align: center;}
 body.jsEnabled #jsDisabledText {display: none;}
 
-#gameContainer {margin: 0px auto; position: absolute; top: 0px; width: 100%; height: 100%; background: #689B66 url('../images/loading.gif') 50% 10% no-repeat;}
+#gameContainer {margin: 0px auto; position: absolute; top: 0px; width: 100%; height: 100%; background: #689B66 url('../images/loading.gif') 50% 40% no-repeat;}
 
-#loading {color: #E8FBC1; font: 30pt HelveticaBlack, sans-serif; position: absolute; left: 0%; top: 350px; width: 100%; text-align: center} /* top: should be at least the height of loading.gif */
+#loading, #quality {color: #E8FBC1; font: 30pt HelveticaBlack, sans-serif; position: absolute; left: 0%; top: 0px; width: 100%; text-align: center} /* top: should be at least the height of loading.gif */
+#quality {left: 0%; top: 50px; font-size: 80%;}
+#quality a {color: #E8FBC1;}
 
 #wwwLink, #fbLink {display: none};
 

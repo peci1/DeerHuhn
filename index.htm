@@ -32,6 +32,8 @@
 
     <div id="loading">Načítání (cca 3MB)</div>
 
+    <div id="quality">Kvalita: <a href="?res=high" id="qualityHigh">Vysoká</a> | <a href="?res=medium" id="qualityMedium">Střední</a> | <a href="?res=low" id="qualityLow">Nízká</a></div>
+
     <a href="http://www.fld.czu.cz" id="wwwLink" target="_blank">www.fld.czu.cz</a>
     <a href="http://facebook.com/fld.czu.cz" id="fbLink" target="_blank">facebook.com/fld.czu.cz</a>
 
@@ -41,7 +43,20 @@
 
     <script src="bin/deerhuhn.js"></script>
     <script>
-        var deerHuhn = new DeerHuhn('gameContainer');
+        // http://stackoverflow.com/a/21210643/1076564
+        // read the GET parameters
+        var _GET = {};
+        location.search.substr(1).split("&").forEach(function(item) {_GET[item.split("=")[0]] = item.split("=")[1]});
+
+        var qualityLinks = {low: 'qualityLow', medium: 'qualityMedium', high: 'qualityHigh'};
+        resolutionString = 'high';
+        if (_GET.res !== undefined && DeerHuhn.RESOLUTIONS[_GET.res] !== undefined)
+            resolutionString = _GET.res;
+
+        resolution = DeerHuhn.RESOLUTIONS[resolutionString];
+        document.getElementById(qualityLinks[resolutionString]).href = null; 
+
+        var deerHuhn = new DeerHuhn('gameContainer', resolution);
         deerHuhn.initializeImages();
     </script>
 </body>
