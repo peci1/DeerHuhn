@@ -554,7 +554,9 @@ DeerHuhn.prototype = {
 
         this.stageHiddenListeners.game.push(function() {
             this.sounds.mainTheme.pause();
+
             this.pausableObjects.remove(this.gameTime);
+            this.gameTime.stop();
 
             this.spawnTimer.stop();
         }.bind(this));
