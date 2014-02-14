@@ -123,6 +123,7 @@ var DeerHuhn = function (canvasContainerId, resolution) {
     this.fpsElem = document.getElementById('fps');
     this.fpsCounter = new DeerHuhn.FPSCounter();
     this.pausableObjects.push(this.fpsCounter);
+    this.lowFpsWarningShown = false;
 
     // HUD
     this.dateText = null;
@@ -294,6 +295,43 @@ DeerHuhn.prototype = {
             event.preventDefault();
 
             return false;
+        }
+    },
+
+    calculateSuggestedResolutionFromFPS: function () {
+        var fps = this.fpsCounter.getAverageFPS();
+
+        if (this.resolution === DeerHuhn.RESOLUTION_HIGH) {
+            if (fps > 24)
+                return DeerHuhn.RESOLUTION_HIGH;
+            else if (fps > 12)
+                return DeerHuhn.RESOLUTION_MEDIUM;
+            else
+                return DeerHuhn.RESOLUTION_LOW;
+        } else if (this.resolution === DeerHuhn.RESOLUTION_MEDIUM) {
+            if (fps > 24)
+                return DeerHuhn.RESOLUTION_MEDIUM;
+            else
+                return DeerHuhn.RESOLUTION_LOW;
+        } else {
+            return DeerHuhn.RESOLUTION_LOW;
+        }
+    },
+
+    showLowFpsWarning: function (suggestedResolution) {
+        if (this.lowFpsWarningShown)
+            return;
+
+        this.lowFpsWarningShown = true;
+
+        var resString = "střední";
+        if (suggestedResolution === DeerHuhn.RESOLUTION_LOW)
+            resString = "nízké";
+
+        var changeFps = confirm('Zdá se, že hra běží pomalu. Chcete ji přepnout na ' + resString + " rozlišení?\nAktuálně rozehraná hra bude ztracena. Pokud to vaše zařízení dovoluje, zmenšení okna prohlížeče také může pomoci k vyššímu výkonu.\nTaké spuštění v jiném prohlížeči může pomoci.");
+
+        if (changeFps) {
+            window.location.href='?res=' + suggestedResolution.dirPrefix;
         }
     },
 
@@ -555,10 +593,13 @@ DeerHuhn.prototype = {
         this.stageHiddenListeners.game.push(function() {
             this.sounds.mainTheme.pause();
 
-            this.pausableObjects.remove(this.gameTime);
-            this.gameTime.stop();
+            if (this.gameTime !== null) {
+                this.pausableObjects.remove(this.gameTime);
+                this.gameTime.stop();
+            }
 
-            this.spawnTimer.stop();
+            if (this.spawnTimer !== null)
+                this.spawnTimer.stop();
         }.bind(this));
 
         this.stageShownListeners.game.push(function() {
@@ -599,6 +640,18 @@ DeerHuhn.prototype = {
             this.updateDontShootSigns();
 
             this.startNewSession();
+
+            if (!this.lowFpsWarningShown) {
+                var lowFpsTimer = new DeerHuhn.PausableTimeout(function() {
+                    var suggestedResolution = this.calculateSuggestedResolutionFromFPS();
+                    if (suggestedResolution !== this.resolution)
+                        this.showLowFpsWarning(suggestedResolution);
+
+                    this.pausableObjects.remove(lowFpsTimer);
+                }.bind(this), 10000);
+                this.pausableObjects.push(lowFpsTimer);
+                lowFpsTimer.start();
+            }
 
             this.pause();
             this.unPause();
