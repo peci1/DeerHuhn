@@ -120,8 +120,9 @@ var DeerHuhn = function (canvasContainerId, resolution) {
     this.sounds = {};
 
     // fps
-    this.lastAnimationFrameTime = null;
-    this.fps = 0;
+    this.fpsElem = document.getElementById('fps');
+    this.fpsCounter = new DeerHuhn.FPSCounter();
+    this.pausableObjects.push(this.fpsCounter);
 
     // HUD
     this.dateText = null;
@@ -199,7 +200,7 @@ DeerHuhn.prototype = {
             return;
 
         this.scrollPercentage = Math.max(0, Math.min(1, 
-            this.scrollPercentage - this.scrollingDirection*this.SCROLL_PERCENTAGE_STEP_PER_SECOND/this.fps));
+            this.scrollPercentage - this.scrollingDirection*this.SCROLL_PERCENTAGE_STEP_PER_SECOND/this.fpsCounter.getLastFPS()));
 
         for (var i = 0; i < this.backgroundLayers.length; i++) {
             var layer = this.backgroundLayers[i];
@@ -212,42 +213,23 @@ DeerHuhn.prototype = {
             return;
 
         if (!this.isPaused) {
-            var timeDelta = this.calculateTimeDelta(new Date());
-            this.fps = this.calculateFps(timeDelta);
+
+            this.fpsCounter.newAnimationFrameRendered();
+            if (this.fpsElem !== undefined) {
+                this.fpsElem.innerHTML = Math.round(this.fpsCounter.getAverageFPS()) + " FPS";
+            }
 
             this.processKeys();
 
             this.scrollBackground();
 
-            this.updateMovingObjects(timeDelta);
+            this.updateMovingObjects(this.fpsCounter.getLastTimeDelta());
         }
 
         this.renderer.render(this.stage);
 
         if (!this.isPaused)
             requestAnimFrame(this.animate.bind(this));
-    },
-
-    calculateTimeDelta: function(now) {
-        var timeDelta;
-
-        if (this.lastAnimationFrameTime === null) {
-            this.lastAnimationFrameTime = now;
-            return 0;
-        }
-
-        timeDelta = now.valueOf() - this.lastAnimationFrameTime.valueOf();
-        this.lastAnimationFrameTime = now;
-
-        return timeDelta; 
-    },
-
-    calculateFps: function(timeDelta) {
-        if (timeDelta === 0) {
-            return 60;
-        }
-
-        return 1000 / timeDelta;
     },
 
     processKeys: function() {
@@ -1786,7 +1768,6 @@ DeerHuhn.prototype = {
                     this.unPauseCountdownDigits[2].visible = false;
                     this.stages.game.removeChild(this.pauseMask);
 
-                    this.lastAnimationFrameTime = new Date();
                     this.animate(true);
                 }.bind(this), 1000);
                 this.pausableObjects.push(this.unPauseCountdownTimer);
@@ -3187,6 +3168,165 @@ DeerHuhn.SoundSample.prototype.play = function() {
     this.howl.play(function (id) {
         this.playingIds.push(id);
     }.bind(this));
+};
+
+// class FPSCounter
+
+/**
+ * FPS counter.
+ *
+ * @constructor
+ */
+DeerHuhn.FPSCounter = function () {
+
+    /**
+     * The time of the last rendered animation frame.
+     *
+     * Should be altered after unPause.
+     *
+     * @property
+     *
+     * @private
+     * @type {Date}
+     */
+    this.lastAnimationFrameTime = null;
+
+    /**
+     * The last FPS value.
+     *
+     * @property
+     *
+     * @private
+     * @type {float}
+     */
+    this.lastFPS = 0;
+
+    /**
+     * The last time delta value.
+     *
+     * @property
+     *
+     * @private
+     * @type {int}
+     */
+    this.lastTimeDelta = 0;
+
+    /**
+     * The time delays (in ms) between consequent #animate() calls.
+     *
+     * @property
+     *
+     * @private
+     * @type {int[]}
+     */
+    this.timeDeltas = [];
+
+    /**
+     * The sum of the values in this.timeDeltas.
+     *
+     * @property
+     *
+     * @private
+     * @type {int}
+     */
+    this.timeDeltasSum = 0;
+
+    /**
+     * The maximum length of this.timeDeltas.
+     *
+     * @property
+     *
+     * @public
+     * @type {int}
+     */
+    this.timeDeltasMaxLength = 150;
+};
+
+/**
+ * Get the last FPS value.
+ *
+ * @return {float} The last FPS value.
+ */
+DeerHuhn.FPSCounter.prototype.getLastFPS = function () {
+    return this.lastFPS;
+};
+
+/**
+ * Get the last time delta value (the inverse of frames/ms).
+ *
+ * @return {int} The last time delta value (in ms).
+ */
+DeerHuhn.FPSCounter.prototype.getLastTimeDelta = function () {
+    return this.lastTimeDelta;
+};
+
+/**
+ * The callback that should be called every time a new frame is rendered.
+ */
+DeerHuhn.FPSCounter.prototype.newAnimationFrameRendered = function () {
+    var frameTime = new Date();
+
+    if (this.lastAnimationFrameTime === null) {
+        this.lastAnimationFrameTime = frameTime;
+        return;
+    }
+
+    var timeDelta = this.calculateTimeDelta(frameTime);
+
+    // this.lastAnimationFrameTime is used in this.calculateTimeDelta(), so we need to update it after calling that function.
+    this.lastAnimationFrameTime = frameTime;
+
+    this.addTimeDeltaObservation(timeDelta);
+};
+
+/**
+ * Add a time delta to the list of observations and update lastFPS.
+ *
+ * @param {int} timeDelta The time between two consequent animate() calls (in ms).
+ */
+DeerHuhn.FPSCounter.prototype.addTimeDeltaObservation = function (timeDelta) {
+    this.timeDeltas.push(timeDelta);
+    this.timeDeltasSum += timeDelta;
+
+    if (this.timeDeltas.length > this.timeDeltasMaxLength) {
+        this.timeDeltasSum -= this.timeDeltas[0];
+        this.timeDeltas = this.timeDeltas.slice(1);
+    }
+
+    this.lastFPS = 1000.0/timeDelta;
+    this.lastTimeDelta = timeDelta;
+};
+
+/**
+ * Called when the game is unpaused.
+ *
+ * @param {int} timeDelta The time for which the game was paused (in ms).
+ */
+DeerHuhn.FPSCounter.prototype.unPause = function (timeDelta) {
+    if (this.lastAnimationFrameTime === null)
+        return;
+
+    // setMilliseconds actually adds the given number of ms to the Date object :)
+    this.lastAnimationFrameTime.setMilliseconds(timeDelta);
+};
+
+/**
+ * Get the average FPS value (since the game start).
+ *
+ * @return {float} The average FPS value.
+ */
+DeerHuhn.FPSCounter.prototype.getAverageFPS = function () {
+    return this.timeDeltas.length * 1000.0 / this.timeDeltasSum;
+};
+
+/**
+ * Compute the difference between the given time and this.lastAnimationFrameTime.
+ *
+ * @param {Date} now The time of the new animation frame.
+ * @return {int} The difference between the given time and this.lastAnimationFrameTime (in ms).
+ */
+DeerHuhn.FPSCounter.prototype.calculateTimeDelta = function(now) {
+    return now.valueOf() - this.lastAnimationFrameTime.valueOf();
 };
 
 // MISC UTILITIES

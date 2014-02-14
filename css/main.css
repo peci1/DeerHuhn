@@ -46,3 +46,5 @@ body.jsEnabled #jsDisabledText {display: none;}
 #rules li {margin-left: .5em;}
 
 #best_results tr:hover {background-color: #cccccc;}
+
+#fps {position: absolute; top: 20px; left: 20px;}
