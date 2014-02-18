@@ -6,15 +6,16 @@ $db = new db();
 $db->connect();
 
 // query the current round
-$roundResult = $db->query("SELECT MAX(round) AS current_round FROM current_round");
-if ($roundResult === FALSE)
-    die(mysql_error());
 
-if (mysql_num_rows($roundResult) !== 1)
-    die('The query for current round returned ' . mysql_num_rows($roundResult) . ' rows.');
+if ($db->query('SELECT COUNT(*) FROM current_round')->fetchColumn() == 0) //intentionally ==
+    die('V databázi není záznam o žádném kole. ' . print_r($db->errorInfo(), TRUE));
 
-$round = mysql_fetch_array($roundResult, MYSQL_ASSOC);
-$round = (int) $round['current_round'];
+$roundResult = $db->query("SELECT MAX(round) FROM current_round");
+
+$round = $roundResult->fetchColumn();
+if ($round === FALSE)
+    die($db->get_last_error());
+$round = (int) $round;
 
 $result = new StdClass();
 // select the best score
@@ -27,12 +28,9 @@ function build_and_query($order, $round, $db) {
     $result = $db->query($scoreQuery);
 
     if ($result === FALSE)
-        die(mysql_error());
+        die($db->get_last_error());
 
-    $scoreTable = Array();
-    for ($i = 0; $i < mysql_num_rows($result); $i++) {
-        $scoreTable[] = mysql_fetch_array($result, MYSQL_ASSOC);
-    }
+    $scoreTable = $result->fetchAll(PDO::FETCH_ASSOC);
     return $scoreTable;
 }
 

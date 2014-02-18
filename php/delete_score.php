@@ -9,11 +9,11 @@ $db = new db();
 $db->connect();
 
 // delete the entry
-$deleteQuery = sprintf("UPDATE score SET deleted='1' WHERE round=%u AND score=%d AND name='%s' AND email='%s' AND time='%s' LIMIT 1",
-    $_POST['round'], $_POST['score'], $db->escape($_POST['name']), $db->escape($_POST['email']), $db->escape($_POST['time']));
-$deleteResult = $db->query($deleteQuery);
+$deleteQuery = $db->prepare('UPDATE score SET deleted=1 WHERE round=? AND score=? AND name=? AND email=? AND time=?');
+$deleteResult = $deleteQuery->execute(array($_POST['round'], $_POST['score'], $_POST['name'], $_POST['email'], $_POST['time']));
+
 if ($deleteResult === FALSE)
-    die(mysql_error());
+    die($db->get_last_error());
 else
     header('Location: get_best_score.php?message=Výsledek+byl+smazán');
 /* ?> omitted intentionally */

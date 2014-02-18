@@ -7,6 +7,7 @@ require_once('config.php');
  */
 class db {
 
+    private $dsn;
     private $host;
     private $dbName;
     private $username;
@@ -16,6 +17,7 @@ class db {
     private $dbHandle = NULL;
 
     public function __construct() {
+        $this->dsn = DB_DSN;
         $this->host = DB_HOST;
         $this->dbName = DB_NAME;
         $this->username = DB_USERNAME;
@@ -24,28 +26,27 @@ class db {
     }
 
     public function connect() {
-        $this->dbHandle = mysql_connect($this->host, $this->username, $this->password);
-        if ($this->dbHandle === FALSE)
-            die(mysql_error());
-
-        $dbSelected = mysql_select_db($this->dbName, $this->dbHandle);
-        if ($dbSelected === FALSE)
-            die(mysql_error());
-
-        $charsetSelected = mysql_query('set character_set_results='.$this->dbEncoding.
-            ', character_set_connection='.$this->dbEncoding.
-            ', character_set_client='.$this->dbEncoding);
-
-        if ($charsetSelected === FALSE)
-            die(mysql_error());
+        $this->dbHandle = new PDO($this->dsn, $this->username, $this->password);
     }
 
     public function query($query) {
-        return mysql_query($query, $this->dbHandle);
+        return $this->dbHandle->query($query);
     }
 
     public function escape($string) {
-        return mysql_real_escape_string($string, $this->dbHandle);
+        return $this->dbHandle->quote($string);
+    }
+
+    public function get_last_error() {
+        return print_r($this->dbHandle->errorInfo(), TRUE);
+    }
+
+    public function exec($query) {
+        return $this->dbHandle->exec($query);
+    }
+
+    public function prepare($query) {
+        return $this->dbHandle->prepare($query);
     }
 }
 

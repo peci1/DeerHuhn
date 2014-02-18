@@ -1,22 +1,38 @@
 <?php
-
 // configuration not to be commited to VCS
 // create on your machine and change passwords; rename to config.php
 
-if ($_SERVER['SERVER_ADDR'] == '127.0.0.1') {
+if (sizeof (preg_split('/:/', $_SERVER['HTTP_HOST'])) == 2) {
+    // generally we want to check if $_SERVER['SERVER_PORT'] != '80', but
+    // some bug causes the port to be 80 regardless of where the server is running
+    // hopefully, the port number is also contained in HTTP_HOST, e.g. localhost:8001
+    
+    // the application runs on a local webserver from local-web-server
     define('DB_HOST', 'localhost');
     define('DB_NAME', 'deerhuhn');
     define('DB_USERNAME', 'deerhuhn');
     define('DB_PASSWORD', '');
     define('DB_ENCODING', 'utf8');
-} else {
-    define('DB_HOST', 'provider.net');
+    define('DB_DSN', 'sqlite:'.realpath(dirname(__FILE__).'/../local-web-server/Program/sqlite/deerhuhn.sqlite'));
+} else if ($_SERVER['SERVER_ADDR'] === '127.0.0.1') {
+    // the application runs in development environment
+    define('DB_HOST', 'localhost');
     define('DB_NAME', 'deerhuhn');
-    define('DB_USERNAME', 'user');
-    define('DB_PASSWORD', 'password');
+    define('DB_USERNAME', 'deerhuhn');
+    define('DB_PASSWORD', '');
     define('DB_ENCODING', 'utf8');
+    define('DB_DSN', 'mysql:host='.DB_HOST.';port=3307;dbname='.DB_NAME);
+} else {
+    // production environment
+    define('DB_HOST', 'host');
+    define('DB_NAME', 'dbname');
+    define('DB_USERNAME', 'user');
+    define('DB_PASSWORD', 'pass');
+    define('DB_ENCODING', 'utf8');
+    define('DB_DSN', 'mysql:host='.DB_HOST.';port=3307;dbname='.DB_NAME);
 }
 
-const NEW_ROUND_PASSWORD = 'password';
+define('NEW_ROUND_PASSWORD', 'password');
 
 /* ?> omitted intentionally */
+

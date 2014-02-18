@@ -23,23 +23,23 @@ $db = new db();
 $db->connect();
 
 // query the current round
+if ($db->query('SELECT COUNT(*) FROM current_round')->fetchColumn() == 0) //intentionally ==
+    die('V databázi není záznam o žádném kole. ' . $db->get_last_error());
+
 $roundResult = $db->query("SELECT MAX(round) AS current_round FROM current_round");
-if ($roundResult === FALSE)
-    die(mysql_error());
 
-if (mysql_num_rows($roundResult) !== 1)
-    die('The query for current round returned ' . mysql_num_rows($roundResult) . ' rows.');
-
-$round = mysql_fetch_array($roundResult, MYSQL_ASSOC);
-$round = (int) $round['current_round'];
+$round = $roundResult->fetchColumn();
+if ($round === FALSE)
+    die($db->get_last_error());
+$round = (int) $round;
 
 // insert the values into current round
-$insertQuery = sprintf("INSERT INTO score (round, score, name, email) VALUES (%u, '%d', '%s', '%s')", 
-    $round, (int) $_POST['score'], $db->escape($_POST['name']), $db->escape($_POST['email']));
+$insertQuery = sprintf("INSERT INTO score (round, score, name, email, deleted, time) VALUES (%u, %d, %s, %s, 0, %s)", 
+    $round, (int) $_POST['score'], $db->escape($_POST['name']), $db->escape($_POST['email']), $db->escape(date('Y-m-d H:i:s')));
 $result = $db->query($insertQuery);
 
 if ($result === FALSE)
-    echo mysql_error();
+    die($db->get_last_error());
 else
     echo '1';
 
