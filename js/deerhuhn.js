@@ -123,7 +123,7 @@ var DeerHuhn = function (canvasContainerId, resolution) {
     this.fpsElem = document.getElementById('fps');
     this.fpsCounter = new DeerHuhn.FPSCounter();
     this.pausableObjects.push(this.fpsCounter);
-    this.lowFpsWarningShown = false;
+    this.lowFpsWarningShown = [];
 
     // HUD
     this.dateText = null;
@@ -216,7 +216,8 @@ DeerHuhn.prototype = {
         if (!this.isPaused) {
 
             this.fpsCounter.newAnimationFrameRendered();
-            if (this.fpsElem !== undefined) {
+
+            if (this.fpsElem !== undefined && this.fpsElem !== null) {
                 this.fpsElem.innerHTML = Math.round(this.fpsCounter.getAverageFPS()) + " FPS";
             }
 
@@ -319,10 +320,11 @@ DeerHuhn.prototype = {
     },
 
     showLowFpsWarning: function (suggestedResolution) {
-        if (this.lowFpsWarningShown)
+        if (this.lowFpsWarningShown.indexOf(this.resolution.dirPrefix) >= 0)
             return;
 
-        this.lowFpsWarningShown = true;
+        this.lowFpsWarningShown.push(this.resolution.dirPrefix);
+        cookie.set('lowFpsWarningShown', this.lowFpsWarningShown.join(","));
 
         var resString = "střední";
         if (suggestedResolution === DeerHuhn.RESOLUTION_LOW)
@@ -450,6 +452,7 @@ DeerHuhn.prototype = {
     loadPersistentState: function () {
         this.soundMuted = cookie.get('soundMuted', '0') !== '0';
         this.musicMuted = cookie.get('musicMuted', '0') !== '0';
+        this.lowFpsWarningShown = cookie.get('lowFpsWarningShown', ' ').split(",");
     },
 
     addSprite: function(sprite) {
@@ -641,11 +644,14 @@ DeerHuhn.prototype = {
 
             this.startNewSession();
 
-            if (!this.lowFpsWarningShown) {
+            if (this.lowFpsWarningShown.indexOf(this.resolution.dirPrefix) < 0) {
                 var lowFpsTimer = new DeerHuhn.PausableTimeout(function() {
-                    var suggestedResolution = this.calculateSuggestedResolutionFromFPS();
-                    if (suggestedResolution !== this.resolution)
-                        this.showLowFpsWarning(suggestedResolution);
+                    // if Esc was not pressed in between
+                    if (this.stage === this.stages.game) {
+                        var suggestedResolution = this.calculateSuggestedResolutionFromFPS();
+                        if (suggestedResolution !== this.resolution)
+                            this.showLowFpsWarning(suggestedResolution);
+                    }
 
                     this.pausableObjects.remove(lowFpsTimer);
                 }.bind(this), 10000);
