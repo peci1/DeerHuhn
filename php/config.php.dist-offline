@@ -1,0 +1,12 @@
+<?php    
+// the application runs on a local webserver from local-web-server
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'deerhuhn');
+define('DB_USERNAME', 'deerhuhn');
+define('DB_PASSWORD', '');
+define('DB_ENCODING', 'utf8');
+define('DB_DSN', 'sqlite:'.realpath(dirname(__FILE__).'/../local-web-server/Program/sqlite/deerhuhn.sqlite'));
+
+define('NEW_ROUND_PASSWORD', 'noveKolo');
+
+/* ?> omitted intentionally */

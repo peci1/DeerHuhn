@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     var root = 'js',
-        dist = 'bin',
+        bin = 'bin',
         standaloneLibFilesMinimized = [
             '<%= dirs.src %>/html5.js',
             '<%= dirs.src %>/excanvas.min.js'
@@ -50,8 +50,10 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg : grunt.file.readJSON('package.json'),
         dirs: {
-            build: dist,
-            src: root
+            build: bin,
+            src: root,
+            distOnline: 'dist/online',
+            distOffline: 'dist/offline'
         },
         files: {
             srcBlob: '<%= dirs.src %>/**/*.js',
@@ -63,6 +65,17 @@ module.exports = function(grunt) {
             main: {
                 files: [
                     {src: standaloneLibFilesMinimized, dest: '<%= dirs.build %>/', expand: true, flatten: true}
+                ]
+            },
+            distOnline: {
+                files: [
+                    {src: ['<%= files.buildMin %>', '<%= dirs.build %>/'+'html5.js', '<%= dirs.build %>/'+'excanvas.min.js', 'css/main.min.css', 'images/**', 'fonts/**', 'sound/**', 'php/**', 'index.htm', '.htaccess', '!**/*.dist-offline'], dest: '<%= dirs.distOnline %>/', expand: true}
+                ]
+            },
+            distOffline: {
+                files: [
+                    {src: ['<%= files.buildMin %>', '<%= dirs.build %>/'+'html5.js', '<%= dirs.build %>/'+'excanvas.min.js', 'css/main.min.css', 'images/**', 'fonts/**', 'sound/**', 'php/**', 'index.htm', '.htaccess', 'local-web-server/**', 'Spustit*.bat', '!php/config.php*', '!local-web-server/Program/sqlite/deerhuhn.sqlite*'], dest: '<%= dirs.distOffline %>/', expand: true},
+                    {src: ['**/*.dist-offline', '!dist/**'], dest: '<%= dirs.distOffline %>/', expand: true, rename: function (dest, src) {return dest + src.substring(0, src.length - '.dist-offline'.length);} }
                 ]
             }
         },
@@ -104,6 +117,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('default', ['jshint', 'concat:internal', 'uglify', 'concat', 'copy', 'cssmin']);
-    grunt.registerTask('build', ['concat:internal', 'uglify', 'concat', 'copy', 'cssmin']);
+    grunt.registerTask('default', ['jshint', 'concat:internal', 'uglify', 'concat', 'copy:main', 'cssmin']);
+    grunt.registerTask('build', ['concat:internal', 'uglify', 'concat', 'copy:main', 'cssmin']);
+    grunt.registerTask('dist', ['copy:distOnline', 'copy:distOffline']);
 };

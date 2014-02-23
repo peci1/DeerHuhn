@@ -6,3 +6,6 @@ compile.bat
 bin
 css/main.min.css
 local-web-server
+dist
+dist.bat
+*.lnk
